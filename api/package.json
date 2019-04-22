@@ -1,0 +1,62 @@
+{
+  "name": "matpilot",
+  "description": "CRM system to help martial arts studios maintain student records",
+  "version": "0.0.0",
+  "homepage": "",
+  "main": "src",
+  "keywords": [
+    "feathers"
+  ],
+  "author": {
+    "name": "Michael Leiseca",
+    "email": "mleiseca@gmail.com"
+  },
+  "contributors": [],
+  "bugs": {},
+  "directories": {
+    "lib": "src",
+    "test": "test/",
+    "config": "config/"
+  },
+  "engines": {
+    "node": "^8.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "scripts": {
+    "test": "npm run eslint && NODE_ENV= npm run mocha",
+    "eslint": "eslint src/. test/. --config .eslintrc.json",
+    "dev": "nodemon src/",
+    "start": "node src/",
+    "mocha": "mocha test/ --recursive --exit"
+  },
+  "dependencies": {
+    "@feathersjs/authentication": "^2.1.13",
+    "@feathersjs/authentication-jwt": "^2.0.7",
+    "@feathersjs/authentication-local": "^1.2.9",
+    "@feathersjs/authentication-oauth2": "^1.2.5",
+    "@feathersjs/configuration": "^2.0.4",
+    "@feathersjs/errors": "^3.3.4",
+    "@feathersjs/express": "^1.2.7",
+    "@feathersjs/feathers": "^3.3.1",
+    "@feathersjs/socketio": "^3.2.7",
+    "compression": "^1.7.3",
+    "cors": "^2.8.5",
+    "feathers-sequelize": "^5.0.1",
+    "helmet": "^3.15.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^1.0.0",
+    "pg": "^7.9.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.43.1",
+    "sequelize-auto-migrations": "^1.0.3",
+    "serve-favicon": "^2.5.0",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.10.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.8",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  }
+}

@@ -1,0 +1,9 @@
+0000000000000000000000000000000000000000 4d7dc398c21a05c7b0c4627f683683246e08c13f Michael Leiseca <mleiseca@gmail.com> 1554478424 -0500	commit (initial): init
+4d7dc398c21a05c7b0c4627f683683246e08c13f e931b43ada6bbff05f5e441434d55a54c034e5a5 Michael Leiseca <mleiseca@gmail.com> 1554490769 -0500	commit: Adding material design (vue-mdc-adapter)
+e931b43ada6bbff05f5e441434d55a54c034e5a5 e6e7194113d18167a5731f3b23e59b6475022ebc Michael Leiseca <mleiseca@gmail.com> 1555184674 -0500	commit: Including feathers client
+e6e7194113d18167a5731f3b23e59b6475022ebc 88218c47cd3873d55112f9b62cfd09aee52cd9d3 Michael Leiseca <mleiseca@gmail.com> 1555190443 -0500	commit: With authentication! (ok, it's hardcoded, but it's something!)
+88218c47cd3873d55112f9b62cfd09aee52cd9d3 e9bbad96ee0c687532aabd501a11a2e8bca822ca Michael Leiseca <mleiseca@gmail.com> 1555206826 -0500	commit: Messing around with homepage display
+e9bbad96ee0c687532aabd501a11a2e8bca822ca 1dc8b0aca949c9853d49872d787f61b21f1feb75 Michael Leiseca <mleiseca@gmail.com> 1555218092 -0500	commit: Adding the ability to add a gym
+1dc8b0aca949c9853d49872d787f61b21f1feb75 9d409e1f828be32199b98f2cd11903f8974d1a9a Michael Leiseca <mleiseca@gmail.com> 1555443667 -0500	commit: Navigate to gym after creation
+9d409e1f828be32199b98f2cd11903f8974d1a9a eec6797a428062bd24f01449140afb5b24dccedf Michael Leiseca <mleiseca@gmail.com> 1555689255 -0500	commit: Add members to gym
+eec6797a428062bd24f01449140afb5b24dccedf 5d26759af98b0e6426032f8b90f9ce88cdcd0109 Michael Leiseca <mleiseca@gmail.com> 1555946484 -0500	commit: Edit members

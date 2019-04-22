@@ -1,0 +1,6 @@
+
+postgres:
+  build: ./docker_postgres/
+  ports:
+  - "5433:5432"
+
