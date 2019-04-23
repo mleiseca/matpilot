@@ -10,7 +10,7 @@
         <li><router-link :to="{ name: 'gym-members', params: {gymId: id}}">
           Add Members
         </router-link></li>
-        <li><router-link :to="{ name: 'gym-members', params: {gymId: id}}">
+        <li><router-link :to="{ name: 'gym-scheduled-event-add', params: {gymId: id}}">
           Schedule classes
         </router-link></li>
       </ul>

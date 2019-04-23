@@ -61,6 +61,13 @@ let router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      name: 'gym-scheduled-event-add',
+      path: '/gyms/:gymId/schedule/add',
+      component: () => import(/* webpackChunkName: "GymScheduledEventAdd" */ './views/GymScheduledEventAdd.vue'),
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
