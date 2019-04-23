@@ -28,7 +28,7 @@ export default {
       this.$store.dispatch('scheduled-events/create', event)
         .then((result) => {
           console.log('Got result:', result)
-          this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+          this.$router.push({ name: 'gym-scheduled-events', params: { id: this.gymId } })
         })
     }
   }

@@ -2,10 +2,10 @@
   <div>
     <form>
       <div>
-        <mdc-textfield v-model="scheduledEvent.title" label="Title" />
+        <mdc-textfield v-model="form.title" label="Title" />
       </div>
       <div>
-        <mdc-textfield v-model="scheduledEvent.description" label="Description (optional)" />
+        <mdc-textfield v-model="form.description" label="Description (optional)" />
       </div>
 
       <!--TODO: add parts of mdc-form-field ?-->
@@ -25,24 +25,35 @@
       </div>
 
       <div>
-        Repeats On
-        <div v-for="day in weekdays">
-          <mdc-checkbox :label="day.text" v-model="form.byweekday[day.value]" />
-        </div>
 
-        <p class="repeats-every">Repeat Every</p>
-        <div class="flex-wrapper repeats-every">
 
-          <mdc-textfield v-model="form.repeatEvery" label="Frequency" />
+          <!--<mdc-select v-model="form.repeatPeriod" label="Repeats every" class="repeatPeriodSelector">-->
+            <!--<option v-for="repeatPeriod in repeatPeriods" :value="repeatPeriod.value">-->
+              <!--{{ repeatPeriod.text }}-->
+            <!--</option>-->
+          <!--</mdc-select>-->
 
-          <!--<div class="small">-->
-          <mdc-select v-model="form.repeatPeriod" label="Repeat every" class="repeatPeriodSelector">
-            <option v-for="repeatPeriod in repeatPeriods" :value="repeatPeriod.value">
-              {{ repeatPeriod.text }}
-            </option>
-          </mdc-select>
+          <div>
+            Repeats every
+          </div>
 
-        </div>
+
+          <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="1" label="Week" checked></mdc-radio>-->
+          <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="2" label="Month"></mdc-radio>-->
+
+          <!--<mdc-radio v-model="form.repeatPeriod"-->
+                     <!--name="repeatPeriodRadio"-->
+                     <!--v-for="repeatPeriod in repeatPeriods"-->
+                     <!--:value="repeatPeriod.value"-->
+                     <!--:label="repeatPeriod.text"-->
+                     <!--class="repeatPeriodSelector">-->
+          <!--</mdc-radio>-->
+
+
+          <div v-for="day in weekdays">
+            <mdc-checkbox :label="day.text" v-model="form.byweekday[day.value]" />
+          </div>
+
       </div>
       <div>
         <mdc-button @click="save" raised>Save</mdc-button>
@@ -67,44 +78,75 @@ export default {
   props: {
     //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
     //    If you don't provide a member, you will get back just a data object.
-    scheduledEvent: {
-
-      type: Object,
-      default: function () {
-        return new this.$FeathersVuex.ScheduledEvent({
-          title: '',
-          description: ''
-        })
-      }
-    }
+    scheduledEvent: Object
   },
   data () {
     return {
       dateFormat: 'MMM d, yyyy',
       repeatPeriods: [
         { value: '2', text: 'week' },
-        { value: '1', text: 'month' },
-        { value: '0', text: 'year' }
+        { value: '1', text: 'month' }
+        // ,{ value: '0', text: 'year' }
       ],
       weekdays: [
-        { value: 0, text: 'Monday' },
-        { value: 1, text: 'Tuesday' },
-        { value: 2, text: 'Wednesday' },
-        { value: 3, text: 'Thursday' },
-        { value: 4, text: 'Friday' },
-        { value: 5, text: 'Saturday' },
-        { value: 6, text: 'Sunday' }
+        { value: '0', text: 'Monday' },
+        { value: '1', text: 'Tuesday' },
+        { value: '2', text: 'Wednesday' },
+        { value: '3', text: 'Thursday' },
+        { value: '4', text: 'Friday' },
+        { value: '5', text: 'Saturday' },
+        { value: '6', text: 'Sunday' }
       ],
       form: {
+        title: '',
+        description: '',
         startDate: null,
         startTime: null,
         endDate: null,
         endTime: null,
         byweekday: [],
-        repeatEvery: null,
         repeatPeriod: null
       }
     }
+  },
+  mounted: function () {
+    console.log('mounted', this.scheduledEvent)
+
+    this.$watch('scheduledEvent', se => {
+      console.log(se)
+
+      if (!se) {
+        return
+      }
+      if (se.title) {
+        this.form.title = se.title
+      }
+
+      if (se.description) {
+        this.form.description = se.description
+      }
+      if (se.startDate) {
+        this.form.startDate = moment(se.startDate).toDate()
+      }
+
+      if (se.endDate) {
+        this.form.endDate = moment(se.endDate).toDate()
+      }
+
+      if (se.startTime) {
+        this.form.startTime = se.startTime
+      }
+      if (se.endTime) {
+        this.form.endTime = se.endTime
+      }
+
+      if (this.scheduledEvent.rrules) {
+        const rule = rrulestr(se.rrules)
+        this.form.byweekday = this.formatWeekdays(rule.options.byweekday)
+        this.form.repeatPeriod = rule.options.freq.toString()
+        this.form.repeatPeriod = "2"
+      }
+    }, {immediate:true})
   },
   methods: {
     updateTimes (datePair) {
@@ -132,6 +174,13 @@ export default {
       }
       return result
     },
+    formatWeekdays(dayArray) {
+      const result = []
+      for(let i = 0; i < dayArray.length; i++) {
+        result[dayArray[i]] = true
+      }
+      return result
+    },
     save: function (event) {
       event.preventDefault()
 
@@ -140,12 +189,17 @@ export default {
         .startOf('day').utcOffset(0).hours(startTime.getHours()).minutes(startTime.getMinutes()).toDate()
 
       const rule = new RRule({
-        freq: this.form.repeatPeriod,
-        interval: this.form.repeatEvery,
+        freq: 2,
+//        freq: this.form.repeatPeriod,
+        interval: 1,
+//        interval: this.form.repeatEvery,
         byweekday: this.parseWeekdays(this.form.byweekday),
         dtstart: dtstart,
         tzid: 'America/Chicago' // TODO: should not hardcode
-      });
+      })
+
+      this.scheduledEvent.title = this.form.title
+      this.scheduledEvent.description = this.form.description
 
       // TODO: this should come from the gym
       this.scheduledEvent.timezone = 'America/Chicago'

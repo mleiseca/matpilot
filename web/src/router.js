@@ -61,9 +61,23 @@ let router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      name: 'gym-scheduled-events',
+      path: '/gyms/:gymId/schedule',
+      component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEvents.vue'),
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
       name: 'gym-scheduled-event-add',
       path: '/gyms/:gymId/schedule/add',
-      component: () => import(/* webpackChunkName: "GymScheduledEventAdd" */ './views/GymScheduledEventAdd.vue'),
+      component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEventsAdd.vue'),
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
+      name: 'gym-scheduled-event-view',
+      path: '/gyms/:gymId/schedule/:scheduledEventId',
+      component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEventsView.vue'),
       props: true,
       meta: { requiresAuth: true }
     },
