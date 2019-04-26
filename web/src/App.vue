@@ -25,21 +25,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 export default {
   name: 'appview',
   computed: {
     user () {
       return this.$store.state.auth.user
     }
-  },
-  methods: {
-    ...mapActions('auth', ['authenticate'])
-
-  },
-  created () {
-    const { authenticate } = this
-    authenticate({ strategy: 'local', email: 'me@me.com', password: 'secret' })
   }
 }
 

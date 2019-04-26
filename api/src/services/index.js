@@ -5,6 +5,8 @@ const members = require('./members/members.service.js');
 const scheduledEvents = require('./scheduled-events/scheduled-events.service.js');
 const users = require('./users/users.service.js');
 const userGymRole = require('./user-gym-role/user-gym-role.service.js');
+const mailer = require('./mailer/mailer.service.js');
+const authmanagement = require('./authmanagement/authmanagement.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(gyms);
@@ -21,4 +23,6 @@ module.exports = function (app) {
     .filter(model => model.associate)
     .forEach(model => model.associate(sequelizeClient.models));
 
+  app.configure(mailer);
+  app.configure(authmanagement);
 };

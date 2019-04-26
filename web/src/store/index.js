@@ -18,6 +18,7 @@ export default new Vuex.Store({
     service('scheduled-events'),
     service('users'),
     service('user-gym-role'),
+    service('authManagement'),
 
     // // Specify custom options per service
     // service('/v1/tasks', {
