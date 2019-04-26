@@ -1,7 +1,7 @@
 <template>
   <div>
-    <mdc-textfield v-model="form.name" label="Gym Name" />
-    <mdc-textfield v-model="form.description" label="Description" />
+    <mdc-textfield v-model="form.name" label="Gym Name" fullwidth/>
+    <mdc-textfield v-model="form.description" label="Description" fullwidth/>
 
     <div>
     <mdc-button @click="save" raised>Save</mdc-button>

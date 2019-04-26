@@ -26,7 +26,6 @@
 
       <div>
 
-
           <!--<mdc-select v-model="form.repeatPeriod" label="Repeats every" class="repeatPeriodSelector">-->
             <!--<option v-for="repeatPeriod in repeatPeriods" :value="repeatPeriod.value">-->
               <!--{{ repeatPeriod.text }}-->
@@ -36,7 +35,6 @@
           <div>
             Repeats every
           </div>
-
 
           <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="1" label="Week" checked></mdc-radio>-->
           <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="2" label="Month"></mdc-radio>-->
@@ -49,8 +47,7 @@
                      <!--class="repeatPeriodSelector">-->
           <!--</mdc-radio>-->
 
-
-          <div v-for="day in weekdays">
+          <div v-for="day in weekdays" v-bind:key="day.value">
             <mdc-checkbox :label="day.text" v-model="form.byweekday[day.value]" />
           </div>
 
@@ -67,7 +64,6 @@ import Datepicker from 'vuejs-datepicker'
 import TimeRangePicker from '@/components/TimeRangePicker'
 import moment from 'moment'
 import { RRule, rrulestr } from 'rrule'
-
 
 export default {
   name: 'ScheduleForm',
@@ -144,19 +140,19 @@ export default {
         const rule = rrulestr(se.rrules)
         this.form.byweekday = this.formatWeekdays(rule.options.byweekday)
         this.form.repeatPeriod = rule.options.freq.toString()
-        this.form.repeatPeriod = "2"
+        this.form.repeatPeriod = '2'
       }
-    }, {immediate:true})
+    }, { immediate: true })
   },
   methods: {
     updateTimes (datePair) {
       this.form.startTime = datePair.start
       this.form.endTime = datePair.end
     },
-    formatDateTime(dateTime) {
-      const pad = function(num) {
-        let norm = Math.floor(Math.abs(num));
-        return (norm < 10 ? '0' : '') + norm;
+    formatDateTime (dateTime) {
+      const pad = function (num) {
+        let norm = Math.floor(Math.abs(num))
+        return (norm < 10 ? '0' : '') + norm
       }
       return dateTime.getFullYear() +
         '-' + pad(dateTime.getMonth() + 1) +
@@ -165,18 +161,18 @@ export default {
         ':' + pad(0) +
         ':' + pad(0)
     },
-    parseWeekdays(dayArray) {
+    parseWeekdays (dayArray) {
       const result = []
-      for(let i = 0; i < dayArray.length; i++) {
+      for (let i = 0; i < dayArray.length; i++) {
         if (dayArray[i]) {
           result.push(i)
         }
       }
       return result
     },
-    formatWeekdays(dayArray) {
+    formatWeekdays (dayArray) {
       const result = []
-      for(let i = 0; i < dayArray.length; i++) {
+      for (let i = 0; i < dayArray.length; i++) {
         result[dayArray[i]] = true
       }
       return result
@@ -184,38 +180,39 @@ export default {
     save: function (event) {
       event.preventDefault()
 
-      const startTime = new Date('1970-01-01T' + this.form.startTime);
+      const startTime = new Date('1970-01-01T' + this.form.startTime)
       const dtstart = moment(this.form.startDate)
         .startOf('day').utcOffset(0).hours(startTime.getHours()).minutes(startTime.getMinutes()).toDate()
 
       const rule = new RRule({
         freq: 2,
-//        freq: this.form.repeatPeriod,
+        //        freq: this.form.repeatPeriod,
         interval: 1,
-//        interval: this.form.repeatEvery,
+        //        interval: this.form.repeatEvery,
         byweekday: this.parseWeekdays(this.form.byweekday),
         dtstart: dtstart,
         tzid: 'America/Chicago' // TODO: should not hardcode
       })
 
-      this.scheduledEvent.title = this.form.title
-      this.scheduledEvent.description = this.form.description
+      const se = this.scheduledEvent ? this.scheduledEvent : {}
+      se.title = this.form.title
+      se.description = this.form.description
 
-      // TODO: this should come from the gym
-      this.scheduledEvent.timezone = 'America/Chicago'
-      this.scheduledEvent.startDate = this.formatDateTime(this.form.startDate)
+      // TODO: timezone should come from the gym
+      se.timezone = 'America/Chicago'
+      se.startDate = this.formatDateTime(this.form.startDate)
       if (this.form.endDate) {
-        this.scheduledEvent.endDate = this.formatDateTime(this.form.endDate)
+        se.endDate = this.formatDateTime(this.form.endDate)
       } else {
-        this.scheduledEvent.endDate = null
+        se.endDate = null
       }
-      this.scheduledEvent.startTime = this.form.startTime
-      this.scheduledEvent.endTime = this.form.endTime
-      this.scheduledEvent.rrules = rule.toString()
+      se.startTime = this.form.startTime
+      se.endTime = this.form.endTime
+      se.rrules = rule.toString()
 
       // TODO: validation
-      console.log('scheduled-event saved!', this.scheduledEvent)
-      this.$emit('scheduled-event-save', this.scheduledEvent)
+      console.log('scheduled-event saved!', se)
+      this.$emit('scheduled-event-save', se)
     }
   }
 }

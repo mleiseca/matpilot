@@ -64,11 +64,11 @@ export default {
       const scheduledEventId = event.target.dataset['scheduledEventId']
       this.$router.push({ name: 'gym-scheduled-event-view', params: { gymId: this.gymId, scheduledEventId: scheduledEventId } })
     },
-    scheduleDescription: function(scheduledEvent) {
+    scheduleDescription: function (scheduledEvent) {
       if (scheduledEvent.rrules) {
         return rrulestr(scheduledEvent.rrules).toText()
       } else {
-        return "invalid schedule"
+        return 'invalid schedule'
       }
     }
   },

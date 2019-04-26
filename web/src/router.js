@@ -98,13 +98,13 @@ let router = new Router({
     {
       name: 'user-create-account',
       path: '/create-account',
-      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserCreateAccount.vue'),
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserCreateAccount.vue')
     },
     {
       name: 'user-verify-account',
       path: '/verify',
-      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserVerifyAccount.vue'),
-    },
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserVerifyAccount.vue')
+    }
   ]
 })
 
