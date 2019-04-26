@@ -1,7 +1,7 @@
 module.exports = function(app) {
 
   function getLink(type, hash) {
-    const url = 'http://localhost:3030/' + type + '?token=' + hash
+    const url = app.get("frontendUrlBase") + type + '?token=' + hash
     return url
   }
 
@@ -21,7 +21,7 @@ module.exports = function(app) {
         case 'resendVerifySignup': //sending the user the verification email
           tokenLink = getLink('verify', user.verifyToken)
           email = {
-            from: process.env.FROM_EMAIL,
+            from: app.get('fromEmail'),
             to: user.email,
             subject: 'Verify Signup',
             html: tokenLink
@@ -32,7 +32,7 @@ module.exports = function(app) {
         case 'verifySignup': // confirming verification
           tokenLink = getLink('verify', user.verifyToken)
           email = {
-            from: process.env.FROM_EMAIL,
+            from: app.get('fromEmail'),
             to: user.email,
             subject: 'Confirm Signup',
             html: 'Thanks for verifying your email'

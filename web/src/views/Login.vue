@@ -1,23 +1,5 @@
 <template>
   <div>
-    <!--<form v-on:submit.prevent>-->
-    <!--<div class="input-group">-->
-    <!--<span class="input-group-addon" id="basic-addon1">-->
-    <!--<i class="fa fa-user" aria-hidden="true"></i>-->
-    <!--</span>-->
-    <!--<input type="text" v-model.trim="user.email" class="form-control" placeholder="Email" aria-describedby="basic-addon1" required>-->
-    <!--</div>-->
-    <!--<div class="input-group">-->
-    <!--<span class="input-group-addon" id="basic-addon2">-->
-    <!--<i class="fa fa-key" aria-hidden="true"></i>-->
-    <!--</span>-->
-    <!--<input type="password" v-model.trim="user.password" class="form-control" placeholder="Password" aria-describedby="basic-addon2" required>-->
-    <!--</div>-->
-    <!--<button @click="authLogin()">Login</button>-->
-    <!--&lt;!&ndash;<button @click="authRegister()">Register</button>&ndash;&gt;-->
-    <!--&lt;!&ndash;<button @click="authLogout()">Logout</button>&ndash;&gt;-->
-    <!--</form>-->
-
     <form class="login" @submit.prevent="login">
       <h1 class="site-h1">Welcome</h1>
       <label>Email</label>
@@ -59,6 +41,7 @@
           })
           .catch((e) => {
             console.log("** Login catch: ", e)
+            // TODO: error message
           })
       }
     }

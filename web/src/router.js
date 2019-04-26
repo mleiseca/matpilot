@@ -26,7 +26,6 @@ let router = new Router({
       name: 'login',
       component: Login
     },
-
     {
       path: '/home',
       name: 'userhome',
@@ -95,7 +94,17 @@ let router = new Router({
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
-    }
+    },
+    {
+      name: 'user-create-account',
+      path: '/create-account',
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserCreateAccount.vue'),
+    },
+    {
+      name: 'user-verify-account',
+      path: '/verify',
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserVerifyAccount.vue'),
+    },
   ]
 })
 
