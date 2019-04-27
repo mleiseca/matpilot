@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import feathersVuex from 'feathers-vuex'
 import feathersClient from '../api/feathers-client'
+import modules from './modules'
 
 const { service, auth, FeathersVuex } = feathersVuex(feathersClient, { idField: 'id' })
 
@@ -57,5 +58,6 @@ export default new Vuex.Store({
 
     // Setup the auth plugin.
     auth({ userService: 'users' })
-  ]
+  ],
+  modules
 })

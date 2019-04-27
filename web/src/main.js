@@ -3,10 +3,8 @@ import App from './App.vue'
 import router from './router'
 import store from './store/'
 import './api/feathers-client'
-
-import VueMDCAdapter from 'vue-mdc-adapter'
-
-Vue.use(VueMDCAdapter)
+import './components'
+import './plugins'
 
 Vue.config.productionTip = false
 
