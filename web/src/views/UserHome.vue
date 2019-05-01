@@ -30,13 +30,10 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-//  import UpcomingEvents from '@/components/events/UpcomingEvents'
 
 export default {
   name: 'UserHome',
-  components: {
-    //      'mc-upcoming-events': UpcomingEvents,
-  },
+
   computed: {
     ...mapGetters('user-gym-role', {
       userGyms: 'list'

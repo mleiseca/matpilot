@@ -25,6 +25,7 @@
     "timepicker": "^1.11.14",
     "vue": "^2.6.6",
     "vue-chartist": "^2.2.0",
+    "vue-moment": "^4.0.0",
     "vue-router": "^3.0.1",
     "vuejs-datepicker": "^1.5.4",
     "vuetify": "^1.5.13",
