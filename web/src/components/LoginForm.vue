@@ -1,18 +1,45 @@
 <template>
-  <div>
-    <form @submit.prevent="login">
-      <h1 class="site-h1">Login</h1>
-      <mdc-textfield v-model="email" label="Email" fullwidth/>
+  <v-form>
+    <v-container py-0>
+      <v-layout wrap>
 
-      <mdc-textfield v-model="password" type="password" label="Password" fullwidth/>
+        <v-flex
+          xs12
+          md12
+        >
+          <v-text-field
+            class="purple-input"
+            label="Email"
+            v-model="email"
+          />
+        </v-flex>
 
-      <div>
-        <mdc-button @click="login" raised>Save</mdc-button>
-      </div>
+        <v-flex
+          xs12
+          md12
+        >
+          <v-text-field
+            class="purple-input"
+            label="Password"
+            v-model="password"
+          />
+        </v-flex>
 
-    </form>
-
-  </div>
+        <v-flex
+          xs12
+          text-xs-right
+        >
+          <v-btn
+            class="mx-0 font-weight-light"
+            color="success"
+            @click="login"
+          >
+            Login
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-form>
 </template>
 
 <script>

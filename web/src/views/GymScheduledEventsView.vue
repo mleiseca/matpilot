@@ -1,17 +1,32 @@
 <template>
 
-  <div>
-    <h1>Edit scheduled event</h1>
-    <mp-scheduled-event-form
-      v-on:scheduled-event-save="saveScheduledEventAndDisplay"
-      v-bind:scheduled-event="scheduledEvent"></mp-scheduled-event-form>
-  </div>
+
+  <v-container fill-height fluid grid-list-xl>
+    <v-layout  justify-center wrap>
+      <v-flex xs12 md8>
+        <material-card
+          color="green"
+          title="Edit scheduled event"
+          text="">
+          <scheduled-event-form
+            v-on:scheduled-event-save="saveScheduledEventAndDisplay"
+            v-bind:scheduled-event="scheduledEvent"></scheduled-event-form>
+          <!--<member-form-->
+            <!--v-on:member-save="saveMemberAndDisplay"-->
+            <!--v-bind:member="member"></member-form>-->
+
+        </material-card>
+      </v-flex>
+
+    </v-layout>
+  </v-container>
+
+</template>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
 
-import ScheduledEventForm from '@/components/ScheduledEventForm.vue'
 
 export default {
   name: 'GymScheduledEventsView',
@@ -21,9 +36,6 @@ export default {
       gym: {},
       scheduledEvent: {}
     }
-  },
-  components: {
-    'mp-scheduled-event-form': ScheduledEventForm
   },
   computed: {
   },

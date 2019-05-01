@@ -1,7 +1,27 @@
 <template>
-  <div>
-    <mp-login-form></mp-login-form>
-  </div>
+  <v-container
+    fill-height
+    fluid
+    grid-list-xl>
+    <v-layout
+      justify-center
+      wrap
+    >
+      <v-flex
+        xs12
+        md8
+      >
+        <material-card
+          color="green"
+          title="Login"
+          text=""
+        >
+          <mp-login-form></mp-login-form>
+
+        </material-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>

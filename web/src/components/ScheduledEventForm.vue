@@ -1,76 +1,207 @@
 <template>
-  <div>
-    <form>
-      <div>
-        <mdc-textfield v-model="form.title" label="Title" />
-      </div>
-      <div>
-        <mdc-textfield v-model="form.description" label="Description (optional)" />
-      </div>
+  <v-form>
+    <v-container py-0>
+      <v-layout wrap>
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="Title"
+            v-model="form.title"/>
+        </v-flex>
 
-      <!--TODO: add parts of mdc-form-field ?-->
-      <div class="datepicker">
-        <!--TODO: add mdc-floating-label ?-->
-        <label for="startDate">Schedule starts:</label>
-        <datepicker v-model="form.startDate" id="startDate" :format="dateFormat" wrapper-class="calendar-wrapper " :clear-button="true"></datepicker>
-      </div>
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="Description (optional)"
+            v-model="form.description"/>
+        </v-flex>
 
-      <div class="datepicker">
-        <label for="endDate">and repeats until (optional)</label>
-        <datepicker v-model="form.endDate" id="endDate" :format="dateFormat" wrapper-class="calendar-wrapper" :clear-button="true"></datepicker>
-      </div>
+        <!--TODO: add parts of mdc-form-field ?-->
 
-      <div>
-        Events start at <mc-time-range-picker @update-times="updateTimes" :start="form.startTime" :end="form.endTime" ></mc-time-range-picker>
-      </div>
+        <v-flex xs12 sm6 md4>
+          <v-dialog
+            ref="dialogStartDate"
+            v-model="modalStartDate"
+            :return-value.sync="form.startDate"
+            persistent
+            lazy
+            full-width
+            width="290px">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="form.startDate"
+                label="Schedule starts"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="form.startDate" scrollable>
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="modalStartDate= false">Cancel</v-btn>
+              <v-btn flat color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
+            </v-date-picker>
+          </v-dialog>
+        </v-flex>
 
-      <div>
 
-          <!--<mdc-select v-model="form.repeatPeriod" label="Repeats every" class="repeatPeriodSelector">-->
-            <!--<option v-for="repeatPeriod in repeatPeriods" :value="repeatPeriod.value">-->
-              <!--{{ repeatPeriod.text }}-->
-            <!--</option>-->
-          <!--</mdc-select>-->
+        <v-flex xs12 sm6 md4>
+          <v-dialog
+            ref="dialogEndDate"
+            v-model="modalEndDate"
+            :return-value.sync="form.endDate"
+            persistent
+            lazy
+            full-width
+            width="290px">
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="form.endDate"
+                label="and repeats until (optional)"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker v-model="form.endDate" scrollable>
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="modalEndDate = false">Cancel</v-btn>
+              <v-btn flat color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
+            </v-date-picker>
+          </v-dialog>
+        </v-flex>
+          <!--<v-menu-->
+            <!--ref="menuEndDate"-->
+            <!--v-model="menuEndDate"-->
+            <!--:close-on-content-click="false"-->
+            <!--:nudge-right="40"-->
+            <!--:return-value.sync="form.endDate"-->
+            <!--lazy-->
+            <!--persistent-->
+            <!--transition="scale-transition"-->
+            <!--offset-y-->
+            <!--full-width-->
+            <!--min-width="290px"-->
+          <!--&gt;-->
+            <!--<template v-slot:activator="{ on }">-->
+              <!--<v-text-field-->
+                <!--v-model="form.endDate"-->
+                <!--clearable-->
+                <!--label="and repeats until (optional)"-->
+                <!--prepend-icon="mdi-calendar"-->
+                <!--readonly-->
+                <!--v-on="on"-->
+              <!--&gt;</v-text-field>-->
+            <!--</template>-->
+            <!--<v-date-picker v-model="form.endDate" no-title scrollable>-->
+              <!--<v-spacer></v-spacer>-->
+              <!--<v-btn flat color="primary" @click="menu = false">Cancel</v-btn>-->
+              <!--<v-btn flat color="primary" @click="$refs.menuEndDate.save(form.endDate)">OK</v-btn>-->
+            <!--</v-date-picker>-->
+          <!--</v-menu>-->
+        <!--<div class="datepicker">-->
+          <!--&lt;!&ndash;TODO: add mdc-floating-label ?&ndash;&gt;-->
+          <!--<label for="startDate">Schedule starts:</label>-->
+          <!--<datepicker v-model="form.startDate" id="startDate" :format="dateFormat" wrapper-class="calendar-wrapper " :clear-button="true"></datepicker>-->
+        <!--</div>-->
 
-          <div>
-            Repeats every
-          </div>
+        <!--<div class="datepicker">-->
+          <!--<label for="endDate">and repeats until (optional)</label>-->
+          <!--<datepicker v-model="form.endDate" id="endDate" :format="dateFormat" wrapper-class="calendar-wrapper" :clear-button="true"></datepicker>-->
+        <!--</div>-->
 
-          <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="1" label="Week" checked></mdc-radio>-->
-          <!--<mdc-radio v-model="form.repeatPeriod" name="repeatPeriodRadio" value="2" label="Month"></mdc-radio>-->
+        <!--<div>-->
+          <!--Events start at <mc-time-range-picker @update-times="updateTimes" :start="form.startTime" :end="form.endTime" ></mc-time-range-picker>-->
+        <!--</div>-->
+        <v-flex xs11 sm5>
+          <v-dialog
+            ref="startTimeDialog"
+            v-model="modalStartTime"
+            :return-value.sync="form.startTime"
+            persistent
+            lazy
+            full-width
+            width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="form.startTime"
+                label="Start time"
+                prepend-icon="mdi-clock-outline"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-time-picker
+              v-if="modalStartTime"
+              v-model="form.startTime"
+              format="24hr"
+              full-width
+            >
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="modalStartTime = false">Cancel</v-btn>
+              <v-btn flat color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
+            </v-time-picker>
+          </v-dialog>
+        </v-flex>
+        <v-flex xs11 sm5>
+          <v-dialog
+            ref="endTimeDialog"
+            v-model="modalEndTime"
+            :return-value.sync="form.endTime"
+            persistent
+            lazy
+            full-width
+            width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="form.endTime"
+                label="End time"
+                prepend-icon="mdi-clock-outline"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-time-picker
+              v-if="modalEndTime"
+              v-model="form.endTime"
+              format="24hr"
+              full-width
+            >
+              <v-spacer></v-spacer>
+              <v-btn flat color="primary" @click="modalEndTime = false">Cancel</v-btn>
+              <v-btn flat color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
+            </v-time-picker>
+          </v-dialog>
+        </v-flex>
 
-          <!--<mdc-radio v-model="form.repeatPeriod"-->
-                     <!--name="repeatPeriodRadio"-->
-                     <!--v-for="repeatPeriod in repeatPeriods"-->
-                     <!--:value="repeatPeriod.value"-->
-                     <!--:label="repeatPeriod.text"-->
-                     <!--class="repeatPeriodSelector">-->
-          <!--</mdc-radio>-->
-
+        <v-container fluid>
           <div v-for="day in weekdays" v-bind:key="day.value">
-            <mdc-checkbox :label="day.text" v-model="form.byweekday[day.value]" />
+            <v-checkbox :label="day.text" v-model="form.byweekday[day.value]" />
           </div>
+        </v-container>
 
-      </div>
-      <div>
-        <mdc-button @click="save" raised>Save</mdc-button>
-      </div>
-    </form>
-  </div>
+        <v-flex xs12 text-xs-right>
+          <v-btn
+            class="mx-0 font-weight-light"
+            color="success"
+            @click="save">
+            Save
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-form>
+
 </template>
 
 <script>
-import Datepicker from 'vuejs-datepicker'
-import TimeRangePicker from '@/components/TimeRangePicker'
 import moment from 'moment'
 import { RRule, rrulestr } from 'rrule'
 
 export default {
   name: 'ScheduleForm',
-  components: {
-    'mc-time-range-picker': TimeRangePicker,
-    'datepicker': Datepicker
-  },
   props: {
     //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
     //    If you don't provide a member, you will get back just a data object.
@@ -102,12 +233,14 @@ export default {
         endTime: null,
         byweekday: [],
         repeatPeriod: null
-      }
+      },
+      modalStartDate: false,
+      modalEndDate: false,
+      modalStartTime: false,
+      modalEndTime: false
     }
   },
   mounted: function () {
-    console.log('mounted', this.scheduledEvent)
-
     this.$watch('scheduledEvent', se => {
       console.log(se)
 
@@ -122,11 +255,11 @@ export default {
         this.form.description = se.description
       }
       if (se.startDate) {
-        this.form.startDate = moment(se.startDate).toDate()
+        this.form.startDate = moment(se.startDate).format('YYYY-MM-DD')
       }
 
       if (se.endDate) {
-        this.form.endDate = moment(se.endDate).toDate()
+        this.form.endDate = moment(se.endDate).format('YYYY-MM-DD')
       }
 
       if (se.startTime) {
@@ -154,12 +287,7 @@ export default {
         let norm = Math.floor(Math.abs(num))
         return (norm < 10 ? '0' : '') + norm
       }
-      return dateTime.getFullYear() +
-        '-' + pad(dateTime.getMonth() + 1) +
-        '-' + pad(dateTime.getDate()) +
-        'T' + pad(0) +
-        ':' + pad(0) +
-        ':' + pad(0)
+      return dateTime +  'T00:00:00'
     },
     parseWeekdays (dayArray) {
       const result = []

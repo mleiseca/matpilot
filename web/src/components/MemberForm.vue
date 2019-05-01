@@ -1,18 +1,32 @@
 <template>
-  <div>
-    <form>
-      <div>
-        <mdc-textfield v-model="member.firstName" label="First Name" />
-      </div>
-      <div>
-        <mdc-textfield v-model="member.lastName" label="Last Name" />
-      </div>
+  <v-form>
+    <v-container py-0>
+      <v-layout wrap>
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="First Name"
+            v-model="member.firstName"/>
+        </v-flex>
 
-      <div>
-        <mdc-button @click="save" raised>Save</mdc-button>
-      </div>
-    </form>
-  </div>
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="Last Name"
+            v-model="member.lastName"/>
+        </v-flex>
+
+        <v-flex xs12 text-xs-right>
+          <v-btn
+            class="mx-0 font-weight-light"
+            color="success"
+            @click="save">
+            Save
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-form>
 </template>
 
 <script>

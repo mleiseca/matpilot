@@ -4,8 +4,8 @@
   font-size: $font-size-small;
   font-weight: $font-weight-base !important;
   height: auto;
-  line-height: $line-height-base;
-  color: $white !important;
+  //line-height: $line-height-base;
+  //color: $white !important;
   cursor: pointer;
   border-radius: $border-radius-base;
 
@@ -39,16 +39,16 @@
     font-size: $font-size-small - 1;
   }
 
-  &.v-btn--icon {
-    width: $btn-icon-dim;
-    height: $btn-icon-dim;
-    line-height: $btn-icon-dim;
-    padding: 0;
-
-    &.v-btn--round {
-      border-radius: 50%;
-    }
-  }
+  //&.v-btn--icon {
+  //  width: $btn-icon-dim;
+  //  height: $btn-icon-dim;
+  //  line-height: $btn-icon-dim;
+  //  padding: 0;
+  //
+  //  &.v-btn--round {
+  //    border-radius: 50%;
+  //  }
+  //}
 
   &.success {
     @include button-color($brand-success);

@@ -1,24 +1,26 @@
 <template>
 
-  <div>
-    <h1>Edit member</h1>
-    <mp-member-form
-      v-on:member-save="saveMemberAndDisplay"
-      v-bind:member="member"></mp-member-form>
-    <!--<div>{{ gym }}</div>-->
-    <!--<div>{{ member }}</div>-->
-    <!--<div>-->
-      <!--<mdc-button @click="save" raised>Save</mdc-button>-->
-    <!--</div>-->
-    <!--<mdc-fab fixed icon="edit" @click="enterEditMode"></mdc-fab>-->
+  <v-container fill-height fluid grid-list-xl>
+    <v-layout  justify-center wrap>
+      <v-flex xs12 md8>
+        <material-card
+          color="green"
+          title="Edit member"
+          text="">
+          <member-form
+            v-on:member-save="saveMemberAndDisplay"
+            v-bind:member="member"></member-form>
 
-  </div>
+        </material-card>
+      </v-flex>
+
+    </v-layout>
+  </v-container>
+
 </template>
 
 <script>
 import { mapActions } from 'vuex'
-
-import MemberForm from '@/components/MemberForm.vue'
 
 export default {
   name: 'GymMembersView',
@@ -29,13 +31,9 @@ export default {
       member: {}
     }
   },
-  components: {
-    'mp-member-form': MemberForm
-  },
   computed: {
   },
   mounted: async function () {
-    console.log('GymHome for id: ', this.gymId, this.memberId)
     if (!this.gymId || !this.memberId) {
       return
     }

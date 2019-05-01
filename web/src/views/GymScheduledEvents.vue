@@ -1,44 +1,69 @@
 <template>
 
-  <div>
-    <h1>Schedule</h1>
-    <mdc-list bordered interactive>
-      <mdc-list-item v-for="scheduledEvent in scheduledEvents"
-                     v-bind:key="scheduledEvent.id"
-                     @click="navigateToScheduledEvent"
-                     :data-scheduled-event-id="scheduledEvent.id">
+  <!--<div>-->
+    <!--<h1>Schedule</h1>-->
+    <!--<mdc-list bordered interactive>-->
+      <!--<mdc-list-item v-for="scheduledEvent in scheduledEvents"-->
+                     <!--v-bind:key="scheduledEvent.id"-->
+                     <!--@click="navigateToScheduledEvent"-->
+                     <!--:data-scheduled-event-id="scheduledEvent.id">-->
 
-        {{ scheduledEvent.title }}
-        {{ scheduledEvent.startTime }} -{{ scheduledEvent.endTime }}
-        ({{ scheduleDescription(scheduledEvent) }})
+      <!--</mdc-list-item>-->
+    <!--</mdc-list>-->
 
-        <!--{-->
-        <!--"id": 17,-->
-        <!--"title": "lkjlkj",-->
-        <!--"description": "lkj",-->
-        <!--"timezone": "America/Chicago",-->
-        <!--"rrules": "DTSTART;TZID=America/Chicago:20190401T001000\nRRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY=TU",-->
-        <!--"startTime": "00:10",-->
-        <!--"endTime": "01:10",-->
-        <!--"startDate": "2019-04-01T05:00:00.000Z",-->
-        <!--"endDate": "2019-04-02T05:00:00.000Z",-->
-        <!--"createdAt": "2019-04-23T03:29:12.162Z",-->
-        <!--"updatedAt": "2019-04-23T03:29:12.162Z",-->
-        <!--"gymId": 1,-->
-        <!--"createdBy": 1-->
-        <!--}-->
+    <!--<mdc-fab fixed icon="add" @click="navigateToAddScheduledEvent"></mdc-fab>-->
 
-      </mdc-list-item>
-    </mdc-list>
+  <!--</div>-->
 
-    <mdc-fab fixed icon="add" @click="navigateToAddScheduledEvent"></mdc-fab>
+  <v-container fill-height fluid grid-list-xl>
+    <v-layout justify-center wrap>
+      <v-flex md12>
+        <material-card
+          color="green"
+          title="Scheduled Events"
+          text="">
+          <v-data-table
+            :headers="headers"
+            :items="scheduledEvents"
+            hide-actions>
+            <!-- TODO: this pagination or search needs to work -->
+            <!--:pagination.sync="pagination"-->
+            <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
+            <!--:total-items="pagination.totalItems"-->
+            <template
+              slot="headerCell"
+              slot-scope="{ header }">
+              <span
+                class="subheading font-weight-light text-success text--darken-3"
+                v-text="header.text"
+              />
+            </template>
+            <template
+              slot="items"
+              slot-scope="{ item }">
+              <tr @click="navigateToScheduledEvent"
+                  :data-scheduled-event-id="item.id">
+                <td>{{ item.title }}</td>
+                <td>{{ item.startTime }} -{{ item.endTime }}</td>
+                <td>{{ scheduleDescription(item) }}</td>
+              </tr>
+            </template>
+          </v-data-table>
 
-  </div>
+        </material-card>
+
+        <v-btn @click="navigateToAddScheduledEvent" fab
+               color="green">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-flex>
+    </v-layout>
+  </v-container>
 
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { rrulestr } from 'rrule'
 
 // todo: search?
@@ -46,12 +71,27 @@ export default {
   name: 'GymScheduledEvents',
   props: ['gymId'],
   data () {
-    return {}
+    return {
+      headers: [
+        {
+          sortable: false,
+          text: 'Title'
+        },
+        {
+          sortable: false,
+          text: 'Times'
+        },
+        {
+          sortable: false,
+          text: 'Description'
+        }
+      ]
+    }
   },
   computed: {
-    ...mapGetters('scheduled-events', {
-      scheduledEvents: 'list'
-    })
+    scheduledEvents () {
+      return this.$store.getters['scheduled-events/list']
+    }
   },
   methods: {
     ...mapActions('scheduled-events', {
@@ -61,7 +101,7 @@ export default {
       this.$router.push({ name: 'gym-scheduled-event-add', params: { gymId: this.gymId } })
     },
     navigateToScheduledEvent: function (event) {
-      const scheduledEventId = event.target.dataset['scheduledEventId']
+      const scheduledEventId = event.currentTarget.dataset['scheduledEventId']
       this.$router.push({ name: 'gym-scheduled-event-view', params: { gymId: this.gymId, scheduledEventId: scheduledEventId } })
     },
     scheduleDescription: function (scheduledEvent) {
