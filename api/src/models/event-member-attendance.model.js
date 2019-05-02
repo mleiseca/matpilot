@@ -15,7 +15,13 @@ module.exports = function (app) {
       beforeCount(options) {
         options.raw = true;
       }
-    }
+    },
+    indexes: [
+      {
+        unique: true,
+        fields: ['memberId', 'eventId']
+      }
+    ]
   });
 
   // eslint-disable-next-line no-unused-vars

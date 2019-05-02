@@ -12,37 +12,31 @@ module.exports = function (app) {
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       },
       timezone: {
         type: DataTypes.STRING,
-        // TODO: shouldn't be nullable
-        allowNull: true
+        allowNull: false
       },
       rrules: {
         type: DataTypes.STRING,
-        // TODO: shouldn't be nullable
-        allowNull: true
+        allowNull: false
       },
       startTime: {
         type: DataTypes.STRING,
-        // TODO: shouldn't be nullable
-        allowNull: true
+        allowNull: false
       },
       endTime: {
         type: DataTypes.STRING,
-        // TODO: shouldn't be nullable
         allowNull: true
       },
       startDate: {
         type: DataTypes.DATE,
-        // TODO: shouldn't be nullable
-        allowNull: true
+        allowNull: false
       },
       endDate: {
         type: DataTypes.DATE,
-        // TODO: shouldn't be nullable
-        allowNull: true
+        allowNull: false
       }
     }
     , {

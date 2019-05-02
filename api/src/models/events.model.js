@@ -6,8 +6,24 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const events = sequelizeClient.define('events', {
-    text: {
+    title: {
       type: DataTypes.STRING,
+      allowNull: false
+    },
+    description: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    timezone: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    startDateTime: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    endDateTime: {
+      type: DataTypes.DATE,
       allowNull: false
     }
   }, {
@@ -15,7 +31,13 @@ module.exports = function (app) {
       beforeCount(options) {
         options.raw = true;
       }
-    }
+    },
+    indexes: [
+      {
+        unique: true,
+        fields: ['scheduledEventId', 'startDateTime']
+      }
+    ]
   });
 
   // eslint-disable-next-line no-unused-vars

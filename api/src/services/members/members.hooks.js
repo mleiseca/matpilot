@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const assignCreatedBy = require('../../hooks/created-by')
 
 module.exports = {
   before: {

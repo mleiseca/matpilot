@@ -1,9 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-
-function assignCreatedBy(context) {
-  const user = context.params.user
-  context.data.createdBy = user.id
-}
+const assignCreatedBy = require('../../hooks/created-by')
 
 // function rawFalse(context) {
 //   if (!context.params.sequelize) context.params.sequelize = {}

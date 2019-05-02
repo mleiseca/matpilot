@@ -24,7 +24,7 @@
           </div>
         </v-flex>
         <v-flex>
-          <v-btn color="primary" @click="checkinScheduledEvent(eventDetails.scheduledEvent.id, eventDetails.time)">
+          <v-btn color="primary" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
             Check in</v-btn>
         </v-flex>
       </v-layout>
@@ -42,8 +42,20 @@
       return {}
     },
     methods: {
-      checkinScheduledEvent: function(id, startTime) {
-        console.log('checking in id: ', id, startTime)
+      checkinScheduledEvent: function(scheduledEvent, startTime) {
+        console.log('checking in id: ', scheduledEvent, startTime)
+        const event = {
+          scheduledEventId: scheduledEvent.id,
+          gymId: scheduledEvent.gymId,
+          startTime: startTime,
+          text: scheduledEvent.title
+        }
+        this.$store.dispatch('events/create', event)
+          .then((result) => {
+            console.log('Got result:', result)
+//            this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+          })
+
       }
     }
   }

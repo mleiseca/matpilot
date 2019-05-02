@@ -1,10 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-
-// TODO: C/P from gyms
-function assignCreatedBy(context) {
-  const user = context.params.user
-  context.data.createdBy = user.id
-}
+const assignCreatedBy = require('../../hooks/created-by')
 
 module.exports = {
   before: {

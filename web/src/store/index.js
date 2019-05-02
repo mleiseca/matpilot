@@ -16,6 +16,7 @@ export default new Vuex.Store({
   plugins: [
     service('gyms'),
     service('members'),
+    service('events'),
     service('scheduled-events'),
     service('users'),
     service('user-gym-role'),
