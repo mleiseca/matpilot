@@ -44,7 +44,6 @@
           </v-dialog>
         </v-flex>
 
-
         <v-flex xs12 sm6 md4>
           <v-dialog
             ref="dialogEndDate"
@@ -283,11 +282,7 @@ export default {
       this.form.endTime = datePair.end
     },
     formatDateTime (dateTime) {
-      const pad = function (num) {
-        let norm = Math.floor(Math.abs(num))
-        return (norm < 10 ? '0' : '') + norm
-      }
-      return dateTime +  'T00:00:00'
+      return dateTime + 'T00:00:00'
     },
     parseWeekdays (dayArray) {
       const result = []
@@ -318,8 +313,7 @@ export default {
         interval: 1,
         //        interval: this.form.repeatEvery,
         byweekday: this.parseWeekdays(this.form.byweekday),
-        dtstart: dtstart,
-        tzid: 'America/Chicago' // TODO: should not hardcode
+        dtstart: dtstart
       })
 
       const se = this.scheduledEvent ? this.scheduledEvent : {}

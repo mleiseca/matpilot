@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-import Home from './views/Home.vue'
+// import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import UserHome from './views/UserHome.vue'
 import GymsAdd from './views/GymAdd.vue'
@@ -9,6 +9,7 @@ import GymHome from './views/GymHome.vue'
 import GymMembers from './views/GymMembers.vue'
 import GymMembersAdd from './views/GymMembersAdd.vue'
 import GymMembersView from './views/GymMembersView.vue'
+import GymEventCheckin from './views/GymEventCheckin.vue'
 
 Vue.use(Router)
 
@@ -19,7 +20,7 @@ let router = new Router({
     {
       path: '/',
       name: 'home',
-      component: Home
+      component: Login
     },
     {
       path: '/login',
@@ -88,6 +89,13 @@ let router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      name: 'gym-event-checkin',
+      path: '/gyms/:gymId/event/:eventId/checkin',
+      component: GymEventCheckin,
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
@@ -128,12 +136,12 @@ router.beforeEach(function (to, from, next) {
         next()
       }).catch(_ => {
         // console.log("Auth error: ", err)
-        next('/')
+        next('login')
       })
       // console.log("router: authorizing")
       return
     }
-    next('/')
+    next('login')
   } else {
     next()
   }

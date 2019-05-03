@@ -1,11 +1,23 @@
 <template>
   <v-app>
-    <core-filter />
-    <core-toolbar />
-    <core-drawer />
+    <core-filter v-if="user"/>
+    <core-toolbar v-if="user"/>
+    <core-drawer v-if="user"/>
     <core-view />
   </v-app>
 </template>
+
+<script>
+export default {
+  name: 'appview',
+  computed: {
+    user () {
+      return this.$store.state.auth.user
+    }
+  }
+}
+
+</script>
 
 <style lang="scss">
   @import '@/styles/index.scss';

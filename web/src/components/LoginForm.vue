@@ -1,45 +1,46 @@
 <template>
-  <v-form>
-    <v-container py-0>
+  <v-container py-0>
+    <v-form>
       <v-layout wrap>
 
-        <v-flex
-          xs12
-          md12
-        >
+        <v-flex xs12 md12>
           <v-text-field
             class="purple-input"
             label="Email"
-            v-model="email"
-          />
+            v-model="email"/>
         </v-flex>
 
-        <v-flex
-          xs12
-          md12
-        >
+        <v-flex xs12 md12>
           <v-text-field
-            class="purple-input"
-            label="Password"
             v-model="password"
-          />
+            class="purple-input"
+            :append-icon="showPassword ? 'mdi-visibility' : 'mdi-visibility_off'"
+            :type="showPassword ? 'text' : 'password'"
+            name="password"
+            label="Password"
+            @click:append="showPassword = !showPassword"
+          ></v-text-field>
+
         </v-flex>
 
-        <v-flex
-          xs12
-          text-xs-right
-        >
+        <v-flex xs12>
           <v-btn
             class="mx-0 font-weight-light"
             color="success"
-            @click="login"
-          >
+            block
+            @click="login">
             Login
           </v-btn>
         </v-flex>
+
+      <v-flex xs12>
+          First time here? <router-link :to="{ name: 'user-create-account'}">Create your account</router-link>
+      </v-flex>
+
       </v-layout>
-    </v-container>
-  </v-form>
+    </v-form>
+
+  </v-container>
 </template>
 
 <script>
@@ -51,7 +52,8 @@ export default {
   data () {
     return {
       email: null,
-      password: null
+      password: null,
+      showPassword: false
     }
   },
   methods: {
@@ -68,7 +70,7 @@ export default {
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
-          // TODO: error message
+          // TODO: error message if login fails
         })
     }
   }

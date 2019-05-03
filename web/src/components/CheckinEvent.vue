@@ -20,7 +20,7 @@
           </div>
           <!--TODO: ideally, the date would be displayed only once, so we could group events by date-->
           <div class="times caption">
-            {{ eventDetails.time | moment("dddd, MMMM Do") }} {{ eventDetails.scheduledEvent.startTime }} - {{ eventDetails.scheduledEvent.endTime}}
+            {{ eventDetails.startDateTime | moment("dddd, MMMM Do") }} {{ eventDetails.scheduledEvent.startTime }} - {{ eventDetails.scheduledEvent.endTime}}
           </div>
         </v-flex>
         <v-flex>
@@ -32,37 +32,41 @@
 </template>
 
 <script>
-  export default {
-    name: 'CheckinEvent',
-    props: {
-      //  {time: newEvent, scheduledEvent: se}
-      eventDetails: Object
-    },
-    data () {
-      return {}
-    },
-    methods: {
-      checkinScheduledEvent: function(scheduledEvent, startTime) {
-        console.log('checking in id: ', scheduledEvent, startTime)
-        const event = {
-          scheduledEventId: scheduledEvent.id,
-          gymId: scheduledEvent.gymId,
-          startTime: startTime,
-          text: scheduledEvent.title
-        }
-        this.$store.dispatch('events/create', event)
-          .then((result) => {
-            console.log('Got result:', result)
-//            this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
-          })
-
+export default {
+  name: 'CheckinEvent',
+  props: {
+    //  {startDateTime (Moment): startDateTime
+    //    endDateTime (Moment): endDateTime,
+    //    scheduledEvent: se,
+    //    id: 'se-' + se.id + '-' + startDateTime}
+    eventDetails: Object
+  },
+  data () {
+    return {}
+  },
+  methods: {
+    checkinScheduledEvent: function (scheduledEvent) {
+      const event = {
+        scheduledEventId: scheduledEvent.id,
+        gymId: scheduledEvent.gymId,
+        title: scheduledEvent.title,
+        description: scheduledEvent.description,
+        timezone: scheduledEvent.timezone,
+        startDateTime: this.eventDetails.startDateTime.toISOString(),
+        endDateTime: this.eventDetails.endDateTime.toISOString()
       }
+      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
+      this.$store.dispatch('events/create', event)
+        .then((result) => {
+          console.log('Got result:', result)
+          this.$router.push({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
+        })
     }
   }
+}
 </script>
 
 <style scoped>
-
 
   .description {
     font-weight: 600;

@@ -22,15 +22,14 @@
           <v-list-tile-avatar
             color="white"
           >
-            <!-- TODO: get real logo-->
-            <!--<v-img-->
-              <!--:src="logo"-->
-              <!--height="34"-->
-              <!--contain-->
-            <!--/>-->
+            <v-img
+              :src="logo"
+              height="34"
+              contain
+            />
           </v-list-tile-avatar>
           <v-list-tile-title class="title">
-            Vuetify MD
+            MatPilot
           </v-list-tile-title>
         </v-list-tile>
         <v-divider/>
@@ -64,12 +63,12 @@
           class="v-list-item v-list__tile--buy"
           to="/upgrade"
         >
-          <v-list-tile-action>
-            <v-icon>mdi-package-up</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title class="font-weight-light">
-            Upgrade To PRO
-          </v-list-tile-title>
+          <!--<v-list-tile-action>-->
+            <!--<v-icon>mdi-package-up</v-icon>-->
+          <!--</v-list-tile-action>-->
+          <!--<v-list-tile-title class="font-weight-light">-->
+            <!--Upgrade To PRO-->
+          <!--</v-list-tile-title>-->
         </v-list-tile>
       </v-layout>
     </v-img>
@@ -85,7 +84,7 @@ import {
 
 export default {
   data: () => ({
-    logo: './img/vuetifylogo.png',
+    logo: require('@/assets/mc-logo.png'),
     links: [
       {
         to: '/dashboard',
@@ -171,8 +170,8 @@ export default {
     }
 
     .v-image__image--contain {
-      top: 9px;
-      height: 60%;
+      top: 0px;
+      height: 100%;
     }
 
     .search-input {

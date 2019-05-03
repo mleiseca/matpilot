@@ -28,7 +28,7 @@ module.exports = function (app) {
       },
       endTime: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: false
       },
       startDate: {
         type: DataTypes.DATE,
@@ -36,7 +36,7 @@ module.exports = function (app) {
       },
       endDate: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: true
       }
     }
     , {

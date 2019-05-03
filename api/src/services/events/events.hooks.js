@@ -12,8 +12,7 @@ module.exports = {
     create: [assignCreatedBy,
       mapCreateToUpsert(context => {
         const { data } = context
-        logger.info(data)
-        return { address: data.address }
+        return { scheduledEventId: data.scheduledEventId, startDateTime: data.startDateTime}
       })
     ],
     update: [],

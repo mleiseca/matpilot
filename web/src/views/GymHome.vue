@@ -76,18 +76,18 @@ export default {
     })
   },
 
-//  methods: {
+  //  methods: {
 
-//  },
-//  mounted () {
-//    //        createdBy: 1,
-//    this.findUserGyms({
-//      query: {
-//        $sort: { createdAt: -1 },
-//        $limit: 25
-//      }
-//    })
-//  }
+  //  },
+  //  mounted () {
+  //    //        createdBy: 1,
+  //    this.findUserGyms({
+  //      query: {
+  //        $sort: { createdAt: -1 },
+  //        $limit: 25
+  //      }
+  //    })
+  //  }
 
   mounted: async function () {
     console.log('GymHome for id: ', this.id)

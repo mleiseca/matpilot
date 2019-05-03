@@ -1,6 +1,5 @@
 <template>
 
-
   <v-container fill-height fluid grid-list-xl>
     <v-layout  justify-center wrap>
       <v-flex xs12 md8>
@@ -22,11 +21,9 @@
   </v-container>
 
 </template>
-</template>
 
 <script>
 import { mapActions } from 'vuex'
-
 
 export default {
   name: 'GymScheduledEventsView',
