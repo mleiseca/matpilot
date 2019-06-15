@@ -8,6 +8,9 @@ module.exports = function (app) {
     operatorsAliases: false,
     define: {
       freezeTableName: true
+    },
+    dialectOptions: {
+      ssl: true
     }
   });
   const oldSetup = app.setup;

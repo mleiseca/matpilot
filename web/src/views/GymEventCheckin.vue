@@ -3,167 +3,189 @@
   <v-container fill-height fluid grid-list-xl>
     <v-layout justify-center wrap>
       <v-flex md12>
-        <material-card
-          color="green"
-          title="Check In for TODO CLASS NAME"
-          text="">
-          <!--<v-data-table-->
-            <!--:headers="headers"-->
-            <!--:items="members"-->
-            <!--hide-actions>-->
-            <!--&lt;!&ndash; TODO: this pagination or search needs to work &ndash;&gt;-->
-            <!--&lt;!&ndash;:pagination.sync="pagination"&ndash;&gt;-->
-            <!--&lt;!&ndash;:rows-per-page-items="pagination.rowsPerPageItems"&ndash;&gt;-->
-            <!--&lt;!&ndash;:total-items="pagination.totalItems"&ndash;&gt;-->
-            <!--<template-->
-              <!--slot="headerCell"-->
-              <!--slot-scope="{ header }">-->
-              <!--<span-->
-                <!--class="subheading font-weight-light text-success text&#45;&#45;darken-3"-->
-                <!--v-text="header.text"-->
-              <!--/>-->
-            <!--</template>-->
-            <!--<template-->
-              <!--slot="items"-->
-              <!--slot-scope="{ item }">-->
-              <!--<tr @click="navigateToMember"-->
-                  <!--:data-member-id="item.id">-->
-                <!--<td>{{ item.firstName }}</td>-->
-                <!--<td>{{ item.lastName  }}</td>-->
-              <!--</tr>-->
-              <!--&lt;!&ndash;<td>{{ item.city }}</td>&ndash;&gt;-->
-              <!--&lt;!&ndash;<td class="text-xs-right">{{ item.salary }}</td>&ndash;&gt;-->
-            <!--</template>-->
-          <!--</v-data-table>-->
+        <material-card color="green">
+          <v-flex slot="header">
+            <v-layout justify-center wrap>
+              <v-flex sm6>
+                Check In <br>TODO CLASS NAME:
+              </v-flex>
+              <v-flex sm6 >
+                <v-text-field
+                  v-model="search"
+                  class="mr-0 mt-0"
+                  append-icon="mdi-search"
+                  label="Search"
+                  single-line
+                  hide-details
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-flex>
 
-          here's the checkin
+          <v-data-table
+            :headers="headers"
+            :items="members"
+            :pagination.sync="pagination"
+            :total-items="totalMembers"
+            :loading="loading"
+            :rows-per-page-items="[10, 25, 50]">
+
+            <template v-slot:items="props">
+              <!--<td >{{ props.item.id }} {{ props.item.attendance }}</td>-->
+              <td>
+                <v-checkbox v-model="attendance[props.item.id]" :label="props.item.firstName + ' ' + props.item.lastName"></v-checkbox>
+              </td>
+              <!--<td >{{ props.item.firstName }} {{ props.item.lastName}}</td>-->
+            </template>
+            <!--<template v-slot:no-results>-->
+              <!--<v-alert :value="true" color="error" icon="warning">-->
+                <!--Your search for "{{ search }}" found no results.-->
+              <!--</v-alert>-->
+            <!--</template>-->
+          </v-data-table>
         </material-card>
-
-        <!--<v-btn @click="navigateToAddMember" fab-->
-               <!--color="green">-->
-          <!--<v-icon>mdi-plus</v-icon>-->
-        <!--</v-btn>-->
       </v-flex>
     </v-layout>
   </v-container>
-
-  <!--<b-container fluid>-->
-  <!--<b-row>-->
-  <!--<b-col class="my-1">-->
-  <!--<h1 class="site-h1">Members</h1>-->
-  <!--&lt;!&ndash;TODO add search box&ndash;&gt;-->
-  <!--<b-input-group>-->
-
-  <!--<b-form-input v-model="filter" placeholder="Looking For Somebody?" />-->
-  <!--&lt;!&ndash;<b-input-group-append>&ndash;&gt;-->
-  <!--&lt;!&ndash;<b-button :disabled="!filter" @click="filter = ''" size="sm">Clear</b-button>&ndash;&gt;-->
-  <!--&lt;!&ndash;</b-input-group-append>&ndash;&gt;-->
-  <!--</b-input-group>-->
-
-  <!--</b-col>-->
-  <!--<b-col class="my-1">-->
-  <!--<div class="float-right">-->
-  <!--<b-button to="/member/add" class="mr-1">+ Add Member</b-button>-->
-  <!--</div>-->
-  <!--</b-col>-->
-  <!--</b-row>-->
-
-  <!--<b-table striped hover :items="memberProvider" :fields="fields" :per-page="50">-->
-  <!--<template slot="actions" slot-scope="row">-->
-  <!--&lt;!&ndash; We use @click.stop here to prevent a 'row-clicked' event from also happening &ndash;&gt;-->
-  <!--<b-button :to="{ name: 'member-edit', params: {id: row.item.id} }" size="sm" class="mr-1">-->
-  <!--Edit-->
-  <!--</b-button>-->
-  <!--</template>-->
-  <!--</b-table>-->
-
-  <!--</b-container>-->
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+const { paramsForServer } = require('feathers-hooks-common')
 
-// todo: search?
 export default {
-  name: 'GymMembers',
+  name: 'GymEventCheckin',
   props: ['gymId', 'eventId'],
   data () {
     return {
+      totalMembers: 0,
+      members: [],
+      loading: true,
+      pagination: {},
+      search: '',
+      attendance: {},
+      attendanceRecords: {},
       headers: [
         {
           sortable: false,
-          text: 'First Name',
-          value: 'firstName'
-        },
-        {
-          sortable: false,
-          text: 'Last Name',
-          value: 'lastName'
+          text: 'Member',
         }
       ]
     }
   },
-  //  computed: {
-  //    ...mapGetters('members', {
-  //      members: 'list'
-  //    })
-  //  },
-  //  watch: {
-  //    pagination: {
-  //      handler () {
-  //        this.loading = true
-  //        this.$store.dispatch('queryItems')
-  //          .then(result => {
-  //            this.loading = false
-  //          })
-  //      },
-  //      deep: true
-  //    }
-  //  },
-  computed: {
-    //    //    pagination: {
-    //    //      get: function () {
-    //    //        return this.$store.state.members.pagination
-    //    //      },
-    //    set: function (value) {
-    //      //        this.$store.commit('setPagination', value)
-    //      //      }
-    //    },
-    members () {
-      return this.$store.getters['members/list']
-    }
+  watch: {
+    pagination: {
+      handler () {
+        this.getDataFromApi()
+          .then(data => {
+            this.members = data.data
+            this.totalMembers = data.total
+
+            const attendance = []
+            const attendanceRecords = []
+            this.members.forEach(function(member) {
+              attendance[member.id] = member.attendance
+              attendanceRecords[member.id] = member.attendance
+            })
+            this.attendance = attendance
+            this.attendanceRecords = attendanceRecords
+          })
+      },
+      deep: true
+    },
+    search: {
+      handler () {
+        this.getDataFromApi()
+          .then(data => {
+            this.members = data.data
+            this.totalMembers = data.total
+
+            const attendance = []
+            const attendanceRecords = []
+            this.members.forEach(function(member) {
+              attendance[member.id] = member.attendance
+              attendanceRecords[member.id] = member.attendance
+            })
+            this.attendance = attendance
+            this.attendanceRecords = attendanceRecords
+          })
+      }
+    },
+    attendance: {
+      handler () {
+        console.log(this.attendance)
+        for (const memberId in this.attendance) {
+          if (this.attendance[memberId] === true) {
+            console.log('Adding memberId', memberId)
+            const attendance = {
+              eventId: this.eventId,
+              gymId: this.gymId,
+              memberId: memberId,
+              text: 'asdf'
+            }
+            this.$store.dispatch('event-member-attendance/create', attendance)
+              .then((result) => {
+                console.log('Created...result:', result)
+                this.attendance[result.memberId] = result
+              })
+
+          } else if (this.attendance[memberId] === false) {
+            console.log('Deleting memberId', memberId)
+            this.$store.dispatch('event-member-attendance/remove', this.attendanceRecords[memberId].id)
+              .then((result) => {
+                console.log('Deleted...result:', result)
+                this.attendance[member] = null
+              })
+          }
+        }
+      },
+      deep: true
+    },
   },
   methods: {
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
-    //    ...mapState('members'),
-    navigateToAddMember: function () {
-      this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
-    },
-    navigateToMember: function (event) {
-      //      console.log("click for ", event)
-      const memberId = event.currentTarget.dataset['memberId']
+    ...mapActions('event-member-attendance', {
+      findMemberEventAttendance: 'find'
+    }),
+    getDataFromApi: async function () {
+      const { page, rowsPerPage } = this.pagination
+      this.loading = true
 
-      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
-    }
-  },
-  mounted () {
-    //    console.log("Looking for members...")
-    this.findGymMembers({
-      query: {
-        $sort: { createdAt: -1 },
-        $limit: 50,
+      const query = {
         gymId: this.gymId
       }
-    })
+
+      if (rowsPerPage > 0) {
+        query['$limit'] = rowsPerPage
+        query['$skip'] = rowsPerPage * (page - 1)
+      }
+
+      if (this.search.length > 0) {
+        // TODO: this needs to be case insensitive
+        query['$or'] = [
+          { firstName: { $like: '%' + this.search + '%'}},
+          { lastName: { $like: '%' + this.search + '%'}}
+        ]
+      }
+
+      const foundMembers = await this.findGymMembers(paramsForServer({
+        query,
+        populate: {
+          entity: 'event-member-attendance',
+          id: this.eventId
+        }
+      }))
+
+      console.log("members:" , foundMembers)
+
+      this.loading = false
+      return foundMembers
+    },
+    toggleAttendance: function(memberId) {
+      console.log('toggling memberId: ', memberId)
+    }
   }
 }
 </script>
-
-<style scoped>
-  #app .input-group input {
-    margin-bottom: 2rem;
-  }
-
-</style>

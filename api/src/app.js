@@ -4,6 +4,7 @@ const compress = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
 const logger = require('./logger');
+const history = require('connect-history-api-fallback')
 
 const feathers = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
@@ -31,7 +32,8 @@ app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
-// Host the public folder
+// Host the public folder - and route any SPA urls to index.html (that's history)
+app.use(history());
 app.use('/', express.static(app.get('public')));
 
 // Set up Plugins and providers

@@ -1,4 +1,5 @@
 {
-  "host": "matpilot-app.feathersjs.com",
-  "port": "PORT"
+  "host": "matpilot.com",
+  "port": "3030",
+  "postgres": "postgres://matpilot_user:vhmjrrao1zpgtm6s@db-postgresql-matpilot-do-user-5707717-0.db.ondigitalocean.com:25060/matpilot?sslmode=require&ssl=true"
 }
