@@ -30,6 +30,11 @@
               </li>
             </ul>
 
+            <div v-if="userGyms.length > 0">
+            <router-link :to="{ name: 'gymsadd'}">
+              create a new gym
+            </router-link>
+            </div>
           </v-card-text>
         </material-card>
       </v-flex>

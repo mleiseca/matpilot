@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const assignCreatedBy = require('../../hooks/created-by')
 const { fastJoin, makeCallingParams } = require('feathers-hooks-common');
-
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
 
 const BatchLoader = require('@feathers-plus/batch-loader');
 const { getResultsByKey, getUniqueKeys } = BatchLoader;
@@ -51,7 +51,7 @@ const memberResolvers = {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt')],
+    all: [ authenticate('jwt'), restrictAccessForGym()],
     find: [paramsFromClient('populate')],
     get: [],
     create: [],

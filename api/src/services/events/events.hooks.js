@@ -1,12 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const mapCreateToUpsert = require('../../hooks/map-create-to-upsert')
 const assignCreatedBy = require('../../hooks/created-by')
-
-const logger = require('winston')
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [ authenticate('jwt'), restrictAccessForGym() ],
     find: [],
     get: [],
     create: [assignCreatedBy,

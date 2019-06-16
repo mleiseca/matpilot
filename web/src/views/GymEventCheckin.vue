@@ -127,6 +127,7 @@ export default {
               .then((result) => {
                 console.log('Created...result:', result)
                 this.attendance[result.memberId] = result
+                this.attendanceRecords[result.memberId] = result
               })
 
           } else if (this.attendance[memberId] === false) {
@@ -134,7 +135,8 @@ export default {
             this.$store.dispatch('event-member-attendance/remove', this.attendanceRecords[memberId].id)
               .then((result) => {
                 console.log('Deleted...result:', result)
-                this.attendance[member] = null
+                this.attendance[memberId] = null
+                this.attendanceRecords[memberId] = null
               })
           }
         }

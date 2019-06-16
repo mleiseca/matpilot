@@ -10,7 +10,7 @@
   "smtpPassword": "SMTP_PASSWORD",
   "fromEmail": "MatPilot <admin@matpilot.com>",
   "frontendUrlBase": "http://localhost:8080/",
-  "postgres": "postgres://matpilot_user:vhmjrrao1zpgtm6s@db-postgresql-matpilot-do-user-5707717-0.db.ondigitalocean.com:25060/matpilot?sslmode=require",
+  "postgres": "postgres://postgres:@localhost:5433/matpilot_dev",
   "authentication": {
     "secret": "d6f89d44792630fd438dbff808808d2a55334d5aaf2e25c6f2968b3fc8011e00a029285f2ca535b78d29d09a88faf675b5725deb43ed7183f6ce26b7d0d8ccb32de1d0354017f2ee3b8ce932790c952718d192d3712678201b70356602e60c3ceaac1c3adffa7918eb06fd2ccfd429a07d8887ac90b72a189dc8f70598805c1c5ee96de29f1303c174e5175c7ac378cb129ef06f5d14bd222d08ed3ffec465a51fb38727fc32470794b87843f3a78cd30ea9595a2a931e57270430b03ef70cee5d15c87766998ae41beba02d39d951f7bcbb050b810534540d0dfe8ba13603382fae90f783814d3438f282ce6f2610c0de8133952d9865c84b24f26dd55f44e4",
     "strategies": [

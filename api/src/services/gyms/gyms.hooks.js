@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const assignCreatedBy = require('../../hooks/created-by')
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
 
 // function rawFalse(context) {
 //   if (!context.params.sequelize) context.params.sequelize = {}
@@ -55,12 +56,12 @@ async function printParams(context) {
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [printParams],
-    get: [],
+    find: [restrictAccessForGym({gymIdField: 'id'})],
+    get: [restrictAccessForGym({gymIdField: 'id'})],
     create: [assignCreatedBy],
-    update: [],
-    patch: [],
-    remove: []
+    update: [restrictAccessForGym({gymIdField: 'id'})],
+    patch: [restrictAccessForGym({gymIdField: 'id'})],
+    remove: [restrictAccessForGym({gymIdField: 'id'})]
   },
 
   after: {

@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const hydrate = require('feathers-sequelize/hooks/hydrate');
+const queryWithCurrentUser = require('../../hooks/authorization').queryWithCurrentUser;
 
 function includeGym() {
   return function (hook) {
@@ -22,7 +23,7 @@ function includeGym() {
 module.exports = {
   before: {
     all: [ authenticate('jwt') ],
-    find: [includeGym()],
+    find: [queryWithCurrentUser({ idField: 'id', as: 'userId' }), includeGym()],
     get: [],
     create: [],
     update: [],

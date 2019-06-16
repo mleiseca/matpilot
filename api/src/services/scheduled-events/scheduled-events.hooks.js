@@ -1,9 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const assignCreatedBy = require('../../hooks/created-by')
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
+    all: [ authenticate('jwt'), restrictAccessForGym() ],
     find: [],
     get: [],
     create: [assignCreatedBy],
