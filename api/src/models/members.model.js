@@ -45,6 +45,7 @@ module.exports = function (app) {
 
     // TODO: this should be not-nullable
     members.belongsTo(models.gyms);
+    members.belongsTo(models.users, {foreignKey: 'createdBy'});
   };
 
   return members;

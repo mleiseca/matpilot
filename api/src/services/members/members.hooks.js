@@ -54,7 +54,7 @@ module.exports = {
     all: [ authenticate('jwt'), restrictAccessForGym()],
     find: [paramsFromClient('populate')],
     get: [],
-    create: [],
+    create: [assignCreatedBy],
     update: [],
     patch: [],
     remove: []
