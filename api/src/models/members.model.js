@@ -13,7 +13,23 @@ module.exports = function (app) {
     lastName: {
       type: DataTypes.STRING,
       allowNull: false
-    }
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    dateOfBirth: {
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    emergencyContacts: {
+      type: Sequelize.JSONB,
+      allowNull: false
+    },
   }, {
     hooks: {
       beforeCount(options) {

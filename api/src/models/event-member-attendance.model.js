@@ -6,10 +6,7 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const eventMemberAttendance = sequelizeClient.define('event_member_attendance', {
-    text: {
-      type: DataTypes.STRING,
-      allowNull: false
-    }
+    // no additional fields yet....
   }, {
     hooks: {
       beforeCount(options) {

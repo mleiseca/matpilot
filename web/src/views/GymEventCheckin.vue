@@ -68,7 +68,7 @@ export default {
       headers: [
         {
           sortable: false,
-          text: 'Member',
+          text: 'Member'
         }
       ]
     }
@@ -83,7 +83,7 @@ export default {
 
             const attendance = []
             const attendanceRecords = []
-            this.members.forEach(function(member) {
+            this.members.forEach(function (member) {
               attendance[member.id] = member.attendance
               attendanceRecords[member.id] = member.attendance
             })
@@ -102,7 +102,7 @@ export default {
 
             const attendance = []
             const attendanceRecords = []
-            this.members.forEach(function(member) {
+            this.members.forEach(function (member) {
               attendance[member.id] = member.attendance
               attendanceRecords[member.id] = member.attendance
             })
@@ -120,8 +120,7 @@ export default {
             const attendance = {
               eventId: this.eventId,
               gymId: this.gymId,
-              memberId: memberId,
-              text: 'asdf'
+              memberId: memberId
             }
             this.$store.dispatch('event-member-attendance/create', attendance)
               .then((result) => {
@@ -129,7 +128,6 @@ export default {
                 this.attendance[result.memberId] = result
                 this.attendanceRecords[result.memberId] = result
               })
-
           } else if (this.attendance[memberId] === false) {
             console.log('Deleting memberId', memberId)
             this.$store.dispatch('event-member-attendance/remove', this.attendanceRecords[memberId].id)
@@ -142,7 +140,7 @@ export default {
         }
       },
       deep: true
-    },
+    }
   },
   methods: {
     ...mapActions('members', {
@@ -167,8 +165,8 @@ export default {
       if (this.search.length > 0) {
         // TODO: this needs to be case insensitive
         query['$or'] = [
-          { firstName: { $like: '%' + this.search + '%'}},
-          { lastName: { $like: '%' + this.search + '%'}}
+          { firstName: { $like: '%' + this.search + '%' } },
+          { lastName: { $like: '%' + this.search + '%' } }
         ]
       }
 
@@ -180,12 +178,12 @@ export default {
         }
       }))
 
-      console.log("members:" , foundMembers)
+      console.log('members:', foundMembers)
 
       this.loading = false
       return foundMembers
     },
-    toggleAttendance: function(memberId) {
+    toggleAttendance: function (memberId) {
       console.log('toggling memberId: ', memberId)
     }
   }

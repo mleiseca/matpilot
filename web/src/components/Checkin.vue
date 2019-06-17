@@ -31,36 +31,36 @@
 
 <script>
 
-  export default {
-    name: 'GymEventCheckin',
-    props: ['memberId', 'state'],
-    name: 'Checkin',
-    props: {
-      //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
-      //    If you don't provide a member, you will get back just a data object.
-      member: {
-        type: Object,
-        default: function () {
-          return {
-            firstName: '',
-            lastName: ''
-          }
+export default {
+  name: 'GymEventCheckin',
+  props: ['memberId', 'state'],
+  name: 'Checkin',
+  props: {
+    //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
+    //    If you don't provide a member, you will get back just a data object.
+    member: {
+      type: Object,
+      default: function () {
+        return {
+          firstName: '',
+          lastName: ''
         }
       }
-    },
-    data () {
-      return {
-        loading: false,
-        errorMessage: null,
-        showErrorMessage: false
-      }
-    },
-    methods: {
-      save: function () {
-        this.$emit('attendance-toggle', { memberId: this.memberId, state: false} )
-      }
+    }
+  },
+  data () {
+    return {
+      loading: false,
+      errorMessage: null,
+      showErrorMessage: false
+    }
+  },
+  methods: {
+    save: function () {
+      this.$emit('attendance-toggle', { memberId: this.memberId, state: false })
     }
   }
+}
 </script>
 
 <style scoped>
@@ -70,5 +70,3 @@
   }
 
 </style>
-
-
