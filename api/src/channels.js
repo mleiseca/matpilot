@@ -70,8 +70,7 @@ module.exports = function(app) {
 
   servicesWithGymId.forEach(function(service) {
     app.service(service).publish((data, context) => {
-      console.log('Using servicesWithGymId to publish')
-      return app.channel(`rooms/${data.gymId}`);
+      return app.channel(`gyms/${data.gymId}`);
     });
   })
 

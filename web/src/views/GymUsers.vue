@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { get } from 'lodash'
 
 // todo: search?
@@ -91,25 +91,24 @@ export default {
   //      //        this.$store.commit('setPagination', value)
   //      //      }
   //    },
-    userGyms () {
-      return this.$store.getters['user-gym-role/list']
-    }
+    ...mapGetters('user-gym-role', {
+      findUserGymsInStore: 'find'
+    }),
+    userGyms() {
+      return this.findUserGymsInStore({
+        query: {
+          gymId: parseInt(this.gymId, 10),
+          $sort: {createdAt: -1},
+          $limit: 25
+        }
+      }).data
+    },
   },
   methods: {
     get,
     ...mapActions('user-gym-role', {
-      findUsersForGym: 'find'
+      findUserGyms: 'find'
     }),
-    //    ...mapState('members'),
-    //    navigateToAddMember: function () {
-    //      this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
-    //    },
-    //    navigateToMember: function (event) {
-    //      //      console.log("click for ", event)
-    //      const memberId = event.currentTarget.dataset['memberId']
-    //
-    //      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
-    //    }
     navigateToAddUserGym: function () {
       this.$router.push({ name: 'gym-users-add', params: { gymId: this.gymId } })
     },
@@ -119,7 +118,7 @@ export default {
   },
   mounted () {
     console.log('Looking for users...')
-    this.findUsersForGym({
+    this.findUserGyms({
       query: {
         $sort: { createdAt: -1 },
         $limit: 50,

@@ -56,7 +56,9 @@ function fetchUserGymIds(app, userId, optionalRequiredRoles) {
     const gymIds = new Set();
 
     gymRoles.forEach(userGymRole => {
-      if (optionalRequiredRoles === undefined || optionalRequiredRoles.includes(userGymRole.role)) {
+      if (isUndefined(optionalRequiredRoles) || optionalRequiredRoles === null) {
+        gymIds.add(userGymRole.gymId)
+      } else if (optionalRequiredRoles.includes(userGymRole.role)) {
         gymIds.add(userGymRole.gymId)
       }
     });
