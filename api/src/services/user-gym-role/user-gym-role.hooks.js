@@ -1,11 +1,18 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const hydrate = require('feathers-sequelize/hooks/hydrate');
-const queryWithCurrentUser = require('../../hooks/authorization').queryWithCurrentUser;
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
+const commonHooks = require('feathers-hooks-common');
 
-function includeGym() {
+function includeGymAndUser() {
   return function (hook) {
-    const model = hook.app.service('gyms').Model;
-    const association = { include: [{ model: model, attributes: ['id', 'name', 'description'] }] };
+    const gymModel = hook.app.service('gyms').Model;
+    const userModel = hook.app.service('users').Model;
+    const association = {
+      include: [
+        { model: gymModel, attributes: ['id', 'name', 'description'] },
+        { model: userModel, attributes: ['id', 'email', 'name'] }
+      ]
+    };
 
     switch (hook.type) {
       case 'before':
@@ -20,20 +27,47 @@ function includeGym() {
   }
 }
 
+function replaceUserWithUserId() {
+  return async function(hook) {
+    console.log("Incoming:", hook.data)
+    let users = await hook.app.service('users').find({
+      query: {
+        email: hook.data.user.email.toLowerCase()
+      }
+    })
+
+    console.log("Found user: ", users)
+    if (users.total === 0) {
+      // Generate a random password. User will get a reset email to set their own password.
+      hook.data.user.password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      let newUser = await hook.app.service('users').create(hook.data.user)
+      console.log("New User! ", newUser)
+      hook.data.userId = newUser.id
+    } else {
+      hook.data.userId = users.data[0].id
+    }
+    delete hook.data.user
+    console.log("Done:", hook.data)
+  }
+}
+
 module.exports = {
   before: {
-    all: [ authenticate('jwt') ],
-    find: [queryWithCurrentUser({ idField: 'id', as: 'userId' }), includeGym()],
-    get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: []
+    all: [ authenticate('jwt'), includeGymAndUser() ],
+    find: [restrictAccessForGym()],
+    get: [restrictAccessForGym()],
+    create: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }),
+      commonHooks.iff(commonHooks.isProvider('external'), replaceUserWithUserId())],
+    update: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }),
+      commonHooks.iff(commonHooks.isProvider('external'), commonHooks.discard('gymId', 'userId'))],
+    patch: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }),
+      commonHooks.iff(commonHooks.isProvider('external'), commonHooks.discard('gymId', 'userId'))],
+    remove: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] })]
   },
 
   after: {
-    all: [],
-    find: [includeGym()],
+    all: [includeGymAndUser()],
+    find: [],
     get: [],
     create: [],
     update: [],

@@ -10,6 +10,8 @@ import GymMembers from './views/GymMembers.vue'
 import GymMembersAdd from './views/GymMembersAdd.vue'
 import GymMembersView from './views/GymMembersView.vue'
 import GymEventCheckin from './views/GymEventCheckin.vue'
+import GymUsers from './views/GymUsers.vue'
+import GymUsersAdd from './views/GymUsersAdd.vue'
 
 Vue.use(Router)
 
@@ -64,6 +66,20 @@ let router = new Router({
       name: 'gym-members-view',
       path: '/gyms/:gymId/members/:memberId',
       component: GymMembersView,
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
+      name: 'gym-users',
+      path: '/gyms/:gymId/users',
+      component: GymUsers,
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
+      name: 'gym-users-add',
+      path: '/gyms/:gymId/users/add',
+      component: GymUsersAdd,
       props: true,
       meta: { requiresAuth: true }
     },

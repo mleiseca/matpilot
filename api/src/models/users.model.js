@@ -6,7 +6,10 @@ const DataTypes = Sequelize.DataTypes;
 module.exports = function (app) {
   const sequelizeClient = app.get('sequelizeClient');
   const users = sequelizeClient.define('users', {
-
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -40,7 +43,7 @@ module.exports = function (app) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
     //users.belongsToMany(models.gyms, {through: 'UserGym', through: 'user_gyms'});
-    users.hasMany(models.user_gym_role);
+    users.hasMany(models.user_gym_role, {foreignKey: {allowNull: false}} );
   };
 
   return users;

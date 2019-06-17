@@ -22,8 +22,8 @@ module.exports = function (app) {
   userGymRole.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    userGymRole.belongsTo(models.users);
-    userGymRole.belongsTo(models.gyms);
+    userGymRole.belongsTo(models.users, { foreignKey: { allowNull: false }});
+    userGymRole.belongsTo(models.gyms,  { foreignKey: { allowNull: false }});
   };
 
   return userGymRole;

@@ -1,20 +1,4 @@
 <template>
-
-  <!--<div>-->
-    <!--<h1>Schedule</h1>-->
-    <!--<mdc-list bordered interactive>-->
-      <!--<mdc-list-item v-for="scheduledEvent in scheduledEvents"-->
-                     <!--v-bind:key="scheduledEvent.id"-->
-                     <!--@click="navigateToScheduledEvent"-->
-                     <!--:data-scheduled-event-id="scheduledEvent.id">-->
-
-      <!--</mdc-list-item>-->
-    <!--</mdc-list>-->
-
-    <!--<mdc-fab fixed icon="add" @click="navigateToAddScheduledEvent"></mdc-fab>-->
-
-  <!--</div>-->
-
   <v-container fill-height fluid grid-list-xl>
     <v-layout justify-center wrap>
       <v-flex md12>

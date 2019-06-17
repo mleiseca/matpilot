@@ -3,19 +3,12 @@
     fill-height
     fluid
     grid-list-xl>
-    <v-layout
-      justify-center
-      wrap
-    >
-      <v-flex
-        xs12
-        md8
-      >
+    <v-layout justify-center wrap>
+      <v-flex xs12 md8>
         <material-card
           color="green"
           title="Login"
-          text=""
-        >
+          text="">
           <mp-login-form></mp-login-form>
 
         </material-card>

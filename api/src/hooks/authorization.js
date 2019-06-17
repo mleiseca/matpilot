@@ -42,10 +42,11 @@ function queryWithCurrentUser(options = {}) {
 
 const restrictAccessForGymDefaults = {
   gymIdField: 'gymId',
-  as: 'gymId'
+  as: 'gymId',
+  role: null
 };
 
-function fetchUserGymIds(app, userId) {
+function fetchUserGymIds(app, userId, optionalRequiredRoles) {
   const userGymRoleModel = app.services['user-gym-role'].Model
   return userGymRoleModel.findAll({
     where: {
@@ -55,7 +56,9 @@ function fetchUserGymIds(app, userId) {
     const gymIds = new Set();
 
     gymRoles.forEach(userGymRole => {
-      gymIds.add(userGymRole.gymId)
+      if (optionalRequiredRoles === undefined || optionalRequiredRoles.includes(userGymRole.role)) {
+        gymIds.add(userGymRole.gymId)
+      }
     });
 
     return gymIds
@@ -83,8 +86,8 @@ function addGymIdParameter(hook, options) {
   })
 }
 
-function verifyGymIdParameter(hook, options) {
-  return fetchUserGymIds(hook.app, hook.params.user.id).then(function (gymIds) {
+function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
+  return fetchUserGymIds(hook.app, hook.params.user.id, optionalRequiredRoles).then(function (gymIds) {
     let explicitGymId = get(hook.data, options.gymIdField)
 
     // console.log("Found explicitGymId: ", explicitGymId, hook)
@@ -111,7 +114,7 @@ function restrictAccessForGym(options = {}) {
     }
 
     if (hook.method === 'create') {
-      return verifyGymIdParameter(hook, options);
+      return verifyGymIdParameter(hook, options, options.role);
     }
 
     if (hook.method === 'find' || hook.id === null) {
@@ -131,7 +134,7 @@ function restrictAccessForGym(options = {}) {
     return hook.service.get(hook.id, params).then(data => {
       console.log("running restrictAccessForGym...found some data....", data)
 
-      return fetchUserGymIds(hook.app, hook.params.user.id).then(function (gymIds) {
+      return fetchUserGymIds(hook.app, hook.params.user.id, options.role).then(function (gymIds) {
 
         console.log("Checking GYMID: ", get(data, options.gymIdField))
         if (!gymIds.has(get(data, options.gymIdField)) ) {

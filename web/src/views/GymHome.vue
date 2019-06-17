@@ -16,6 +16,9 @@
             <li><router-link :to="{ name: 'gym-scheduled-events', params: {gymId: id}}">
             Schedule classes
             </router-link></li>
+              <li><router-link :to="{ name: 'gym-users', params: {gymId: id}}">
+                Adminstrators/Staff
+              </router-link></li>
             </ul>
           </v-card-text>
         </material-card>

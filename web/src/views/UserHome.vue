@@ -66,6 +66,7 @@ export default {
     //        createdBy: 1,
     this.findUserGyms({
       query: {
+        userId: this.$store.state.auth.user.id,
         $sort: { createdAt: -1 },
         $limit: 25
       }

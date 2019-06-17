@@ -1,14 +1,15 @@
 <template>
+
   <v-container fill-height fluid grid-list-xl>
     <v-layout justify-center wrap>
       <v-flex md12>
         <material-card
           color="green"
-          title="Members"
+          title="Users"
           text="">
           <v-data-table
             :headers="headers"
-            :items="members"
+            :items="userGyms"
             hide-actions>
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
@@ -25,53 +26,50 @@
             <template
               slot="items"
               slot-scope="{ item }">
-              <tr @click="navigateToMember"
-                  :data-member-id="item.id">
-                <td>{{ item.firstName }}</td>
-                <td>{{ item.lastName  }}</td>
+
+              <tr @click="navigateToUserGym" :data-user-id="item.id">
+                <td>{{ get(item, 'user.name') }}</td>
+                <td>{{ get(item, 'user.email') }}</td>
+                <td>{{ item.role }}</td>
               </tr>
             </template>
           </v-data-table>
 
         </material-card>
 
-        <v-btn @click="navigateToAddMember" fab
-               color="green">
+        <v-btn @click="navigateToAddUserGym" fab color="green">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
+
 </template>
 
 <script>
 import { mapActions } from 'vuex'
+import { get } from 'lodash'
 
 // todo: search?
 export default {
-  name: 'GymMembers',
+  name: 'GymUsers',
   props: ['gymId'],
   data () {
     return {
       headers: [
         {
-          sortable: false,
-          text: 'First Name',
-          value: 'firstName'
+          sortable: true,
+          text: 'Name',
+          value: 'user.name'
         },
         {
-          sortable: false,
-          text: 'Last Name',
-          value: 'lastName'
+          sortable: true,
+          text: 'Email',
+          value: 'user.email'
         }
       ]
     }
   },
-  //  computed: {
-  //    ...mapGetters('members', {
-  //      members: 'list'
-  //    })
-  //  },
   //  watch: {
   //    pagination: {
   //      handler () {
@@ -93,28 +91,35 @@ export default {
   //      //        this.$store.commit('setPagination', value)
   //      //      }
   //    },
-    members () {
-      return this.$store.getters['members/list']
+    userGyms () {
+      return this.$store.getters['user-gym-role/list']
     }
   },
   methods: {
-    ...mapActions('members', {
-      findGymMembers: 'find'
+    get,
+    ...mapActions('user-gym-role', {
+      findUsersForGym: 'find'
     }),
     //    ...mapState('members'),
-    navigateToAddMember: function () {
-      this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
+    //    navigateToAddMember: function () {
+    //      this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
+    //    },
+    //    navigateToMember: function (event) {
+    //      //      console.log("click for ", event)
+    //      const memberId = event.currentTarget.dataset['memberId']
+    //
+    //      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
+    //    }
+    navigateToAddUserGym: function () {
+      this.$router.push({ name: 'gym-users-add', params: { gymId: this.gymId } })
     },
-    navigateToMember: function (event) {
-      //      console.log("click for ", event)
-      const memberId = event.currentTarget.dataset['memberId']
+    navigateToUserGym: function() {
 
-      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
     }
   },
   mounted () {
-    //    console.log("Looking for members...")
-    this.findGymMembers({
+    console.log('Looking for users...')
+    this.findUsersForGym({
       query: {
         $sort: { createdAt: -1 },
         $limit: 50,
