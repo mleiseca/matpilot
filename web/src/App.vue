@@ -24,11 +24,11 @@
 </template>
 
 <script>
-import { EventBus } from './event-bus.js';
+import { EventBus } from './event-bus.js'
 
 export default {
   name: 'appview',
-  data() {
+  data () {
     return {
       notification: false,
       notificationText: '',
@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    eventBusListener(contents) {
+    eventBusListener (contents) {
       console.log(`Event bus: ${contents.message}`)
       this.notification = true
       this.notificationText = contents.message
@@ -49,8 +49,8 @@ export default {
         this.type = 'success'
       }
     },
-    closeNotification() {
-      this.notification = false;
+    closeNotification () {
+      this.notification = false
     }
   },
   computed: {
@@ -58,11 +58,11 @@ export default {
       return this.$store.state.auth.user
     }
   },
-  mounted() {
-    EventBus.$on('user-message', this.eventBusListener);
+  mounted () {
+    EventBus.$on('user-message', this.eventBusListener)
   },
-  beforeDestroy() {
-    EventBus.$off('user-message', this.eventBusListener);
+  beforeDestroy () {
+    EventBus.$off('user-message', this.eventBusListener)
   }
 }
 

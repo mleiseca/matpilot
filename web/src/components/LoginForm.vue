@@ -49,7 +49,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { EventBus } from './../event-bus.js';
+import { EventBus } from './../event-bus.js'
 import { trim } from 'lodash'
 
 export default {
@@ -90,7 +90,7 @@ export default {
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
-          EventBus.$emit('user-message', {message: `Error resetting password: ${e.message}`, type: 'error'});
+          EventBus.$emit('user-message', { message: `Error resetting password: ${e.message}`, type: 'error' })
         })
     }
   }

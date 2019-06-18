@@ -58,60 +58,59 @@
 </template>
 
 <script>
-  import client from '../api/feathers-client';
-  import { EventBus } from './../event-bus.js';
-  import { trim } from 'lodash'
+import client from '../api/feathers-client'
+import { EventBus } from './../event-bus.js'
+import { trim } from 'lodash'
 
-  export default {
-    name: 'UserResetPassword',
-    data () {
-      return {
-        form: {
-          password1: '',
-          password2: ''
-        },
-        showPassword1: false,
-        showPassword2: false,
-        rules: {
-          required: value => !!value || 'Required.',
-          minLength: value => value.length > 7 || 'Password too short',
-          matchPassword1: value => value === this.form.password1 || 'Passwords do not match',
-          email: value => {
-            value = trim(value)
-            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            return (value.length === 0) || pattern.test(value) || 'Invalid e-mail.'
-          }
+export default {
+  name: 'UserResetPassword',
+  data () {
+    return {
+      form: {
+        password1: '',
+        password2: ''
+      },
+      showPassword1: false,
+      showPassword2: false,
+      rules: {
+        required: value => !!value || 'Required.',
+        minLength: value => value.length > 7 || 'Password too short',
+        matchPassword1: value => value === this.form.password1 || 'Passwords do not match',
+        email: value => {
+          value = trim(value)
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return (value.length === 0) || pattern.test(value) || 'Invalid e-mail.'
         }
       }
-    },
-    methods: {
-      resetPassword: function () {
+    }
+  },
+  methods: {
+    resetPassword: function () {
+      event.preventDefault()
 
-        event.preventDefault()
+      console.log('validating')
+      if (!this.$refs.form.validate()) {
+        return
+      }
 
-        console.log('validating')
-        if (!this.$refs.form.validate()) {
-          return
-        }
-
-        client.service('authManagement').create(
-          {
+      client.service('authManagement').create(
+        {
           action: 'resetPwdLong',
           value: {
             token: this.$route.query.token,
             password: this.form.password1
           }
         })
-          .then((result) => {
-            console.log('Got result:', result)
-            this.$router.push({ name: 'login' })
-            EventBus.$emit('user-message', {message: 'Password successfully reset'});
-          })
-          .catch((e) => {
-            console.log('** Login catch: ', e)
-            EventBus.$emit('user-message', {message: `Error resetting password: ${e.message}`, type: 'error'});
-          })
-      }
+        .then((result) => {
+          console.log('Got result:', result)
+          this.$router.push({ name: 'login' })
+          EventBus.$emit('user-message', { message: 'Password successfully reset' })
+        })
+        .catch((e) => {
+          console.log('** Login catch: ', e)
+          EventBus.$emit('user-message', { message: `Error resetting password: ${e.message}`, type: 'error' })
+        })
     }
   }
+}
 </script>

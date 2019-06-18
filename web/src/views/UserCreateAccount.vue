@@ -81,7 +81,7 @@
 
 <script>
 import { trim } from 'lodash'
-import { EventBus } from './../event-bus.js';
+import { EventBus } from './../event-bus.js'
 
 export default {
   name: 'login',
@@ -120,10 +120,10 @@ export default {
       this.$store.dispatch('users/create', this.form)
         .then((result) => {
           this.$router.push({ name: 'login' })
-          EventBus.$emit('user-message', {message: 'Account successfully created!'});
+          EventBus.$emit('user-message', { message: 'Account successfully created!' })
         })
         .catch((e) => {
-          EventBus.$emit('user-message', {message: `Error creating account: ${e.message}`, type: 'error'});
+          EventBus.$emit('user-message', { message: `Error creating account: ${e.message}`, type: 'error' })
         })
     }
   }
