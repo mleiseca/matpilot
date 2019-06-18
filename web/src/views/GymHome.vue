@@ -10,13 +10,13 @@
 
           <v-card-text>
             <ul>
-            <li><router-link :to="{ name: 'gym-members', params: {gymId: id}}">
-            Members
-            </router-link></li>
-            <li><router-link :to="{ name: 'gym-scheduled-events', params: {gymId: id}}">
-            Schedule classes
-            </router-link></li>
-              <li><router-link :to="{ name: 'gym-users', params: {gymId: id}}">
+              <li><router-link :to="{ name: 'gym-members', params: {gymId: id}}">
+              Members
+              </router-link></li>
+              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-scheduled-events', params: {gymId: id}}">
+              Schedule classes
+              </router-link></li>
+              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-users', params: {gymId: id}}">
                 Adminstrators/Staff
               </router-link></li>
             </ul>
@@ -76,7 +76,17 @@ export default {
     }),
     ...mapActions('scheduled-events', {
       findScheduledEvents: 'find'
-    })
+    }),
+    isAdminForGym () {
+      for (let i = 0; i < this.$store.state.auth.user.user_gym_roles.length; i++) {
+        let userGymRole = this.$store.state.auth.user.user_gym_roles[i]
+        console.log(userGymRole)
+        if (userGymRole.gymId === parseInt(this.id, 10) && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
+          return true
+        }
+      }
+      return false
+    }
   },
 
   //  methods: {

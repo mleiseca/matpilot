@@ -94,15 +94,15 @@ export default {
     ...mapGetters('user-gym-role', {
       findUserGymsInStore: 'find'
     }),
-    userGyms() {
+    userGyms () {
       return this.findUserGymsInStore({
         query: {
           gymId: parseInt(this.gymId, 10),
-          $sort: {createdAt: -1},
+          $sort: { createdAt: -1 },
           $limit: 25
         }
       }).data
-    },
+    }
   },
   methods: {
     get,
@@ -112,7 +112,7 @@ export default {
     navigateToAddUserGym: function () {
       this.$router.push({ name: 'gym-users-add', params: { gymId: this.gymId } })
     },
-    navigateToUserGym: function() {
+    navigateToUserGym: function () {
 
     }
   },

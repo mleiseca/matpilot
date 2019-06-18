@@ -66,7 +66,7 @@ module.exports = function(app) {
   // });
 
 
-  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'scheduled-events', 'user-gym-role']
+  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
     app.service(service).publish((data, context) => {

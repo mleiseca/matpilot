@@ -56,15 +56,15 @@ export default {
     ...mapGetters('user-gym-role', {
       findUserGymsInStore: 'find'
     }),
-    userGyms() {
+    userGyms () {
       return this.findUserGymsInStore({
         query: {
           userId: this.$store.state.auth.user.id,
-          $sort: {createdAt: -1},
+          $sort: { createdAt: -1 },
           $limit: 25
         }
       }).data
-    },
+    }
   },
   methods: {
     ...mapActions('user-gym-role', {
