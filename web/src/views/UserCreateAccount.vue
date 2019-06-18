@@ -22,13 +22,14 @@
           title="Create Account"
           text="">
           <v-container py-0>
-            <v-form>
+            <v-form ref="form">
               <v-layout wrap>
 
                 <v-flex xs12 md12>
                   <v-text-field
                     class="purple-input"
                     label="Email"
+                    :rules="[rules.required, rules.email]"
                     v-model="form.email"/>
                 </v-flex>
 
@@ -40,9 +41,9 @@
                     :type="showPassword1 ? 'text' : 'password'"
                     name="password1"
                     label="Password"
+                    :rules="[rules.required, rules.minLength]"
                     @click:append="showPassword1 = !showPassword1"
                   ></v-text-field>
-
                 </v-flex>
 
                 <v-flex xs12 md12>
@@ -53,9 +54,9 @@
                     :type="showPassword2 ? 'text' : 'password'"
                     name="password2"
                     label="Password (confirm)"
+                    :rules="[rules.required, rules.matchPassword1]"
                     @click:append="showPassword2 = !showPassword2"
                   ></v-text-field>
-
                 </v-flex>
                 <v-flex xs12>
                   <v-btn
@@ -79,6 +80,8 @@
 </template>
 
 <script>
+import { trim } from 'lodash'
+import { EventBus } from './../event-bus.js';
 
 export default {
   name: 'login',
@@ -90,24 +93,37 @@ export default {
         password2: ''
       },
       showPassword1: false,
-      showPassword2: false
+      showPassword2: false,
+      rules: {
+        required: value => !!value || 'Required.',
+        minLength: value => value.length > 7 || 'Password too short',
+        matchPassword1: value => value === this.form.password1 || 'Passwords do not match',
+        email: value => {
+          value = trim(value)
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return (value.length === 0) || pattern.test(value) || 'Invalid e-mail.'
+        }
+      }
     }
   },
   methods: {
     createAccount: function () {
-      if (this.form.password1 !== this.form.password2) {
-        // TODO: display error. Validation?
+      event.preventDefault()
+
+      console.log('validating')
+      if (!this.$refs.form.validate()) {
+        return
       }
+
       this.form.password = this.form.password1
       console.log('Saving account:', this.form)
       this.$store.dispatch('users/create', this.form)
         .then((result) => {
-          console.log('Got result:', result)
           this.$router.push({ name: 'login' })
+          EventBus.$emit('user-message', {message: 'Account successfully created!'});
         })
         .catch((e) => {
-          console.log('** Login catch: ', e)
-          // TODO: error message if login fails
+          EventBus.$emit('user-message', {message: `Error creating account: ${e.message}`, type: 'error'});
         })
     }
   }

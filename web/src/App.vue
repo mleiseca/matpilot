@@ -4,16 +4,65 @@
     <core-toolbar v-if="user"/>
     <core-drawer v-if="user"/>
     <core-view />
+    <v-snackbar
+      v-model="notification"
+      bottom
+      center
+      :color="type"
+      :timeout="timeout"
+    >
+      {{ notificationText }}
+      <v-btn
+        flat
+        dark
+        @click="closeNotification"
+      >
+        Close
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
 <script>
+import { EventBus } from './event-bus.js';
+
 export default {
   name: 'appview',
+  data() {
+    return {
+      notification: false,
+      notificationText: '',
+      type: '',
+      timeout: 10 * 1000,
+      buttonColor: ''
+    }
+  },
+  methods: {
+    eventBusListener(contents) {
+      console.log(`Event bus: ${contents.message}`)
+      this.notification = true
+      this.notificationText = contents.message
+      if (contents.type === 'error') {
+        this.type = 'error'
+        this.buttonColor = 'error'
+      } else {
+        this.type = 'success'
+      }
+    },
+    closeNotification() {
+      this.notification = false;
+    }
+  },
   computed: {
     user () {
       return this.$store.state.auth.user
     }
+  },
+  mounted() {
+    EventBus.$on('user-message', this.eventBusListener);
+  },
+  beforeDestroy() {
+    EventBus.$off('user-message', this.eventBusListener);
   }
 }
 

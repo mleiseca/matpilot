@@ -35,7 +35,7 @@ module.exports = {
   before: {
     all: [],
     find: [ authenticate('jwt') ],
-    get: [ authenticate('jwt') ],
+    get: [ authenticate('jwt'), includeRoles() ],
     create: [ hashPassword(), commonHooks.lowerCase('email'), verifyHooks.addVerification() ],
     update: [ commonHooks.disallow('external') ],
     patch: [  commonHooks.iff(

@@ -53,18 +53,33 @@ module.exports = function(app) {
 
         case 'resetPwd':
           tokenLink = getLink('reset', user.resetToken)
-          email = {}
+          email = {
+            from: app.get('fromEmail'),
+            to: user.email,
+            subject: 'Password reset',
+            html: 'Your password has been reset'
+          }
           return sendEmail(email)
           break
 
         case 'passwordChange':
-          email = {}
+          email = {
+            from: app.get('fromEmail'),
+            to: user.email,
+            subject: 'Password updated',
+            html: 'Your password has been updated'
+          }
           return sendEmail(email)
           break
 
         case 'identityChange':
           tokenLink = getLink('verifyChanges', user.verifyToken)
-          email = {}
+          email = {
+            from: app.get('fromEmail'),
+            to: user.email,
+            subject: 'Verify changes',
+            html: tokenLink
+          }
           return sendEmail(email)
           break
 

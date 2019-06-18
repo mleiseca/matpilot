@@ -32,22 +32,8 @@
 <script>
 
 export default {
-  name: 'GymEventCheckin',
   props: ['memberId', 'state'],
   name: 'Checkin',
-  props: {
-    //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
-    //    If you don't provide a member, you will get back just a data object.
-    member: {
-      type: Object,
-      default: function () {
-        return {
-          firstName: '',
-          lastName: ''
-        }
-      }
-    }
-  },
   data () {
     return {
       loading: false,

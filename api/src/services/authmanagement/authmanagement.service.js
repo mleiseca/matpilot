@@ -6,7 +6,10 @@ const notifier = require('./notifier');
 module.exports = function (app) {
 
   // Initialize our service with any options it requires
-  app.configure(authManagement(notifier(app)));
+  app.configure(authManagement({
+    notifier: notifier(app).notifier,
+    skipIsVerifiedCheck: true
+  }));
 
   // Get our initialized service so that we can register hooks and filters
   const service = app.service('authManagement');

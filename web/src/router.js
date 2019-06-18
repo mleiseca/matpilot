@@ -128,6 +128,16 @@ let router = new Router({
       name: 'user-verify-account',
       path: '/verify',
       component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserVerifyAccount.vue')
+    },
+    {
+      name: 'user-reset-password',
+      path: '/reset',
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserResetPassword.vue')
+    },
+    {
+      name: 'user-reset-password-request',
+      path: '/reset-request',
+      component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserResetPasswordRequest.vue')
     }
   ]
 })

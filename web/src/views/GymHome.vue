@@ -78,8 +78,13 @@ export default {
       findScheduledEvents: 'find'
     }),
     isAdminForGym () {
-      for (let i = 0; i < this.$store.state.auth.user.user_gym_roles.length; i++) {
-        let userGymRole = this.$store.state.auth.user.user_gym_roles[i]
+      const userGyms = this.$store.state.auth.user.user_gym_roles
+      console.log(userGyms)
+      if (!userGyms) {
+        return false
+      }
+      for (let i = 0; i < userGyms.length; i++) {
+        let userGymRole = userGyms[i]
         console.log(userGymRole)
         if (userGymRole.gymId === parseInt(this.id, 10) && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
           return true
