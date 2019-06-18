@@ -75,7 +75,7 @@
         }
         let contents = {
           action: 'sendResetPwd',
-          value: {'email': this.form.email }, // {email}, {token: verifyToken}
+          value: {'email': this.form.email.toLowerCase() }, // {email}, {token: verifyToken}
         }
         console.log('resetting password', contents)
         client.service('authManagement').create(contents)

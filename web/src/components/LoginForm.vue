@@ -83,7 +83,7 @@ export default {
       }
       console.log('username', this.username)
 
-      authenticate({ strategy: 'local', email: this.email, password: this.password })
+      authenticate({ strategy: 'local', email: this.email.toLowerCase(), password: this.password })
         .then((result) => {
           console.log('** Login result: ', result)
           this.$router.push({ name: 'userhome' })
