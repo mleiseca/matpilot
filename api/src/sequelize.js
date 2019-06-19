@@ -29,7 +29,7 @@ module.exports = function (app) {
     });
 
     // Sync to the database
-    sequelize.sync({alter: true});
+    // sequelize.sync();
 
     return result;
   };
