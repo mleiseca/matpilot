@@ -29,8 +29,7 @@
       "repo" : "git@github.com:mleiseca/matpilot.git",
       "path" : "/home/mleiseca/matpilot",
       "ssh_options": ["ForwardAgent=yes"],
-      "post-setup": "cd web && npm install && npm run build && cp -R dist/* ../api/public && pwd && cd ../api && npm install",
-      "post-deploy" : "pm2 reload ecosystem.json --env production"
+      "post-deploy" : "cd web && npm install && npm run build && cp -R dist/* ../api/public && pwd && cd ../api && npm install && pm2 reload ecosystem.json --env production"
     }
   }
 }
