@@ -30,7 +30,7 @@
       "path" : "/home/mleiseca/matpilot",
       "ssh_options": ["ForwardAgent=yes"],
       "post-setup": "cd web && npm install && npm run build && cp -R dist/* ../api/public && cd api && npm install",
-      "post-deploy" : "pm2 reload ecosystem.config.js --env production"
+      "post-deploy" : "pm2 reload ecosystem.json --env production"
     }
   }
 }
