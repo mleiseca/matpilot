@@ -1,7 +1,7 @@
 {
   "apps" : [{
-    "name": "API",
-    "script": "src/index.js",
+    "name": "MatpilotAPI",
+    "script": "api/src/index.js",
 
     "instances": 1,
     "autorestart": true,
