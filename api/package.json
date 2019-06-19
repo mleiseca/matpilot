@@ -44,6 +44,7 @@
     "compression": "^1.7.3",
     "connect-history-api-fallback": "^1.6.0",
     "cors": "^2.8.5",
+    "dotenv": "^8.0.0",
     "feathers-authentication-management": "^2.0.1",
     "feathers-hooks-common": "^4.20.7",
     "feathers-mailer": "^3.0.1",
