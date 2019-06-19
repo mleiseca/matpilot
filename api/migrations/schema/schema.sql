@@ -62,8 +62,6 @@ CREATE TABLE public.event_member_attendance (
 );
 
 
-ALTER TABLE public.event_member_attendance OWNER TO postgres;
-
 --
 -- Name: event_member_attendance_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -75,8 +73,6 @@ CREATE SEQUENCE public.event_member_attendance_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.event_member_attendance_id_seq OWNER TO postgres;
 
 --
 -- Name: event_member_attendance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -104,9 +100,6 @@ CREATE TABLE public.events (
 );
 
 
-ALTER TABLE public.events OWNER TO postgres;
-
---
 -- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -118,9 +111,6 @@ CREATE SEQUENCE public.events_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.events_id_seq OWNER TO postgres;
-
---
 -- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -142,9 +132,6 @@ CREATE TABLE public.gyms (
 );
 
 
-ALTER TABLE public.gyms OWNER TO postgres;
-
---
 -- Name: gyms_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -156,9 +143,6 @@ CREATE SEQUENCE public.gyms_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.gyms_id_seq OWNER TO postgres;
-
---
 -- Name: gyms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
 
@@ -187,9 +171,6 @@ CREATE TABLE public.members (
 );
 
 
-ALTER TABLE public.members OWNER TO postgres;
-
---
 -- Name: members_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
 
@@ -200,8 +181,6 @@ CREATE SEQUENCE public.members_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.members_id_seq OWNER TO postgres;
 
 --
 -- Name: members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -231,8 +210,6 @@ CREATE TABLE public.scheduled_events (
 );
 
 
-ALTER TABLE public.scheduled_events OWNER TO postgres;
-
 --
 -- Name: scheduled_events_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -244,8 +221,6 @@ CREATE SEQUENCE public.scheduled_events_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.scheduled_events_id_seq OWNER TO postgres;
 
 --
 -- Name: scheduled_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -268,8 +243,6 @@ CREATE TABLE public.user_gym_role (
 );
 
 
-ALTER TABLE public.user_gym_role OWNER TO postgres;
-
 --
 -- Name: user_gym_role_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -281,8 +254,6 @@ CREATE SEQUENCE public.user_gym_role_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.user_gym_role_id_seq OWNER TO postgres;
 
 --
 -- Name: user_gym_role_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -313,8 +284,6 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO postgres;
-
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -326,8 +295,6 @@ CREATE SEQUENCE public.users_id_seq
     NO MAXVALUE
     CACHE 1;
 
-
-ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
