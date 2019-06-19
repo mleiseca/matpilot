@@ -8,7 +8,9 @@ export const host = process.env.VUE_APP_API_HOST || 'http://localhost:3030'
 const socket = io(host, { transports: ['websocket'] })
 
 const feathersClient = feathers()
-  .configure(socketio(socket))
+  .configure(socketio(socket, {
+    timeout: 5000
+  }))
   .configure(auth({ storage: window.localStorage }))
 
 export default feathersClient

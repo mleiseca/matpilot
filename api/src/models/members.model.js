@@ -30,6 +30,18 @@ module.exports = function (app) {
       type: Sequelize.JSONB,
       allowNull: false
     },
+    guardianContacts: {
+      type: Sequelize.JSONB,
+      allowNull: false
+    },
+    waiverSignedDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
+    waiverUrl: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
   }, {
     hooks: {
       beforeCount(options) {

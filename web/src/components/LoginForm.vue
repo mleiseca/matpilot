@@ -90,7 +90,7 @@ export default {
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
-          EventBus.$emit('user-message', { message: `Error resetting password: ${e.message}`, type: 'error' })
+          EventBus.$emit('user-message', { message: `Error logging in: ${e.message}`, type: 'error' })
         })
     }
   }

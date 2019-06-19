@@ -45,6 +45,9 @@ export default {
       if (contents.type === 'error') {
         this.type = 'error'
         this.buttonColor = 'error'
+      } else if (contents.type === 'warning') {
+        this.type = 'warning'
+        this.buttonColor = 'warning'
       } else {
         this.type = 'success'
       }

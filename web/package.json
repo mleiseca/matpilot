@@ -29,8 +29,10 @@
     "timepicker": "^1.11.14",
     "vue": "^2.6.6",
     "vue-chartist": "^2.2.0",
+    "vue-html2canvas": "0.0.4",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.1",
+    "vue-signature-pad": "^1.1.10",
     "vuejs-datepicker": "^1.5.4",
     "vuetify": "^1.5.13",
     "vuex": "^3.0.1"
