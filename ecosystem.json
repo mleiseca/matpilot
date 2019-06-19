@@ -1,0 +1,37 @@
+{
+  "apps" : [{
+    "name": "API",
+    "script": "src/index.js",
+
+    "instances": 1,
+    "autorestart": true,
+    "watch": false,
+    "instance_var": "INSTANCE_ID",
+    "max_memory_restart": "1G",
+    "exec_mode": "cluster_mode",
+    "env": {
+      "PORT": 3030,
+      "NODE_ENV": "development"
+    },
+    "env_production": {
+      "PORT": 3030,
+      "NODE_ENV": "production",
+      "API_HOST": "http://167.99.10.40:3030"
+    }
+  }],
+
+  "deploy" : {
+    "production" : {
+      "key"  : "/home/mleiseca/.ssh/id_rsa_digitalocean",
+      "user" : "mleiseca",
+      "host" : "167.99.10.40",
+      "ref"  : "origin/master",
+      "repo" : "git@github.com:mleiseca/matpilot.git",
+      "path" : "/home/mleiseca/matpilot",
+      "ssh_options": ["StrictHostKeyChecking=no", "ForwardAgent=yes"],
+//       npm run build
+//      cp -R dist/* ../api/public
+      "post-deploy" : "(cd web && npm install && npm run build && cp -R dist/* ../api/public ) && (cd api && npm install) && cd .. && pm2 reload ecosystem.config.js --env production"
+    }
+  }
+}

@@ -172,7 +172,6 @@
           </v-btn>
         </v-flex>
 
-
       </v-layout>
     </v-container>
   </v-form>
@@ -287,7 +286,7 @@ export default {
       console.log('Member saved!', this.member)
       this.$emit('member-save', this.member)
     },
-    currentDate() { return moment().format('MMMM D, YYYY') },
+    currentDate () { return moment().format('MMMM D, YYYY') },
     evaluateDateOfBirth (date) {
       const age = moment().diff(date, 'years')
       this.isMinor = age < 18
