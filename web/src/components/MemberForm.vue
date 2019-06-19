@@ -97,7 +97,7 @@
             v-model="emergencyContactPhone"/>
         </v-flex>
 
-        <v-flex xs12 md12>
+        <v-flex xs12 md12 ref="fullWaiver">
           <strong>WAIVER AND RELEASE OF LIABILITY AND AGREEMENT TO PARTICIPATE IN ACTIVITY WITH:</strong><br>
           <strong>FOUNDATIONS BJJ ACADEMY</strong><br>
           <strong>IN THE MARTIAL ART STYLES OF BRAZILIAN JIU JITSU, JUDO, WRESTLING, SUBMISSION GRAPPLING</strong><br>
@@ -130,14 +130,29 @@
           <v-checkbox
             @change="clickedAgreeToTerms"
             :rules="[rules.required]"
+            :disabled="!this.needsToSign"
             v-model="agreeToTerms" label="I agree to the terms above"/>
 
           <template v-if="expandSignature">
+            <div><span>Name: </span><span>{{ this.member.firstName + ' ' + this.member.lastName }}</span></div>
+            <template v-if="isMinor">
+              <div><span>Parent or Guardian: </span><span>{{ this.guardianContactName }}</span></div>
+            </template>
+            <div><span>Date: </span><span>{{ this.currentDate() }}</span></div>
+
+            <div style="padding-top: 10px;">
+              <template v-if="isMinor">
+                Parent or Guardian Signature:
+              </template>
+              <template v-else>
+                Signature:
+              </template>
+            </div>
           <VueSignaturePad
-            width="600px"
+            width="550px"
             height="300px"
             ref="signaturePad"
-            :options="{ onBegin}"
+            :customStyle="{ border: 'black 3px solid' }"
           />
           <v-btn
             class="mx-0 font-weight-light"
@@ -157,11 +172,6 @@
           </v-btn>
         </v-flex>
 
-        <div class="outer">
-          <div class="inner">
-            <canvas ref="canvas" width="600px" height="300px"></canvas>
-          </div>
-        </div>
 
       </v-layout>
     </v-container>
@@ -193,16 +203,11 @@ export default {
   },
   data () {
     return {
-      loading: false,
-      errorMessage: null,
-      showErrorMessage: false,
-      modalDateOfBirth: false,
       guardianContactName: '',
       guardianContactPhone: '',
       emergencyContactName: '',
       emergencyContactPhone: '',
       dateOfBirth: null,
-      output: null,
       isMinor: false,
       agreeToTerms: false,
       expandSignature: false,
@@ -246,7 +251,7 @@ export default {
     })
   },
   methods: {
-    save: function (event) {
+    save: async function (event) {
       event.preventDefault()
       if (!this.$refs.form.validate()) {
         EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
@@ -254,11 +259,11 @@ export default {
       }
 
       if (this.needsToSign) {
-        if (!this.hasSigned) {
-          EventBus.$emit('user-message', {message: 'Please sign the waiver to continue', type: 'error'})
+        if (this.$refs.signaturePad.isEmpty()) {
+          EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
           return
         } else {
-          this.member.waiverSignature = this.$refs.signaturePad.saveSignature().data
+          this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
         }
       }
 
@@ -282,33 +287,20 @@ export default {
       console.log('Member saved!', this.member)
       this.$emit('member-save', this.member)
     },
-    onBegin() {
-      this.hasSigned = true
-    },
+    currentDate() { return moment().format('MMMM D, YYYY') },
     evaluateDateOfBirth (date) {
       const age = moment().diff(date, 'years')
-      console.log('age: ', age)
       this.isMinor = age < 18
     },
     saveDateOfBirth (date) {
       console.log('Saving dateOfBirth: ', date)
       this.member.dateOfBirth = moment(date).format('YYYY-MM-DD')
       this.$refs.dateOfBirthMenu.save(this.formatDateTime(date))
-      this.dateOfBirth =this.member.dateOfBirth
+      this.dateOfBirth = this.member.dateOfBirth
       this.evaluateDateOfBirth(date)
     },
     async clearSignature () {
       await this.$refs.signaturePad.clearSignature()
-      await this.$refs.signaturePad.clearCacheImages()
-
-      this.clearTextCanvas()
-      this.addSignatureDetails()
-    },
-    clearTextCanvas () {
-      const canvasEl = this.$refs.canvas
-      const ctx = canvasEl.getContext('2d')
-      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
-      this.hasSigned = false
     },
     clickedAgreeToTerms () {
       if (this.agreeToTerms && !this.$refs.form.validate()) {
@@ -318,48 +310,11 @@ export default {
       }
       this.showSignatureBox()
     },
-    async addSignatureDetails () {
-      const canvasEl = this.$refs.canvas
-      var ctx = canvasEl.getContext('2d')
-      ctx.font = '12px'
-      let termsText = [
-        'I HAVE READ THE ABOVE WARNING, WAIVER AND RELEASE, UNDERSTAND THAT I GIVE UP SUBSTANTIAL ',
-        'RIGHTS BY SIGNING IT, AND KNOWING THIS, SIGN VOLUNTARILY. I AGREE TO PARTICIPATE KNOWING ',
-        'THE RISK AND CONDITIONS INVOLVED AND DO SO ENTIRELY OF MY OWN FREE WILL. I AFFIRM THAT I AM',
-        'AT LEAST 18 YEARS OF AGE, OR, IF I AM UNDER 18 YEARS OF AGE, I HAVE OBTAINED THE REQUIRED ',
-        'CONSENT OF MY PARENT/GUARDIAN AS EVIDENCE BY THEIR SIGNATURE BELOW.']
-      termsText.forEach((line, i) => ctx.fillText(line, 0, i * 30 + 10))
-      ctx.font = '18px'
-      const signStartY = 130
-      ctx.fillText('Name:', 0, signStartY + 50)
-      ctx.fillText(this.member.firstName + ' ' + this.member.lastName, 150, signStartY + 50)
 
-      if (this.isMinor) {
-        ctx.fillText('Parent or Guardian:', 0, signStartY + 80)
-        ctx.fillText(this.guardianContactName, 150, signStartY + 80)
-        ctx.fillText('Parent or Guardian Signature:________________________________________________________________________', 0, signStartY + 130)
-        ctx.fillText('Date: ' + moment().format('YYYY-MM-DD'), 0, signStartY + 160)
-      } else {
-        ctx.fillText('Signature:________________________________________________________________________', 0, signStartY + 100)
-        ctx.fillText('Date     : ' + moment().format('YYYY-MM-DD'), 0, signStartY + 130)
-      }
-      // add option type to get the image version
-      // if not provided the promise will return
-      // the canvas.
-      const options = {
-        type: 'dataURL'
-      }
-      console.log('trying to add image to canvas....')
-      this.output = await this.$html2canvas(canvasEl, options)
-      this.$refs.signaturePad.addImages(this.$refs.signaturePad.fromDataURL(this.output))
-      return true
-    },
     async showSignatureBox () {
       if (!this.agreeToTerms) {
-        this.clearTextCanvas()
       } else {
         this.expandSignature = true
-        await this.addSignatureDetails()
       }
     },
     // TODO: copied from ScheduledEventForm
@@ -375,18 +330,6 @@ export default {
 
   h1 {
     padding-left: .5rem;
-  }
-
-  .outer {
-    overflow: hidden;
-    position: relative;
-  }
-  .inner {
-    position: absolute;
-    height: 100px;
-    width: 100px;
-    right: -50px;
-    top: 50px;
   }
 
 </style>

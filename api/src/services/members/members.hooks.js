@@ -5,6 +5,8 @@ const restrictAccessForGym = require('../../hooks/authorization').restrictAccess
 
 const BatchLoader = require('@feathers-plus/batch-loader');
 const { getResultsByKey, getUniqueKeys } = BatchLoader;
+const uuid = require('uuid');
+const AWS = require('aws-sdk');
 
 
 const { paramsFromClient } = require('feathers-hooks-common');
@@ -49,14 +51,45 @@ const memberResolvers = {
   }
 };
 
+function writeWaiverSignatureToS3() {
+  return function(hook) {
+    if (hook.data.waiverSignature) {
+      console.log('Writing waiver to S3, gym, member', hook.data.gymId, hook.data.lastName)
+      let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ""),'base64')
+
+      // TODO: property name
+      let bucketName = 'com.matpilot.development.waivers'
+      let keyName = 'gym_'  + hook.data.gymId + '_' +  uuid.v4() + '.png'
+      const objectParams = {
+        Bucket: bucketName,
+        Key: keyName,
+        Body: buf,
+        ContentEncoding: 'base64',
+        ContentType: 'image/png'
+      };
+
+      // console.log(objectParams)
+      return new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise()
+        .then(function(data) {
+          delete hook.data.waiverSignature
+          console.log("Successfully uploaded data to " + bucketName + "/" + keyName, data);
+          // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
+          hook.data.waiverUrl = 'https://s3.amazonaws.com/' + bucketName + '/' + keyName
+        });
+    } else {
+      console.log('No need to write waiver to S3', hook.data.gymId, hook.data.userId)
+    }
+  }
+}
+
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
     find: [paramsFromClient('populate')],
     get: [],
-    create: [assignCreatedBy],
-    update: [],
-    patch: [],
+    create: [assignCreatedBy, writeWaiverSignatureToS3()],
+    update: [writeWaiverSignatureToS3()],
+    patch: [writeWaiverSignatureToS3()],
     remove: []
   },
 

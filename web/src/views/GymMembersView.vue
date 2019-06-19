@@ -21,6 +21,7 @@
 
 <script>
 import { mapActions } from 'vuex'
+import { EventBus } from '../event-bus'
 
 export default {
   name: 'GymMembersView',
@@ -60,6 +61,10 @@ export default {
         .then((result) => {
           console.log('Got result:', result)
           this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+        })
+        .catch((e) => {
+          console.log('** Login catch: ', e)
+          EventBus.$emit('user-message', { message: `Error saving member: ${e.message}`, type: 'error' })
         })
     },
     enterEditMode: function (event) {
