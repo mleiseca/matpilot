@@ -2,6 +2,7 @@
   "apps" : [{
     "name": "MatpilotAPI",
     "script": "api/src/index.js",
+    "cwd": "/home/mleiseca/matpilot/source/api",
 
     "instances": 1,
     "autorestart": true,
