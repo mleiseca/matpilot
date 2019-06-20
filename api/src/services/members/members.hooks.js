@@ -11,7 +11,7 @@ const AWS = require('aws-sdk');
 
 const { paramsFromClient } = require('feathers-hooks-common');
 
-
+const WAIVER_S3_BUCKET = process.env.WAIVER_S3_BUCKET || 'com.matpilot.production.waivers'
 
 const memberResolvers = {
   before: context => {
@@ -58,10 +58,9 @@ function writeWaiverSignatureToS3() {
       let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ""),'base64')
 
       // TODO: property name
-      let bucketName = 'com.matpilot.development.waivers'
       let keyName = 'gym_'  + hook.data.gymId + '_' +  uuid.v4() + '.png'
       const objectParams = {
-        Bucket: bucketName,
+        Bucket: WAIVER_S3_BUCKET,
         Key: keyName,
         Body: buf,
         ContentEncoding: 'base64',
@@ -72,9 +71,9 @@ function writeWaiverSignatureToS3() {
       return new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise()
         .then(function(data) {
           delete hook.data.waiverSignature
-          console.log("Successfully uploaded data to " + bucketName + "/" + keyName, data);
+          console.log("Successfully uploaded data to " + WAIVER_S3_BUCKET + "/" + keyName, data);
           // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
-          hook.data.waiverUrl = 'https://s3.amazonaws.com/' + bucketName + '/' + keyName
+          hook.data.waiverUrl = 'https://s3.amazonaws.com/' + WAIVER_S3_BUCKET + '/' + keyName
         });
     } else {
       console.log('No need to write waiver to S3', hook.data.gymId, hook.data.userId)

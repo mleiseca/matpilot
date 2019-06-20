@@ -10,7 +10,7 @@ module.exports = function (app) {
       freezeTableName: true
     },
     dialectOptions: {
-      ssl: true
+      ssl: process.env.DB_DIALECT_OPTIONS_SSL || true
     }
   });
   const oldSetup = app.setup;

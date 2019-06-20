@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-console.log(require('dotenv').config())
+require('dotenv').config()
 const logger = require('./logger');
 const app = require('./app');
 const port = app.get('port');

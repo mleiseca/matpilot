@@ -6,7 +6,6 @@ const smtpTransport = require('nodemailer-smtp-transport');
 module.exports = function (app) {
   const smtpUser = process.env.SMTP_USER || app.get("smtpUser")
   const smtpPassword = process.env.SMTP_PASS || app.get("smtpPassword")
-  console.log("SMTP:", smtpUser, smtpUser)
   app.use('/mailer', Mailer(smtpTransport({
     host: 'email-smtp.us-east-1.amazonaws.com',
     secure: true,
