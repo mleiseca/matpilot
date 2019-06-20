@@ -1,42 +1,44 @@
-const { get, set, isUndefined } = require('lodash');
-const errors = require('@feathersjs/errors');
+const { get, set, isUndefined } = require('lodash')
+const errors = require('@feathersjs/errors')
+const logger = require('./logger')
 
 const defaults = {
   idField: '_id',
   as: 'userId',
   expandPaths: true
-};
+}
 
+/* eslint-disable-next-line */
 function queryWithCurrentUser(options = {}) {
   return function (hook) {
     if (hook.type !== 'before') {
-      throw new Error(`The 'queryWithCurrentUser' hook should only be used as a 'before' hook.`);
+      throw new Error('The \'queryWithCurrentUser\' hook should only be used as a \'before\' hook.')
     }
 
-    options = Object.assign({}, defaults, hook.app.get('authentication'), options);
-    const userEntity = hook.params[options.entity || 'user'];
+    options = Object.assign({}, defaults, hook.app.get('authentication'), options)
+    const userEntity = hook.params[options.entity || 'user']
 
     if (!userEntity) {
       if (!hook.params.provider) {
-        return hook;
+        return hook
       }
 
-      throw new Error('There is no current user to associate.');
+      throw new Error('There is no current user to associate.')
     }
 
-    const id = get(userEntity, options.idField);
+    const id = get(userEntity, options.idField)
 
     if (id === undefined) {
-      throw new Error(`Current user is missing '${options.idField}' field.`);
+      throw new Error(`Current user is missing '${options.idField}' field.`)
     }
 
     if (options.expandPaths) {
-      set(hook.params, `query.${options.as}`, id);
+      set(hook.params, `query.${options.as}`, id)
     } else {
-      hook.params.query[options.as] = id;
+      hook.params.query[options.as] = id
     }
     return hook
-  };
+  }
 }
 
 
@@ -44,7 +46,7 @@ const restrictAccessForGymDefaults = {
   gymIdField: 'gymId',
   as: 'gymId',
   role: null
-};
+}
 
 function fetchUserGymIds(app, userId, optionalRequiredRoles) {
   const userGymRoleModel = app.services['user-gym-role'].Model
@@ -53,7 +55,7 @@ function fetchUserGymIds(app, userId, optionalRequiredRoles) {
       userId: userId
     }
   }).then(function (gymRoles) {
-    const gymIds = new Set();
+    const gymIds = new Set()
 
     gymRoles.forEach(userGymRole => {
       if (isUndefined(optionalRequiredRoles) || optionalRequiredRoles === null) {
@@ -61,10 +63,10 @@ function fetchUserGymIds(app, userId, optionalRequiredRoles) {
       } else if (optionalRequiredRoles.includes(userGymRole.role)) {
         gymIds.add(userGymRole.gymId)
       }
-    });
+    })
 
     return gymIds
-  });
+  })
 }
 
 function addGymIdParameter(hook, options) {
@@ -73,15 +75,15 @@ function addGymIdParameter(hook, options) {
 
     let explicitGymId = get(hook.params.query, options.gymIdField)
 
-    console.log("Found explicitGymId: ", explicitGymId)
+    logger.info('Found explicitGymId: ', explicitGymId)
 
     if (isUndefined(explicitGymId )) {
-      set(hook.params, `query.${options.gymIdField}`, Array.from(gymIds));
+      set(hook.params, `query.${options.gymIdField}`, Array.from(gymIds))
     } else {
       explicitGymId = parseInt(explicitGymId, 10)
       if (!gymIds.has(explicitGymId)) {
-        console.log("Permission denied, gymIds is", gymIds, "query wanted ", explicitGymId);
-        throw new errors.Forbidden('You do not have the permissions to access this.');
+        logger.info('Permission denied, gymIds is', gymIds, 'query wanted ', explicitGymId)
+        throw new errors.Forbidden('You do not have the permissions to access this.')
       }
     }
     return hook
@@ -92,11 +94,10 @@ function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
   return fetchUserGymIds(hook.app, hook.params.user.id, optionalRequiredRoles).then(function (gymIds) {
     let explicitGymId = get(hook.data, options.gymIdField)
 
-    // console.log("Found explicitGymId: ", explicitGymId, hook)
     explicitGymId = parseInt(explicitGymId, 10)
     if (!gymIds.has(explicitGymId)) {
-      console.log("Permission denied, gymIds is", gymIds, "query wanted ", explicitGymId);
-      throw new errors.Forbidden('You do not have the permissions to access this.');
+      logger.info('Permission denied, gymIds is', gymIds, 'query wanted ', explicitGymId)
+      throw new errors.Forbidden('You do not have the permissions to access this.')
     }
     return hook
   })
@@ -105,48 +106,48 @@ function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
 function restrictAccessForGym(options = {}) {
   return function (hook) {
     if (hook.type !== 'before') {
-      throw new Error(`The 'restrictAccessForGym' hook should only be used as a 'before' hook.`);
+      throw new Error('The \'restrictAccessForGym\' hook should only be used as a \'before\' hook.')
     }
 
-    options = Object.assign({}, restrictAccessForGymDefaults, options);
+    options = Object.assign({}, restrictAccessForGymDefaults, options)
 
     // If it was an internal call then skip this hook
     if (!hook.params.provider) {
-      return hook;
+      return hook
     }
 
     if (hook.method === 'create') {
-      return verifyGymIdParameter(hook, options, options.role);
+      return verifyGymIdParameter(hook, options, options.role)
     }
 
     if (hook.method === 'find' || hook.id === null) {
-      return addGymIdParameter(hook, options);
+      return addGymIdParameter(hook, options)
     }
 
     // Check hook is being called on an allowable method
     if (!(hook.method === 'get' || hook.method === 'update' || hook.method === 'patch' || hook.method === 'remove')) {
-      throw new errors.MethodNotAllowed(`The 'restrictAccessForGym' hook should only be used on the 'get', 'update', 'patch' and 'remove' service methods...not ${hook.method}`);
+      throw new errors.MethodNotAllowed(`The 'restrictAccessForGym' hook should only be used on the 'get', 'update', 'patch' and 'remove' service methods...not ${hook.method}`)
     }
 
     // look up the document and throw a Forbidden error if the user is not an owner
     // Set provider as undefined so we avoid an infinite loop if this hook is
     // set on the resource we are requesting.
-    const params = Object.assign({}, hook.params, { provider: undefined });
+    const params = Object.assign({}, hook.params, { provider: undefined })
 
     return hook.service.get(hook.id, params).then(data => {
-      console.log("running restrictAccessForGym...found some data....", data)
+      logger.info('running restrictAccessForGym...found some data....', data)
 
       return fetchUserGymIds(hook.app, hook.params.user.id, options.role).then(function (gymIds) {
 
-        console.log("Checking GYMID: ", get(data, options.gymIdField))
+        logger.info('Checking GYMID: ', get(data, options.gymIdField))
         if (!gymIds.has(get(data, options.gymIdField)) ) {
-          console.log("Permission denied, gymIds is", gymIds);
-          throw new errors.Forbidden('You do not have the permissions to access this.');
+          logger.info('Permission denied, gymIds is', gymIds)
+          throw new errors.Forbidden('You do not have the permissions to access this.')
         }
 
-      });
-    });
-  };
+      })
+    })
+  }
 }
 
 
@@ -190,6 +191,5 @@ function restrictAccessForGym(options = {}) {
 // });
 
 module.exports = {
-  restrictAccessForGym,
-  queryWithCurrentUser
-};
+  restrictAccessForGym
+}

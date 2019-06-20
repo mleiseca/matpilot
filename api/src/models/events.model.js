@@ -1,10 +1,10 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-const Sequelize = require('sequelize');
-const DataTypes = Sequelize.DataTypes;
+const Sequelize = require('sequelize')
+const DataTypes = Sequelize.DataTypes
 
 module.exports = function (app) {
-  const sequelizeClient = app.get('sequelizeClient');
+  const sequelizeClient = app.get('sequelizeClient')
   const events = sequelizeClient.define('events', {
     title: {
       type: DataTypes.STRING,
@@ -29,7 +29,7 @@ module.exports = function (app) {
   }, {
     hooks: {
       beforeCount(options) {
-        options.raw = true;
+        options.raw = true
       }
     },
     indexes: [
@@ -38,16 +38,16 @@ module.exports = function (app) {
         fields: ['scheduledEventId', 'startDateTime']
       }
     ]
-  });
+  })
 
   // eslint-disable-next-line no-unused-vars
   events.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    events.belongsTo(models.gyms);
-    events.belongsTo(models.scheduled_events);
-    events.belongsTo(models.users, {foreignKey: 'createdBy'});
-  };
+    events.belongsTo(models.gyms)
+    events.belongsTo(models.scheduled_events)
+    events.belongsTo(models.users, {foreignKey: 'createdBy'})
+  }
 
-  return events;
-};
+  return events
+}

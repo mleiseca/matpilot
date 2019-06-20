@@ -1,10 +1,10 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-const Sequelize = require('sequelize');
-const DataTypes = Sequelize.DataTypes;
+const Sequelize = require('sequelize')
+const DataTypes = Sequelize.DataTypes
 
 module.exports = function (app) {
-  const sequelizeClient = app.get('sequelizeClient');
+  const sequelizeClient = app.get('sequelizeClient')
   const users = sequelizeClient.define('users', {
     name: {
       type: DataTypes.STRING,
@@ -33,18 +33,18 @@ module.exports = function (app) {
   }, {
     hooks: {
       beforeCount(options) {
-        options.raw = true;
+        options.raw = true
       }
     }
-  });
+  })
 
   // eslint-disable-next-line no-unused-vars
   users.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
     //users.belongsToMany(models.gyms, {through: 'UserGym', through: 'user_gyms'});
-    users.hasMany(models.user_gym_role, {foreignKey: {allowNull: false}} );
-  };
+    users.hasMany(models.user_gym_role, {foreignKey: {allowNull: false}} )
+  }
 
-  return users;
-};
+  return users
+}

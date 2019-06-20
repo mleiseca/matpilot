@@ -1,53 +1,53 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
-const hydrate = require('feathers-sequelize/hooks/hydrate');
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
-const commonHooks = require('feathers-hooks-common');
+const { authenticate } = require('@feathersjs/authentication').hooks
+const hydrate = require('feathers-sequelize/hooks/hydrate')
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const commonHooks = require('feathers-hooks-common')
+const logger = require('./logger')
 
 function includeGymAndUser() {
   return function (hook) {
-    const gymModel = hook.app.service('gyms').Model;
-    const userModel = hook.app.service('users').Model;
+    const gymModel = hook.app.service('gyms').Model
+    const userModel = hook.app.service('users').Model
     const association = {
       include: [
         { model: gymModel, attributes: ['id', 'name', 'description'] },
         { model: userModel, attributes: ['id', 'email', 'name'] }
       ]
-    };
+    }
 
     switch (hook.type) {
-      case 'before':
-        hook.params.sequelize = Object.assign(association, { raw: false });
-        return Promise.resolve(hook);
-        break;
+    case 'before':
+      hook.params.sequelize = Object.assign(association, { raw: false })
+      return Promise.resolve(hook)
 
-      case 'after':
-        hydrate( association ).call(this, hook);
-        break;
+    case 'after':
+      hydrate( association ).call(this, hook)
+      break
     }
   }
 }
 
 function replaceUserWithUserId() {
   return async function(hook) {
-    console.log("Incoming:", hook.data)
+    logger.info('Incoming:', hook.data)
     let users = await hook.app.service('users').find({
       query: {
         email: hook.data.user.email.toLowerCase()
       }
     })
 
-    console.log("Found user: ", users)
+    logger.info('Found user: ', users)
     if (users.total === 0) {
       // Generate a random password. User will get a reset email to set their own password.
-      hook.data.user.password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      hook.data.user.password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
       let newUser = await hook.app.service('users').create(hook.data.user)
-      console.log("New User! ", newUser)
+      logger.info('New User! ', newUser)
       hook.data.userId = newUser.id
     } else {
       hook.data.userId = users.data[0].id
     }
     delete hook.data.user
-    console.log("Done:", hook.data)
+    logger.info('Done:', hook.data)
   }
 }
 
@@ -84,4 +84,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

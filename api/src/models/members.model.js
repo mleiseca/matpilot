@@ -1,10 +1,10 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-const Sequelize = require('sequelize');
-const DataTypes = Sequelize.DataTypes;
+const Sequelize = require('sequelize')
+const DataTypes = Sequelize.DataTypes
 
 module.exports = function (app) {
-  const sequelizeClient = app.get('sequelizeClient');
+  const sequelizeClient = app.get('sequelizeClient')
   const members = sequelizeClient.define('members', {
     firstName: {
       type: DataTypes.STRING,
@@ -45,10 +45,10 @@ module.exports = function (app) {
   }, {
     hooks: {
       beforeCount(options) {
-        options.raw = true;
+        options.raw = true
       }
     }
-  });
+  })
 
   // eslint-disable-next-line no-unused-vars
   members.associate = function (models) {
@@ -56,9 +56,9 @@ module.exports = function (app) {
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
 
     // TODO: this should be not-nullable
-    members.belongsTo(models.gyms);
-    members.belongsTo(models.users, {foreignKey: 'createdBy'});
-  };
+    members.belongsTo(models.gyms)
+    members.belongsTo(models.users, {foreignKey: 'createdBy'})
+  }
 
-  return members;
-};
+  return members
+}

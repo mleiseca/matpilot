@@ -1,7 +1,7 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks
 const mapCreateToUpsert = require('../../hooks/map-create-to-upsert')
 const assignCreatedBy = require('../../hooks/created-by')
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
 
 module.exports = {
   before: {
@@ -38,4 +38,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

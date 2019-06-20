@@ -1,6 +1,6 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
 
 module.exports = {
   before: {
@@ -32,4 +32,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

@@ -1,7 +1,7 @@
-const Sequelize = require('sequelize');
+const Sequelize = require('sequelize')
 
 module.exports = function (app) {
-  const connectionString = process.env.DB_URL || app.get('postgres');
+  const connectionString = process.env.DB_URL || app.get('postgres')
   const sequelize = new Sequelize(connectionString, {
     dialect: 'postgres',
     logging: false,
@@ -12,25 +12,25 @@ module.exports = function (app) {
     dialectOptions: {
       ssl: process.env.DB_DIALECT_OPTIONS_SSL || true
     }
-  });
-  const oldSetup = app.setup;
+  })
+  const oldSetup = app.setup
 
-  app.set('sequelizeClient', sequelize);
+  app.set('sequelizeClient', sequelize)
 
   app.setup = function (...args) {
-    const result = oldSetup.apply(this, args);
+    const result = oldSetup.apply(this, args)
 
     // Set up data relationships
-    const models = sequelize.models;
+    const models = sequelize.models
     Object.keys(models).forEach(name => {
       if ('associate' in models[name]) {
-        models[name].associate(models);
+        models[name].associate(models)
       }
-    });
+    })
 
     // Sync to the database
     // sequelize.sync();
 
-    return result;
-  };
-};
+    return result
+  }
+}

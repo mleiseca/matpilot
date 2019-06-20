@@ -1,13 +1,13 @@
 module.exports = function(app) {
   if(typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
-    return;
+    return
   }
 
   app.on('connection', connection => {
     // On a new real-time connection, add it to the anonymous channel
-    app.channel('anonymous').join(connection);
-  });
+    app.channel('anonymous').join(connection)
+  })
 
   app.on('login', (authResult, { connection }) => {
 
@@ -16,13 +16,13 @@ module.exports = function(app) {
     // real-time connection, e.g. when logging in via REST
     if(connection) {
       // Obtain the logged in user from the connection
-      const user = connection.user;
+      const user = connection.user
 
       // The connection is no longer anonymous, remove it
-      app.channel('anonymous').leave(connection);
+      app.channel('anonymous').leave(connection)
 
       // Add it to the authenticated user channel
-      app.channel('authenticated').join(connection);
+      app.channel('authenticated').join(connection)
 
       // console.log(user);
       const userGymRoleModel = app.services['user-gym-role'].Model
@@ -34,9 +34,9 @@ module.exports = function(app) {
       }).then(function(gymRoles) {
         // console.log(gymRoles)
         gymRoles.forEach(userGymRole => {
-          app.channel(`gyms/${userGymRole.gymId}`).join(connection);
-        });
-      });
+          app.channel(`gyms/${userGymRole.gymId}`).join(connection)
+        })
+      })
 
 
 
@@ -52,7 +52,7 @@ module.exports = function(app) {
       // app.channel(`emails/${user.email}`).join(channel);
       // app.channel(`userIds/$(user.id}`).join(channel);
     }
-  });
+  })
 
   // eslint-disable-next-line no-unused-vars
   // app.publish((data, hook) => {
@@ -69,9 +69,9 @@ module.exports = function(app) {
   const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
-    app.service(service).publish((data, context) => {
-      return app.channel(`gyms/${data.gymId}`);
-    });
+    app.service(service).publish((data) => {
+      return app.channel(`gyms/${data.gymId}`)
+    })
   })
 
   // TODO: MEMBERS???
@@ -88,4 +88,4 @@ module.exports = function(app) {
   //     app.channel(`emails/${data.recipientEmail}`)
   //   ];
   // });
-};
+}

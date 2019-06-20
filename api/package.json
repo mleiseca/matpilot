@@ -25,6 +25,7 @@
   "scripts": {
     "test": "npm run eslint && NODE_ENV= npm run mocha",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
+    "eslint-fix": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",
     "start": "sequelize db:migrate && node src/",
     "mocha": "mocha test/ --recursive --exit"

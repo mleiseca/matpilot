@@ -1,35 +1,34 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks
 
-const verifyHooks = require('feathers-authentication-management').hooks;
-const accountService = require('../authmanagement/notifier');
-const commonHooks = require('feathers-hooks-common');
-const hydrate = require('feathers-sequelize/hooks/hydrate');
+const verifyHooks = require('feathers-authentication-management').hooks
+const accountService = require('../authmanagement/notifier')
+const commonHooks = require('feathers-hooks-common')
+const hydrate = require('feathers-sequelize/hooks/hydrate')
 
 function includeRoles() {
   return function (hook) {
-    const userGymModel = hook.app.service('user-gym-role').Model;
+    const userGymModel = hook.app.service('user-gym-role').Model
     const association = {
       include: [
         { model: userGymModel, attributes: ['id', 'gymId', 'role'] }
       ]
-    };
+    }
 
     switch (hook.type) {
-      case 'before':
-        hook.params.sequelize = Object.assign(association, { raw: false });
-        return Promise.resolve(hook);
-        break;
+    case 'before':
+      hook.params.sequelize = Object.assign(association, { raw: false })
+      return Promise.resolve(hook)
 
-      case 'after':
-        hydrate( association ).call(this, hook);
-        break;
+    case 'after':
+      hydrate( association ).call(this, hook)
+      break
     }
   }
 }
 
 const {
   hashPassword, protect
-} = require('@feathersjs/authentication-local').hooks;
+} = require('@feathersjs/authentication-local').hooks
 
 module.exports = {
   before: {
@@ -85,4 +84,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

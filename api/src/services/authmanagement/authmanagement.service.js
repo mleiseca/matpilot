@@ -1,7 +1,7 @@
 // Initializes the `authmanagement` service on path `/authmanagement`
-const authManagement = require('feathers-authentication-management');
-const hooks = require('./authmanagement.hooks');
-const notifier = require('./notifier');
+const authManagement = require('feathers-authentication-management')
+const hooks = require('./authmanagement.hooks')
+const notifier = require('./notifier')
 
 module.exports = function (app) {
 
@@ -9,10 +9,10 @@ module.exports = function (app) {
   app.configure(authManagement({
     notifier: notifier(app).notifier,
     skipIsVerifiedCheck: true
-  }));
+  }))
 
   // Get our initialized service so that we can register hooks and filters
-  const service = app.service('authManagement');
+  const service = app.service('authManagement')
 
-  service.hooks(hooks);
+  service.hooks(hooks)
 }

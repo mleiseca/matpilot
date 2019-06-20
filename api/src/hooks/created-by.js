@@ -6,4 +6,4 @@ module.exports = function (context) {
   const user = context.params.user
   context.data.createdBy = user.id
 
-};
+}

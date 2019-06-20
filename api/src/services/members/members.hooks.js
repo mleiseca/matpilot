@@ -1,33 +1,34 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
-const { fastJoin, makeCallingParams } = require('feathers-hooks-common');
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym;
+const { fastJoin, makeCallingParams } = require('feathers-hooks-common')
+const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const logger = require('./logger')
 
-const BatchLoader = require('@feathers-plus/batch-loader');
-const { getResultsByKey, getUniqueKeys } = BatchLoader;
-const uuid = require('uuid');
-const AWS = require('aws-sdk');
+const BatchLoader = require('@feathers-plus/batch-loader')
+const { getResultsByKey, getUniqueKeys } = BatchLoader
+const uuid = require('uuid')
+const AWS = require('aws-sdk')
 
 
-const { paramsFromClient } = require('feathers-hooks-common');
+const { paramsFromClient } = require('feathers-hooks-common')
 
 const WAIVER_S3_BUCKET = process.env.WAIVER_S3_BUCKET || 'com.matpilot.production.waivers'
 
 const memberResolvers = {
   before: context => {
-    context._loaders = { event_attendance: {} };
+    context._loaders = { event_attendance: {} }
     context._loaders.event_attendance.event_id = new BatchLoader(async (keys, context) => {
-        const result = await context.app.service('event-member-attendance').find(makeCallingParams(
-          context, {
-            memberId: { $in: getUniqueKeys(keys) },
-            eventId: context.params.populate.id
-          }, undefined, { paginate: false }
-        ));
-        console.log(result)
-        return getResultsByKey(keys, result, attendance => attendance.memberId, '!');
-      },
-      { context }
-    );
+      const result = await context.app.service('event-member-attendance').find(makeCallingParams(
+        context, {
+          memberId: { $in: getUniqueKeys(keys) },
+          eventId: context.params.populate.id
+        }, undefined, { paginate: false }
+      ))
+      logger.info(result)
+      return getResultsByKey(keys, result, attendance => attendance.memberId, '!')
+    },
+    { context }
+    )
   },
   joins: {
     attendance: () => async (member, context) => {
@@ -49,13 +50,13 @@ const memberResolvers = {
     //   }
     // },
   }
-};
+}
 
 function writeWaiverSignatureToS3() {
   return function(hook) {
     if (hook.data.waiverSignature) {
-      console.log('Writing waiver to S3, gym, member', hook.data.gymId, hook.data.lastName)
-      let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ""),'base64')
+      logger.info('Writing waiver to S3, gym, member', hook.data.gymId, hook.data.lastName)
+      let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''),'base64')
 
       // TODO: property name
       let keyName = 'gym_'  + hook.data.gymId + '_' +  uuid.v4() + '.png'
@@ -65,18 +66,18 @@ function writeWaiverSignatureToS3() {
         Body: buf,
         ContentEncoding: 'base64',
         ContentType: 'image/png'
-      };
+      }
 
       // console.log(objectParams)
       return new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise()
         .then(function(data) {
           delete hook.data.waiverSignature
-          console.log("Successfully uploaded data to " + WAIVER_S3_BUCKET + "/" + keyName, data);
+          logger.info('Successfully uploaded data to ' + WAIVER_S3_BUCKET + '/' + keyName, data)
           // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
           hook.data.waiverUrl = 'https://s3.amazonaws.com/' + WAIVER_S3_BUCKET + '/' + keyName
-        });
+        })
     } else {
-      console.log('No need to write waiver to S3', hook.data.gymId, hook.data.userId)
+      logger.info('No need to write waiver to S3', hook.data.gymId, hook.data.userId)
     }
   }
 }
@@ -111,4 +112,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

@@ -1,10 +1,10 @@
 // See http://docs.sequelizejs.com/en/latest/docs/models-definition/
 // for more of what you can do here.
-const Sequelize = require('sequelize');
-const DataTypes = Sequelize.DataTypes;
+const Sequelize = require('sequelize')
+const DataTypes = Sequelize.DataTypes
 
 module.exports = function (app) {
-  const sequelizeClient = app.get('sequelizeClient');
+  const sequelizeClient = app.get('sequelizeClient')
   const gyms = sequelizeClient.define('gyms', {
     // String id
     // String name
@@ -26,18 +26,18 @@ module.exports = function (app) {
   }, {
     hooks: {
       beforeCount(options) {
-        options.raw = true;
+        options.raw = true
       }
     }
-  });
+  })
 
   // eslint-disable-next-line no-unused-vars
   gyms.associate = function (models) {
     // Define associations here
     // See http://docs.sequelizejs.com/en/latest/docs/associations/
-    gyms.belongsTo(models.users, {foreignKey: 'createdBy'});
-    gyms.hasMany(models.user_gym_role);
-  };
+    gyms.belongsTo(models.users, {foreignKey: 'createdBy'})
+    gyms.hasMany(models.user_gym_role)
+  }
 
-  return gyms;
-};
+  return gyms
+}
