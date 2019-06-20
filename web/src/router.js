@@ -104,7 +104,7 @@ let router = new Router({
       path: '/gyms/:gymId/schedule/:scheduledEventId',
       component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEventsView.vue'),
       props: true,
-      meta: { requiresAuth: true, breadcrumb: 'gym-scheduled-events', breadcrumbText: 'Scheduled Events'  }
+      meta: { requiresAuth: true, breadcrumb: 'gym-scheduled-events', breadcrumbText: 'Scheduled Events' }
     },
     {
       name: 'gym-event-checkin',
