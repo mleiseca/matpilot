@@ -1,6 +1,6 @@
 const { get, set, isUndefined } = require('lodash')
 const errors = require('@feathersjs/errors')
-const logger = require('./logger')
+const logger = require('../logger')
 
 const defaults = {
   idField: '_id',

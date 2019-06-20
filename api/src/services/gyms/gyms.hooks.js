@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
-const logger = require('./logger')
+const logger = require('../../logger')
 
 // function rawFalse(context) {
 //   if (!context.params.sequelize) context.params.sequelize = {}

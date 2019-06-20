@@ -279,10 +279,6 @@ export default {
         }
       ]
 
-      if (this.agreeToTerms && this.member.waiverSignedDate === null) {
-        this.member.waiverSignedDate = moment()
-      }
-
       console.log('Member saved!', this.member)
       this.$emit('member-save', this.member)
     },

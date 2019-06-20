@@ -1,18 +1,31 @@
 const Sequelize = require('sequelize')
+const logger = require('./logger')
+
 
 module.exports = function (app) {
   const connectionString = process.env.DB_URL || app.get('postgres')
-  const sequelize = new Sequelize(connectionString, {
+  const useSslEnv = process.env.DB_DIALECT_OPTIONS_SSL
+
+  let dbOptions = {
     dialect: 'postgres',
     logging: false,
     operatorsAliases: false,
     define: {
       freezeTableName: true
-    },
-    dialectOptions: {
-      ssl: process.env.DB_DIALECT_OPTIONS_SSL || true
     }
-  })
+  }
+
+  let useSsl = true
+  if (useSslEnv !== undefined) {
+    logger.info('use SSL (DB_DIALECT_OPTIONS_SSL)? ', process.env.DB_DIALECT_OPTIONS_SSL)
+    useSsl = useSslEnv === 'true'
+  }
+  if (useSsl === true) {
+    dbOptions.dialectOptions = {ssl: useSsl}
+  }
+
+  logger.info('dboptions', dbOptions)
+  const sequelize = new Sequelize(connectionString, dbOptions)
   const oldSetup = app.setup
 
   app.set('sequelizeClient', sequelize)

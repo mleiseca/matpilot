@@ -2,7 +2,9 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const { fastJoin, makeCallingParams } = require('feathers-hooks-common')
 const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
-const logger = require('./logger')
+const logger = require('../../logger')
+const moment = require('moment')
+const commonHooks = require('feathers-hooks-common')
 
 const BatchLoader = require('@feathers-plus/batch-loader')
 const { getResultsByKey, getUniqueKeys } = BatchLoader
@@ -75,6 +77,7 @@ function writeWaiverSignatureToS3() {
           logger.info('Successfully uploaded data to ' + WAIVER_S3_BUCKET + '/' + keyName, data)
           // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
           hook.data.waiverUrl = 'https://s3.amazonaws.com/' + WAIVER_S3_BUCKET + '/' + keyName
+          hook.data.waiverSignedDate = moment()
         })
     } else {
       logger.info('No need to write waiver to S3', hook.data.gymId, hook.data.userId)
@@ -87,9 +90,18 @@ module.exports = {
     all: [ authenticate('jwt'), restrictAccessForGym()],
     find: [paramsFromClient('populate')],
     get: [],
-    create: [assignCreatedBy, writeWaiverSignatureToS3()],
+    create: [
+      assignCreatedBy,
+      writeWaiverSignatureToS3()
+    ],
     update: [writeWaiverSignatureToS3()],
-    patch: [writeWaiverSignatureToS3()],
+    patch: [
+      commonHooks.iff(
+        commonHooks.isProvider('external'),
+        commonHooks.preventChanges(true,
+          ['waiverSignedDate'])),
+      writeWaiverSignatureToS3()
+    ],
     remove: []
   },
 

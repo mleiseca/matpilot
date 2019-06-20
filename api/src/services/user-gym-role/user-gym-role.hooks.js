@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const hydrate = require('feathers-sequelize/hooks/hydrate')
 const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
 const commonHooks = require('feathers-hooks-common')
-const logger = require('./logger')
+const logger = require('../../logger')
 
 function includeGymAndUser() {
   return function (hook) {
