@@ -12,7 +12,7 @@
     <!--timezone: (...)-->
     <!--title: (...)-->
     <!--updatedAt: (...)-->
-    <v-container fill-height fluid grid-list-xl>
+    <v-container fill-height fluid grid-list-xl pt-0>
       <v-layout wrap class="row">
         <v-flex md8 sm8 lg8>
           <div class="description title">

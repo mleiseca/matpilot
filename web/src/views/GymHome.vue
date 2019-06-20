@@ -1,6 +1,6 @@
 <template>
 
-  <v-container fluid grid-list-xl fill-height>
+  <v-container fluid grid-list-xl fill-height pt-0>
     <v-layout wrap>
       <v-flex xs12>
         <material-card>

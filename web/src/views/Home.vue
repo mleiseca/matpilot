@@ -3,6 +3,7 @@
     fill-height
     fluid
     grid-list-xl
+    pt-0
   >
     <v-layout wrap>
       <v-flex
