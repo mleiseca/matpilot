@@ -6,7 +6,6 @@
     <v-layout justify-center wrap>
       <v-flex xs12 md8>
         <material-card
-          color="green"
           title="Login"
           text="">
           <mp-login-form></mp-login-form>

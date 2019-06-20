@@ -1,5 +1,5 @@
 <template>
-    <material-card color="green">
+    <material-card>
       <div slot="header">
         <div class="title font-weight-light mb-2">Upcoming events</div>
       </div>

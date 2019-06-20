@@ -36,15 +36,15 @@
 
         </v-list-tile>
         <v-divider/>
-        <v-list-tile
-          v-if="responsive"
-        >
-          <v-text-field
-            class="purple-input search-input"
-            label="Search..."
-            color="purple"
-          />
-        </v-list-tile>
+        <!--<v-list-tile-->
+          <!--v-if="responsive"-->
+        <!--&gt;-->
+          <!--<v-text-field-->
+            <!--class="purple-input search-input"-->
+            <!--label="Search..."-->
+            <!--color="purple"-->
+          <!--/>-->
+        <!--</v-list-tile>-->
         <v-list-tile
           v-for="(link, i) in links"
           :key="i"
@@ -90,40 +90,42 @@ export default {
     logo: require('@/assets/mc-logo.png'),
     links: [
       {
-        to: '/dashboard',
+        to: '/home',
         icon: 'mdi-view-dashboard',
-        text: 'Dashboard'
-      },
-      {
-        to: '/user-profile',
-        icon: 'mdi-account',
-        text: 'User Profile'
-      },
-      {
-        to: '/table-list',
-        icon: 'mdi-clipboard-outline',
-        text: 'Table List'
-      },
-      {
-        to: '/typography',
-        icon: 'mdi-format-font',
-        text: 'Typography'
-      },
-      {
-        to: '/icons',
-        icon: 'mdi-chart-bubble',
-        text: 'Icons'
-      },
-      {
-        to: '/maps',
-        icon: 'mdi-map-marker',
-        text: 'Maps'
-      },
-      {
-        to: '/notifications',
-        icon: 'mdi-bell',
-        text: 'Notifications'
+        text: 'Home'
       }
+
+      //      ,
+      //      {
+      //        to: '/user-profile',
+      //        icon: 'mdi-account',
+      //        text: 'User Profile'
+      //      },
+      //      {
+      //        to: '/table-list',
+      //        icon: 'mdi-clipboard-outline',
+      //        text: 'Table List'
+      //      },
+      //      {
+      //        to: '/typography',
+      //        icon: 'mdi-format-font',
+      //        text: 'Typography'
+      //      },
+      //      {
+      //        to: '/icons',
+      //        icon: 'mdi-chart-bubble',
+      //        text: 'Icons'
+      //      },
+      //      {
+      //        to: '/maps',
+      //        icon: 'mdi-map-marker',
+      //        text: 'Maps'
+      //      },
+      //      {
+      //        to: '/notifications',
+      //        icon: 'mdi-bell',
+      //        text: 'Notifications'
+      //      }
     ],
     responsive: false
   }),

@@ -3,7 +3,7 @@
   <v-container fluid grid-list-xl fill-height>
     <v-layout wrap>
       <v-flex xs12>
-        <material-card color="green">
+        <material-card >
           <div slot="header">
             <div class="title font-weight-light mb-2">Administration</div>
           </div>

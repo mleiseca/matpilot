@@ -4,7 +4,6 @@
     <v-layout justify-center wrap>
       <v-flex md12>
         <material-card
-          color="green"
           title="Users"
           text="">
           <v-data-table
@@ -19,7 +18,7 @@
               slot="headerCell"
               slot-scope="{ header }">
               <span
-                class="subheading font-weight-light text-success text--darken-3"
+                class="subheading font-weight-light text--darken-3"
                 v-text="header.text"
               />
             </template>
@@ -37,7 +36,7 @@
 
         </material-card>
 
-        <v-btn @click="navigateToAddUserGym" fab color="green">
+        <v-btn @click="navigateToAddUserGym" fab color="success">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-flex>
@@ -66,6 +65,11 @@ export default {
           sortable: true,
           text: 'Email',
           value: 'user.email'
+        },
+        {
+          sortable: false,
+          text: 'Role',
+          value: 'role'
         }
       ]
     }

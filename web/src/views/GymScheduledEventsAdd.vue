@@ -4,7 +4,6 @@
     <v-layout justify-center wrap>
       <v-flex xs12 md8>
         <material-card
-          color="green"
           title="Schedule an Event"
           text="">
           <scheduled-event-form

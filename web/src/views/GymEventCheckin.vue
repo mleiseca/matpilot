@@ -3,7 +3,7 @@
   <v-container fill-height fluid grid-list-xl>
     <v-layout justify-center wrap>
       <v-flex md12>
-        <material-card color="green">
+        <material-card>
           <v-flex slot="header">
             <v-layout justify-center wrap>
               <v-flex sm6>

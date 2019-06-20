@@ -12,7 +12,6 @@
         md8
       >
         <material-card
-          color="green"
           title="Create a new gym"
           text=""
         >
