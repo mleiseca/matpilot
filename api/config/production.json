@@ -1,4 +1,5 @@
 {
   "host": "matpilot.com",
-  "port": "3030"
+  "port": "3030",
+  "frontendUrlBase": "https://www.matpilot.com/"
 }
