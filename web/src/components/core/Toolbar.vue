@@ -167,7 +167,6 @@ export default {
       if (contents.gymId) {
         gymId = parseInt(contents.gymId, 10)
         gym = await this.getGym(gymId)
-        console.log('breadcrumb gym',  gym)
         this.breadcrumbs.push({
           name: '/gym',
           text: gym.name,
@@ -182,7 +181,7 @@ export default {
         })
       }
 
-      console.log("breadcrumbs!!", this.breadcrumbs)
+      console.log('breadcrumbs!!', this.breadcrumbs)
       //      breadcrumb: "gym-members"
       //      gymId: "1"
       //      name: "gym-members-view"
