@@ -12,6 +12,8 @@ import GymMembersView from './views/GymMembersView.vue'
 import GymEventCheckin from './views/GymEventCheckin.vue'
 import GymUsers from './views/GymUsers.vue'
 import GymUsersAdd from './views/GymUsersAdd.vue'
+import { get } from 'lodash'
+import { EventBus } from './event-bus'
 
 Vue.use(Router)
 
@@ -43,7 +45,7 @@ let router = new Router({
     },
     {
       name: '/gym',
-      path: '/gyms/:id',
+      path: '/gyms/:gymId',
       component: GymHome,
       props: true,
       meta: { requiresAuth: true }
@@ -60,14 +62,14 @@ let router = new Router({
       path: '/gyms/:gymId/members/add',
       component: GymMembersAdd,
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-members', breadcrumbText: 'Members' }
     },
     {
       name: 'gym-members-view',
       path: '/gyms/:gymId/members/:memberId',
       component: GymMembersView,
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-members', breadcrumbText: 'Members' }
     },
     {
       name: 'gym-users',
@@ -81,7 +83,7 @@ let router = new Router({
       path: '/gyms/:gymId/users/add',
       component: GymUsersAdd,
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-users', breadcrumbText: 'Users' }
     },
     {
       name: 'gym-scheduled-events',
@@ -95,14 +97,14 @@ let router = new Router({
       path: '/gyms/:gymId/schedule/add',
       component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEventsAdd.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-scheduled-events', breadcrumbText: 'Scheduled Events' }
     },
     {
       name: 'gym-scheduled-event-view',
       path: '/gyms/:gymId/schedule/:scheduledEventId',
       component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEventsView.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-scheduled-events', breadcrumbText: 'Scheduled Events'  }
     },
     {
       name: 'gym-event-checkin',
@@ -147,6 +149,14 @@ let router = new Router({
 // auth/authenticate
 
 // TODO: Is this the best way to do this? We just need to load this on app startup? Maybe in main.js?
+
+router.afterEach(function (to) {
+  console.log(to)
+  const gymId = get(to, 'params.gymId')
+  const breadcrumb = get(to, 'meta.breadcrumb')
+  const breadcrumbText = get(to, 'meta.breadcrumbText')
+  EventBus.$emit('gym-navigation', { gymId: gymId, breadcrumb: breadcrumb, name: to.name, breadcrumbText: breadcrumbText })
+})
 
 router.beforeEach(function (to, from, next) {
   if (to.matched.some(record => record.meta.requiresAuth)) {

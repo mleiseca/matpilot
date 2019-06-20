@@ -19,7 +19,16 @@
         >
           <v-icon>mdi-view-list</v-icon>
         </v-btn>
-        {{ title }}
+
+        <span v-for="(item, index) in breadcrumbs" v-bind:key="item.name">
+        <router-link :to="{ name: item.name, params: {id: item.gymId }} " >
+          <template v-if="index > 0">
+            >
+          </template>
+          {{ item.text }}
+        </router-link>
+        </span>
+
       </v-toolbar-title>
     </div>
 
@@ -94,9 +103,8 @@
 
 <script>
 
-import {
-  mapMutations
-} from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
+import { EventBus } from '../../event-bus'
 
 export default {
   data: () => ({
@@ -109,7 +117,8 @@ export default {
     ],
     title: null,
     responsive: false,
-    responsiveInput: false
+    responsiveInput: false,
+    breadcrumbs: []
   }),
 
   watch: {
@@ -121,12 +130,17 @@ export default {
   mounted () {
     this.onResponsiveInverted()
     window.addEventListener('resize', this.onResponsiveInverted)
+    EventBus.$on('gym-navigation', this.gymNavigationListener)
   },
   beforeDestroy () {
+    EventBus.$off('gym-navigation', this.gymNavigationListener)
     window.removeEventListener('resize', this.onResponsiveInverted)
   },
 
   methods: {
+    ...mapActions('gyms', {
+      getGym: 'get'
+    }),
     ...mapMutations('app', ['setDrawer', 'toggleDrawer']),
     onClickBtn () {
       this.setDrawer(!this.$store.state.app.drawer)
@@ -142,6 +156,38 @@ export default {
         this.responsive = false
         this.responsiveInput = true
       }
+    },
+    async gymNavigationListener (contents) {
+      //      { gymId: gymId }
+      //      '/gym'
+
+      this.breadcrumbs = []
+      let gymId = null
+      let gym = null
+      if (contents.gymId) {
+        gymId = parseInt(contents.gymId, 10)
+        gym = await this.getGym(gymId)
+        console.log('breadcrumb gym',  gym)
+        this.breadcrumbs.push({
+          name: '/gym',
+          text: gym.name,
+          gymId: contents.gymId
+        })
+      }
+      if (gymId && contents.breadcrumb) {
+        this.breadcrumbs.push({
+          name: contents.breadcrumb,
+          text: contents.breadcrumbText,
+          gymId: contents.gymId
+        })
+      }
+
+      console.log("breadcrumbs!!", this.breadcrumbs)
+      //      breadcrumb: "gym-members"
+      //      gymId: "1"
+      //      name: "gym-members-view"
+
+      console.log(contents)
     }
   }
 }

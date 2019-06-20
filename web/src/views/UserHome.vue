@@ -24,7 +24,7 @@
             </div>
             <ul class="flex flex-column flex-1 list-unstyled user-list">
               <li v-for="userGym in userGyms" v-bind:key="userGym.id">
-                <router-link :to="{ name: '/gym', params: {id: userGym.gymId}}">
+                <router-link :to="{ name: '/gym', params: {gymId: userGym.gymId}}">
                   {{ userGym.gym.name }}
                 </router-link>
               </li>

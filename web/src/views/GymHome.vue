@@ -10,14 +10,14 @@
 
           <v-card-text>
             <ul>
-              <li><router-link :to="{ name: 'gym-members', params: {gymId: id}}">
+              <li><router-link :to="{ name: 'gym-members', params: {gymId: this.gymId}}">
               Members
               </router-link></li>
-              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-scheduled-events', params: {gymId: id}}">
+              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-scheduled-events', params: {gymId: this.gymId}}">
               Schedule classes
               </router-link></li>
-              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-users', params: {gymId: id}}">
-                Adminstrators/Staff
+              <li v-if="isAdminForGym()"><router-link :to="{ name: 'gym-users', params: {gymId: this.gymId}}">
+                Administrators/Staff
               </router-link></li>
             </ul>
           </v-card-text>
@@ -59,7 +59,7 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'GymHome',
-  props: ['id'],
+  props: ['gymId'],
   data () {
     return {
       gym: {}
@@ -86,7 +86,7 @@ export default {
       for (let i = 0; i < userGyms.length; i++) {
         let userGymRole = userGyms[i]
         console.log(userGymRole)
-        if (userGymRole.gymId === parseInt(this.id, 10) && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
+        if (userGymRole.gymId === parseInt(this.gymId, 10) && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
           return true
         }
       }
@@ -108,16 +108,16 @@ export default {
   //  }
 
   mounted: async function () {
-    console.log('GymHome for id: ', this.id)
-    if (!this.id) {
+    console.log('GymHome for id: ', this.gymId)
+    if (!this.gymId) {
       return
     }
 
-    await this.getGym(this.id).then(result => { this.gym = result })
+    await this.getGym(this.gymId).then(result => { this.gym = result })
 
     this.findScheduledEvents({
       query: {
-        gymId: this.id
+        gymId: this.gymId
       }
     })
   }
