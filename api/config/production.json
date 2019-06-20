@@ -1,5 +1,7 @@
 {
   "host": "matpilot.com",
   "port": "3030",
-  "frontendUrlBase": "https://www.matpilot.com/"
+  "frontendUrlBase": "https://www.matpilot.com/",
+  "smtpUser": "SMTP_USER",
+  "smtpPassword": "SMTP_PASSWORD",
 }
