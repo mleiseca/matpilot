@@ -15,8 +15,9 @@
 
 <script>
 import { rrulestr } from 'rrule'
-import moment from 'moment-timezone'
+import momentTz from 'moment-timezone'
 import CheckinEvent from './CheckinEvent.vue'
+// import moment from 'moment'
 
 export default {
   components: { CheckinEvent },
@@ -44,9 +45,9 @@ export default {
         for (const newEventIndex in newEvents) {
           const newEvent = newEvents[newEventIndex]
 
-          const startDateTime = moment.tz(se.startTime, 'HH:mm', se.timezone)
+          const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone)
             .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
-          const endDateTime = moment.tz(se.endTime, 'HH:mm', se.timezone)
+          const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone)
             .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
           upcomingEvents.push({ startDateTime: startDateTime, endDateTime: endDateTime, scheduledEvent: se, id: 'se-' + se.id + '-' + startDateTime })
         }

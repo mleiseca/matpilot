@@ -47,6 +47,11 @@ strong {
   height: auto;
 }
 
+.v-input--selection-controls {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
 @include drawer-active-colors('primary', $brand-primary);
 @include drawer-active-colors('success', $brand-success);
 @include drawer-active-colors('danger', $brand-danger);

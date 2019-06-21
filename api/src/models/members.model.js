@@ -14,6 +14,14 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: false
     },
+    lowerFirstName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lowerLastName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: true
@@ -24,7 +32,7 @@ module.exports = function (app) {
     },
     dateOfBirth: {
       type: DataTypes.DATE,
-      allowNull: false
+      allowNull: true
     },
     emergencyContacts: {
       type: Sequelize.JSONB,

@@ -2,13 +2,13 @@
 
   <v-container fluid grid-list-xl fill-height pt-0>
     <v-layout wrap>
-      <v-flex xs12>
+      <v-flex xs12 py-0>
         <material-card>
           <div slot="header">
             <div class="title font-weight-light mb-2">Administration</div>
           </div>
 
-          <v-card-text>
+          <v-card-text >
             <ul>
               <li><router-link :to="{ name: 'gym-members', params: {gymId: this.gymId}}">
               Members
@@ -23,31 +23,7 @@
           </v-card-text>
         </material-card>
       </v-flex>
-        <!--<material-stats-card-->
-          <!--color="green"-->
-          <!--icon="mdi-store"-->
-          <!--title="Revenue"-->
-          <!--value="$34,245"-->
-          <!--sub-icon="mdi-calendar"-->
-          <!--sub-text="Last 24 Hours"-->
-          <!--v-on:click="alert('foo')"-->
-        <!--/>-->
-      <!--</v-flex>-->
-      <!--<v-flex-->
-        <!--sm6-->
-        <!--xs12-->
-        <!--md6-->
-        <!--lg3-->
-      <!--&gt;-->
-        <!--<material-stats-card-->
-          <!--color="green"-->
-          <!--icon="mdi-store"-->
-          <!--title="Schedule events"-->
-          <!--value="$34,245"-->
-          <!--sub-icon="mdi-calendar"-->
-          <!--sub-text="Last 24 Hours"-->
-        <!--/>-->
-      <v-flex xs12>
+      <v-flex xs12 py-0>
         <checkin-list v-bind:scheduled-events="gymScheduledEvents"></checkin-list>
       </v-flex>
     </v-layout>
@@ -93,19 +69,6 @@ export default {
       return false
     }
   },
-
-  //  methods: {
-
-  //  },
-  //  mounted () {
-  //    //        createdBy: 1,
-  //    this.findUserGyms({
-  //      query: {
-  //        $sort: { createdAt: -1 },
-  //        $limit: 25
-  //      }
-  //    })
-  //  }
 
   mounted: async function () {
     console.log('GymHome for id: ', this.gymId)

@@ -1,33 +1,37 @@
 <template>
-    <!--createdAt: (...)-->
-    <!--createdBy: (...)-->
-    <!--description: (...)-->
-    <!--endDate: (...)-->
-    <!--endTime: (...)-->
-    <!--gymId: (...)-->
-    <!--id: (...)-->
-    <!--rrules: (...)-->
-    <!--startDate: (...)-->
-    <!--startTime: (...)-->
-    <!--timezone: (...)-->
-    <!--title: (...)-->
-    <!--updatedAt: (...)-->
-    <v-container fill-height fluid grid-list-xl pt-0>
-      <v-layout wrap class="row">
-        <v-flex md8 sm8 lg8>
-          <div class="description title">
-            {{ eventDetails.scheduledEvent.title }}
-          </div>
-          <!--TODO: ideally, the date would be displayed only once, so we could group events by date-->
-          <div class="times caption">
-            {{ eventDetails.startDateTime | moment("dddd, MMMM Do") }} {{ eventDetails.scheduledEvent.startTime }} - {{ eventDetails.scheduledEvent.endTime}}
-          </div>
-        </v-flex>
-        <v-flex>
-          <v-btn color="primary" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
-            Check in</v-btn>
-        </v-flex>
-      </v-layout>
+  <!--createdAt: (...)-->
+  <!--createdBy: (...)-->
+  <!--description: (...)-->
+  <!--endDate: (...)-->
+  <!--endTime: (...)-->
+  <!--gymId: (...)-->
+  <!--id: (...)-->
+  <!--rrules: (...)-->
+  <!--startDate: (...)-->
+  <!--startTime: (...)-->
+  <!--timezone: (...)-->
+  <!--title: (...)-->
+  <!--updatedAt: (...)-->
+  <v-container fill-height fluid grid-list-xl pt-0>
+    <v-layout wrap class="row">
+      <v-flex md6 sm6 lg6 py-0>
+        <div class="description title">
+          {{ eventDetails.scheduledEvent.title }}
+        </div>
+        <!--TODO: ideally, the date would be displayed only once, so we could group events by date-->
+        <div class="times caption">
+          {{ eventDetails.startDateTime | moment("dddd, MMMM Do") }} {{ eventDetails.scheduledEvent.startTime }} - {{ eventDetails.scheduledEvent.endTime}}
+        </div>
+      </v-flex>
+      <v-flex py-0>
+            <v-btn color="primary" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
+              Self Check in</v-btn>
+
+            <v-btn color="primary" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
+              Check in</v-btn>
+
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -45,6 +49,24 @@ export default {
     return {}
   },
   methods: {
+    selfCheckinScheduledEvent: function (scheduledEvent) {
+      const event = {
+        scheduledEventId: scheduledEvent.id,
+        gymId: scheduledEvent.gymId,
+        title: scheduledEvent.title,
+        description: scheduledEvent.description,
+        timezone: scheduledEvent.timezone,
+        startDateTime: this.eventDetails.startDateTime.toISOString(),
+        endDateTime: this.eventDetails.endDateTime.toISOString()
+      }
+      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
+      this.$store.dispatch('events/create', event)
+        .then((result) => {
+          console.log('Got result:', result)
+          let route = this.$router.resolve({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
+          window.open(route.href, '_blank')
+        })
+    },
     checkinScheduledEvent: function (scheduledEvent) {
       const event = {
         scheduledEventId: scheduledEvent.id,

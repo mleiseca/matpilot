@@ -85,6 +85,29 @@ function writeWaiverSignatureToS3() {
   }
 }
 
+function createLowerName() {
+  return function(hook) {
+    if (hook.type !== 'before') {
+      throw new Error('The \'createLowerName\' hook should only be used as a \'before\' hook.')
+    }
+
+    if (!(hook.method === 'update' || hook.method === 'patch' || hook.method === 'create')) {
+      throw new errors.MethodNotAllowed(`The 'createLowerName' hook should only be used on the 'update', 'patch' and 'create' service methods...not ${hook.method}`)
+    }
+
+    delete hook.data.lowerFirstName
+    delete hook.data.lowerLastName
+
+
+    if (hook.data.firstName) {
+      hook.data.lowerFirstName = hook.data.firstName.toLowerCase()
+    }
+    if (hook.data.lastName) {
+      hook.data.lowerLastName = hook.data.lastName.toLowerCase()
+    }
+  }
+}
+
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
@@ -92,15 +115,18 @@ module.exports = {
     get: [],
     create: [
       assignCreatedBy,
-      writeWaiverSignatureToS3()
+      writeWaiverSignatureToS3(),
+      createLowerName()
+
     ],
-    update: [writeWaiverSignatureToS3()],
+    update: [writeWaiverSignatureToS3(), createLowerName()],
     patch: [
-      commonHooks.iff(
-        commonHooks.isProvider('external'),
-        commonHooks.preventChanges(true,
-          ['waiverSignedDate'])),
-      writeWaiverSignatureToS3()
+      // commonHooks.iff(
+      //   commonHooks.isProvider('external'),
+      //   commonHooks.preventChanges(true,
+      //     ['waiverSignedDate'])),
+      writeWaiverSignatureToS3(),
+      createLowerName()
     ],
     remove: []
   },

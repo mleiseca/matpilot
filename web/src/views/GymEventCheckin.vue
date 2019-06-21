@@ -1,15 +1,24 @@
 <template>
-
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout justify-center wrap>
       <v-flex md12>
         <material-card>
           <v-flex slot="header">
-            <v-layout justify-center wrap>
-              <v-flex sm6>
-                Check In <br>TODO CLASS NAME:
+            <v-layout align-center justify-space-between row fill-height>
+              <v-flex>
+                {{ get(event, 'title') }}
+
               </v-flex>
-              <v-flex sm6 >
+
+              <v-flex shrink>
+                {{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+          <v-flex>
+            <v-layout>
+              <v-flex>
                 <v-text-field
                   v-model="search"
                   class="mr-0 mt-0"
@@ -17,32 +26,24 @@
                   label="Search"
                   single-line
                   hide-details
+                  px-100
                 ></v-text-field>
+              </v-flex>
+              <v-flex shrink>
+                <v-switch v-model="showAttendeesOnly" label="Attendees Only"
+                ></v-switch>
               </v-flex>
             </v-layout>
           </v-flex>
 
-          <v-data-table
-            :headers="headers"
-            :items="members"
-            :pagination.sync="pagination"
-            :total-items="totalMembers"
-            :loading="loading"
-            :rows-per-page-items="[10, 25, 50]">
+          <div v-for="member in members" v-bind:key="member.id">
+            <mp-checkin-member-row
+              v-bind:member="member"
+              v-bind:attendance-records="attendanceByMember"
+              v-on:attendance-change="attendanceChange">
+            </mp-checkin-member-row>
+          </div>
 
-            <template v-slot:items="props">
-              <!--<td >{{ props.item.id }} {{ props.item.attendance }}</td>-->
-              <td>
-                <v-checkbox v-model="attendance[props.item.id]" :label="props.item.firstName + ' ' + props.item.lastName"></v-checkbox>
-              </td>
-              <!--<td >{{ props.item.firstName }} {{ props.item.lastName}}</td>-->
-            </template>
-            <!--<template v-slot:no-results>-->
-              <!--<v-alert :value="true" color="error" icon="warning">-->
-                <!--Your search for "{{ search }}" found no results.-->
-              <!--</v-alert>-->
-            <!--</template>-->
-          </v-data-table>
         </material-card>
       </v-flex>
     </v-layout>
@@ -50,7 +51,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import { get } from 'lodash'
+import CheckinMemberRow from '@/components/CheckinMemberRow.vue'
 const { paramsForServer } = require('feathers-hooks-common')
 
 export default {
@@ -58,118 +61,58 @@ export default {
   props: ['gymId', 'eventId'],
   data () {
     return {
-      totalMembers: 0,
       members: [],
-      loading: true,
-      pagination: {},
       search: '',
-      attendance: {},
-      attendanceRecords: {},
-      headers: [
-        {
-          sortable: false,
-          text: 'Member'
-        }
-      ]
+      showAttendeesOnly: false,
+      attendanceByMember: []
     }
   },
-  watch: {
-    pagination: {
-      handler () {
-        this.getDataFromApi()
-          .then(data => {
-            this.members = data.data
-            this.totalMembers = data.total
-
-            const attendance = []
-            const attendanceRecords = []
-            this.members.forEach(function (member) {
-              attendance[member.id] = member.attendance
-              attendanceRecords[member.id] = member.attendance
-            })
-            this.attendance = attendance
-            this.attendanceRecords = attendanceRecords
-          })
-      },
-      deep: true
+  components: {
+    'mp-checkin-member-row': CheckinMemberRow
+  },
+  computed: {
+    ...mapGetters('event-member-attendance', {
+      findEventMemberAttendanceInStore: 'find'
+    }),
+    ...mapGetters('events', {
+      getEventInStore: 'get'
+    }),
+    event () {
+      return this.getEventInStore(this.eventId)
     },
-    search: {
-      handler () {
-        this.getDataFromApi()
-          .then(data => {
-            this.members = data.data
-            this.totalMembers = data.total
-
-            const attendance = []
-            const attendanceRecords = []
-            this.members.forEach(function (member) {
-              attendance[member.id] = member.attendance
-              attendanceRecords[member.id] = member.attendance
-            })
-            this.attendance = attendance
-            this.attendanceRecords = attendanceRecords
-          })
-      }
-    },
-    attendance: {
-      handler () {
-        console.log(this.attendance)
-        for (const memberId in this.attendance) {
-          if (this.attendance[memberId] === true) {
-            console.log('Adding memberId', memberId)
-            const attendance = {
-              eventId: this.eventId,
-              gymId: this.gymId,
-              memberId: memberId
-            }
-            this.$store.dispatch('event-member-attendance/create', attendance)
-              .then((result) => {
-                console.log('Created...result:', result)
-                this.attendance[result.memberId] = result
-                this.attendanceRecords[result.memberId] = result
-              })
-          } else if (this.attendance[memberId] === false) {
-            console.log('Deleting memberId', memberId)
-            this.$store.dispatch('event-member-attendance/remove', this.attendanceRecords[memberId].id)
-              .then((result) => {
-                console.log('Deleted...result:', result)
-                this.attendance[memberId] = null
-                this.attendanceRecords[memberId] = null
-              })
-          }
+    attendance () {
+      return this.findEventMemberAttendanceInStore({
+        query: {
+          eventId: parseInt(this.eventId, 10)
         }
-      },
-      deep: true
+      }).data
     }
   },
+
   methods: {
+    get,
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
     ...mapActions('event-member-attendance', {
       findMemberEventAttendance: 'find'
     }),
-    getDataFromApi: async function () {
-      const { page, rowsPerPage } = this.pagination
-      this.loading = true
+    ...mapActions('events', {
+      findEvents: 'find'
+    }),
 
+    async findMembers (searchValue) {
       const query = {
-        gymId: this.gymId
-      }
-
-      if (rowsPerPage > 0) {
-        query['$limit'] = rowsPerPage
-        query['$skip'] = rowsPerPage * (page - 1)
+        gymId: this.gymId,
+        $limit: 50
       }
 
       if (this.search.length > 0) {
-        // TODO: this needs to be case insensitive
         query['$or'] = [
-          { firstName: { $like: '%' + this.search + '%' } },
-          { lastName: { $like: '%' + this.search + '%' } }
+          { lowerFirstName: { $like: '%' + searchValue.toLowerCase() + '%' } },
+          { lowerLastName: { $like: '%' + searchValue.toLowerCase() + '%' } }
         ]
       }
-
       const foundMembers = await this.findGymMembers(paramsForServer({
         query,
         populate: {
@@ -177,15 +120,63 @@ export default {
           id: this.eventId
         }
       }))
-
-      console.log('members:', foundMembers)
-
-      this.loading = false
-      return foundMembers
+      this.members = foundMembers.data
     },
-    toggleAttendance: function (memberId) {
-      console.log('toggling memberId: ', memberId)
+    attendanceChange (event) {
+      if (event.value) {
+        this.$store.dispatch('event-member-attendance/create', {
+          eventId: this.eventId,
+          gymId: this.gymId,
+          memberId: event.memberId
+        })
+          .then((result) => {
+            console.log('Created...result:', result)
+          })
+      } else {
+        this.$store.dispatch('event-member-attendance/remove', event.eventMemberAttendanceId)
+          .then((result) => {
+            console.log('Deleted...result:', result)
+          })
+      }
     }
+  },
+  watch: {
+    attendance: {
+      handler (newAttendance, old) {
+        const attendanceMap = []
+        newAttendance.forEach(function (record) {
+          attendanceMap.push({
+            memberId: record.memberId,
+            eventMemberAttendanceId: record.id
+          })
+        })
+        this.attendanceByMember = attendanceMap
+        console.log('ATTENDANCE!! ', this.attendanceByMember)
+      },
+      deep: true
+    },
+    search: async function (searchValue) {
+      return this.findMembers(searchValue)
+    }
+
+  },
+  mounted () {
+    this.findMembers('')
+
+    this.findEvents({
+      query: {
+        id: this.eventId
+      }
+    })
+    this.findMemberEventAttendance({
+      query: {
+        eventId: this.eventId
+      }
+    })
+    //        .then(function(result) {
+    //        console.log('found', result)
+    //      })
+    //      this.findAttendance()
   }
 }
 </script>
