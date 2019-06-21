@@ -1,17 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import store from './store'
-// import Home from './views/Home.vue'
-import Login from './views/Login.vue'
-import UserHome from './views/UserHome.vue'
-import GymsAdd from './views/GymAdd.vue'
-import GymHome from './views/GymHome.vue'
-import GymMembers from './views/GymMembers.vue'
-import GymMembersAdd from './views/GymMembersAdd.vue'
-import GymMembersView from './views/GymMembersView.vue'
-import GymEventCheckin from './views/GymEventCheckin.vue'
-import GymUsers from './views/GymUsers.vue'
-import GymUsersAdd from './views/GymUsersAdd.vue'
 import { get } from 'lodash'
 import { EventBus } from './event-bus'
 
@@ -24,64 +13,64 @@ let router = new Router({
     {
       path: '/',
       name: 'home',
-      component: Login
+      component: () => import(/* webpackChunkName: "allUsers" */ './views/Login.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: () => import(/* webpackChunkName: "allUsers" */ './views/Login.vue')
     },
     {
       path: '/home',
       name: 'userhome',
-      component: UserHome,
+      component: () => import(/* webpackChunkName: "allUsers" */ './views/UserHome.vue'),
       meta: { requiresAuth: true }
     },
     {
       path: '/gyms/add',
       name: 'gymsadd',
-      component: GymsAdd,
+      component: () => import(/* webpackChunkName: "allUsers" */ './views/GymAdd.vue'),
       meta: { requiresAuth: true }
     },
     {
       name: '/gym',
       path: '/gyms/:gymId',
-      component: GymHome,
+      component: () => import(/* webpackChunkName: "allUsers" */ './views/GymHome.vue'),
       props: true,
       meta: { requiresAuth: true }
     },
     {
       name: 'gym-members',
       path: '/gyms/:gymId/members',
-      component: GymMembers,
+      component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymMembers.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-members', breadcrumbText: 'Members' }
     },
     {
       name: 'gym-members-add',
       path: '/gyms/:gymId/members/add',
-      component: GymMembersAdd,
+      component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymMembersAdd.vue'),
       props: true,
       meta: { requiresAuth: true, breadcrumb: 'gym-members', breadcrumbText: 'Members' }
     },
     {
       name: 'gym-members-view',
       path: '/gyms/:gymId/members/:memberId',
-      component: GymMembersView,
+      component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymMembersView.vue'),
       props: true,
       meta: { requiresAuth: true, breadcrumb: 'gym-members', breadcrumbText: 'Members' }
     },
     {
       name: 'gym-users',
       path: '/gyms/:gymId/users',
-      component: GymUsers,
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymUsers.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-users', breadcrumbText: 'Users' }
     },
     {
       name: 'gym-users-add',
       path: '/gyms/:gymId/users/add',
-      component: GymUsersAdd,
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymUsersAdd.vue'),
       props: true,
       meta: { requiresAuth: true, breadcrumb: 'gym-users', breadcrumbText: 'Users' }
     },
@@ -90,7 +79,7 @@ let router = new Router({
       path: '/gyms/:gymId/schedule',
       component: () => import(/* webpackChunkName: "GymScheduledEvent" */ './views/GymScheduledEvents.vue'),
       props: true,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true, breadcrumb: 'gym-scheduled-events', breadcrumbText: 'Scheduled Events' }
     },
     {
       name: 'gym-scheduled-event-add',
@@ -109,17 +98,9 @@ let router = new Router({
     {
       name: 'gym-event-checkin',
       path: '/gyms/:gymId/event/:eventId/checkin',
-      component: GymEventCheckin,
+      component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymEventCheckin.vue'),
       props: true,
       meta: { requiresAuth: true }
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue')
     },
     {
       name: 'user-create-account',
@@ -140,6 +121,11 @@ let router = new Router({
       name: 'user-reset-password-request',
       path: '/reset-request',
       component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserResetPasswordRequest.vue')
+    },
+    {
+      // will match everything - must be last
+      path: '*',
+      component: () => import(/* webpackChunkName: "NotFound" */ './views/404.vue')
     }
   ]
 })
