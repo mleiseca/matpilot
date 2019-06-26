@@ -1,16 +1,19 @@
 <template>
+  <v-container grid-list-md>
+
   <v-layout wrap>
 
-    <v-flex xs1 >
+    <v-flex shrink>
       <v-switch pt-0 mt-0
                 v-model="present"
                 @change="presentChange"
       ></v-switch>
     </v-flex>
-    <v-flex>
+    <v-flex >
       {{ member.firstName }} {{ member.lastName }}
     </v-flex>
   </v-layout>
+  </v-container>
 </template>
 
 <script>

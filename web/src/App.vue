@@ -1,8 +1,9 @@
 <template>
   <v-app>
-    <core-filter v-if="user"/>
-    <core-toolbar v-if="user"/>
-    <core-drawer v-if="user"/>
+    <!--<core-footer v-if="$route.name !== 'Maps'" />-->
+    <core-filter v-if="user && $route.name !== 'gym-event-self-checkin'"/>
+    <core-toolbar v-if="user && $route.name !== 'gym-event-self-checkin'"/>
+    <core-drawer v-if="user && $route.name !== 'gym-event-self-checkin'"/>
     <core-view />
     <v-snackbar
       v-model="notification"

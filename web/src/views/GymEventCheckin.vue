@@ -3,20 +3,13 @@
     <v-layout justify-center wrap>
       <v-flex md12>
         <material-card>
-          <v-flex slot="header">
-            <v-layout align-center justify-space-between row fill-height>
-              <v-flex>
-                {{ get(event, 'title') }}
+          <v-flex slot="header" py-0>
+            <div class="title font-weight-heavy">{{ get(event, 'title') }}</div>
 
-              </v-flex>
-
-              <v-flex shrink>
-                {{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}
-              </v-flex>
-            </v-layout>
+            <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
-          <v-flex>
+          <v-flex pt-0>
             <v-layout>
               <v-flex>
                 <v-text-field
@@ -27,16 +20,18 @@
                   single-line
                   hide-details
                   px-100
+                  clearable
                 ></v-text-field>
               </v-flex>
-              <v-flex shrink>
-                <v-switch v-model="showAttendeesOnly" label="Attendees Only"
-                ></v-switch>
-              </v-flex>
+              <!--<v-flex shrink>-->
+                <!--<v-switch v-model="showAttendeesOnly" label="Attendees Only"-->
+                <!--&gt;</v-switch>-->
+              <!--</v-flex>-->
             </v-layout>
           </v-flex>
 
-          <div v-for="member in members" v-bind:key="member.id">
+          <div v-for="member in members" v-bind:key="member.id"
+               v-if="search !== null && search.length > 1">
             <mp-checkin-member-row
               v-bind:member="member"
               v-bind:attendance-records="attendanceByMember"
@@ -107,10 +102,10 @@ export default {
         $limit: 50
       }
 
-      if (this.search.length > 0) {
+      if (this.search !== null && this.search.length > 1) {
         query['$or'] = [
-          { lowerFirstName: { $like: '%' + searchValue.toLowerCase() + '%' } },
-          { lowerLastName: { $like: '%' + searchValue.toLowerCase() + '%' } }
+          { lowerFirstName: { $like: searchValue.toLowerCase() + '%' } },
+          { lowerLastName: { $like: searchValue.toLowerCase() + '%' } }
         ]
       }
       const foundMembers = await this.findGymMembers(paramsForServer({

@@ -35,7 +35,7 @@
             v-model="member.phone"/>
         </v-flex>
 
-        <v-flex xs12 sm6 md4>
+        <v-flex xs12 md12>
           <v-menu
             ref="dateOfBirthMenu"
             v-model="dateOfBirthMenu"

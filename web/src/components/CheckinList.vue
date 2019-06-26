@@ -37,7 +37,7 @@ export default {
       const upcomingEvents = []
       for (const seIndex in ses) {
         const se = ses[seIndex]
-        console.log(se)
+        console.log("scheduledEvent", se)
 
         // TODO: this '5' should really be controlled by a toggle on the material card. maybe day/week/month?
         const newEvents = rrulestr(se.rrules).all(function (date, i) { return i < 5 })
@@ -49,6 +49,8 @@ export default {
             .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
           const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone)
             .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
+
+
           upcomingEvents.push({ startDateTime: startDateTime, endDateTime: endDateTime, scheduledEvent: se, id: 'se-' + se.id + '-' + startDateTime })
         }
       }

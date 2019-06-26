@@ -63,7 +63,7 @@ export default {
       this.$store.dispatch('events/create', event)
         .then((result) => {
           console.log('Got result:', result)
-          let route = this.$router.resolve({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
+          let route = this.$router.resolve({ name: 'gym-event-self-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
           window.open(route.href, '_blank')
         })
     },

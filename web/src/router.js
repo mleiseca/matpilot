@@ -103,6 +103,13 @@ let router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      name: 'gym-event-self-checkin',
+      path: '/gyms/:gymId/event/:eventId/selfcheckin',
+      component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymEventCheckin.vue'),
+      props: true,
+      meta: { requiresAuth: true }
+    },
+    {
       name: 'user-create-account',
       path: '/create-account',
       component: () => import(/* webpackChunkName: "UserCreateAccount" */ './views/UserCreateAccount.vue')
