@@ -13,14 +13,13 @@
   <!--title: (...)-->
   <!--updatedAt: (...)-->
   <v-container fill-height fluid grid-list-xl pt-0>
-    <v-layout wrap class="row">
+    <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active }">
       <v-flex md6 sm6 lg6 py-0>
         <div class="description title">
           {{ eventDetails.scheduledEvent.title }}
         </div>
-        <!--TODO: ideally, the date would be displayed only once, so we could group events by date-->
         <div class="times caption">
-          {{ eventDetails.startDateTime | moment("dddd, MMMM Do") }} {{ eventDetails.scheduledEvent.startTime }} - {{ eventDetails.scheduledEvent.endTime}}
+          {{ eventDetails.startDateTime | moment("h:mma") }} - {{ eventDetails.endDateTime | moment("h:mma") }}
         </div>
       </v-flex>
       <v-flex py-0>
@@ -59,7 +58,7 @@ export default {
         startDateTime: this.eventDetails.startDateTime.toISOString(),
         endDateTime: this.eventDetails.endDateTime.toISOString()
       }
-      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
+//      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
       this.$store.dispatch('events/create', event)
         .then((result) => {
           console.log('Got result:', result)
@@ -92,6 +91,10 @@ export default {
 
   .description {
     font-weight: 600;
+  }
+
+  .row.active {
+    box-shadow: 0 .05rem .25rem .15rem #4caf50;
   }
 
   .row {

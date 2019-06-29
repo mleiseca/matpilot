@@ -38,32 +38,39 @@ export default {
       const upcomingEvents = []
       for (const seIndex in ses) {
         const se = ses[seIndex]
-        console.log("scheduledEvent", se)
+//        console.log('scheduledEvent', se)
 
-//        console.log('rules', se.rrules)
+        let now = momentTz.tz(se.timezone);
+        let earliestEventTime = now.clone().subtract(1, 'days')
 
-        const newEvents = rrulestr(se.rrules).between(moment().toDate(), moment().add(7, 'days').toDate(), true, function (date, i) {
-          // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
-          return i < 7
+        // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
+        rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
+
+          const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
+          const endDateTime =   momentTz.tz(se.endTime,   'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
+          const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
+
+          let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
+
+          // Only show events that are in progress or in the future
+          if (now.isBefore(endDateTime)) {
+            upcomingEvents.push({
+              startDateTime: startDateTime,
+              endDateTime: endDateTime,
+              scheduledEvent: se, id: 'se-' + se.id + '-' + startDateTime,
+              startDate: startDate,
+              active: isActive
+            })
+          }
+
+          return true;
         })
 
-        for (const newEventIndex in newEvents) {
-          const newEvent = newEvents[newEventIndex]
-//          console.log('newEvent', newEvent)
-
-          const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone)
-            .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
-          const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone)
-            .year(newEvent.getUTCFullYear()).month(newEvent.getUTCMonth()).date(newEvent.getUTCDate())
-          const startDate = momentTz.tz(newEvent, se.timezone).format('MMMM D')
-
-          upcomingEvents.push({ startDateTime: startDateTime, endDateTime: endDateTime, scheduledEvent: se, id: 'se-' + se.id + '-' + startDateTime, startDate: startDate })
-        }
       }
 
       if (upcomingEvents.length === 0) {
         this.events = []
-        return;
+        return
       }
 
       upcomingEvents.sort(function (a, b) {
@@ -72,19 +79,20 @@ export default {
 
       this.events = []
 
-
+      /**
+       * Group events by day
+       */
       let currentDayEvents = []
       let currentDay = upcomingEvents[0].startDate
 
-      for(let i = 0; i< upcomingEvents.length; i++) {
+      for (let i = 0; i < upcomingEvents.length; i++) {
         let e = upcomingEvents[i]
 
-//        console.log('startDate', e.startDate, currentDay)
         if (e.startDate !== currentDay) {
-            this.events.push({
-              date: currentDay,
-              events: currentDayEvents
-            })
+          this.events.push({
+            date: currentDay,
+            events: currentDayEvents
+          })
           currentDay = e.startDate
           currentDayEvents = []
         }
@@ -95,10 +103,7 @@ export default {
         date: currentDay,
         events: currentDayEvents
       })
-//      console.log('events', this.events)
-
-
-
+      //      console.log('events', this.events)
     })
   }
 }
