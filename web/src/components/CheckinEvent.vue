@@ -14,7 +14,7 @@
   <!--updatedAt: (...)-->
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active }">
-      <v-flex md6 sm6 lg6 py-0>
+      <v-flex xs12 md6 sm6 lg6 py-0>
         <div class="description title">
           {{ eventDetails.scheduledEvent.title }}
         </div>
@@ -22,13 +22,12 @@
           {{ eventDetails.startDateTime | moment("h:mma") }} - {{ eventDetails.endDateTime | moment("h:mma") }}
         </div>
       </v-flex>
-      <v-flex py-0>
-            <v-btn color="primary" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
-              Self Check in</v-btn>
+      <v-flex xs12 md6 sm6 lg6 py-0 class="checkinButtonHolder">
+            <v-btn color="primary" class="checkinButton" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)" >
+              Desk Mode</v-btn>
 
-            <v-btn color="primary" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
+            <v-btn color="primary" class="checkinButton" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
               Check in</v-btn>
-
       </v-flex>
     </v-layout>
   </v-container>
@@ -88,6 +87,17 @@ export default {
 </script>
 
 <style scoped>
+
+  @media (max-width: 600px) {
+    .checkinButtonHolder {
+      padding-left:0 !important;
+      padding-right:0 !important;
+    }
+    .checkinButton {
+      padding-left:.5rem !important;
+      padding-right:.5rem !important;
+    }
+  }
 
   .description {
     font-weight: 600;

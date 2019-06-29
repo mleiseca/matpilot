@@ -6,7 +6,8 @@
 
         <div v-for="event in events" v-bind:key="event.date">
           <v-flex xs12>{{ event.date }} </v-flex>
-          <v-flex xs12 v-for="e in event.events" v-bind:key="e.id">
+          <v-flex xs12 v-for="e in event.events" v-bind:key="e.id"
+                  class="event">
             <checkin-event v-bind:event-details="e" />
           </v-flex>
         </div>
@@ -108,3 +109,13 @@ export default {
   }
 }
 </script>
+
+
+<style>
+  @media (max-width: 600px) {
+    .event {
+      padding-left:0 !important;
+      padding-right:0 !important;
+    }
+  }
+</style>
