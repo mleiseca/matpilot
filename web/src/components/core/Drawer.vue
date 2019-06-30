@@ -46,10 +46,11 @@
           <!--/>-->
         <!--</v-list-tile>-->
         <v-list-tile
-          v-for="(link, i) in links"
+          v-for="(link, i) in gymLinks"
           :key="i"
           :to="link.to"
           :active-class="color"
+          :exact="true"
           avatar
           class="v-list-item"
         >
@@ -80,53 +81,14 @@
 
 <script>
 // Utilities
-import {
-  mapMutations,
-  mapState
-} from 'vuex'
+import { mapMutations, mapState, mapActions } from 'vuex'
+import { EventBus } from '../../event-bus'
 
 export default {
   data: () => ({
     logo: require('@/assets/mc-logo.png'),
-    links: [
-      {
-        to: '/home',
-        icon: 'mdi-view-dashboard',
-        text: 'Home'
-      }
 
-      //      ,
-      //      {
-      //        to: '/user-profile',
-      //        icon: 'mdi-account',
-      //        text: 'User Profile'
-      //      },
-      //      {
-      //        to: '/table-list',
-      //        icon: 'mdi-clipboard-outline',
-      //        text: 'Table List'
-      //      },
-      //      {
-      //        to: '/typography',
-      //        icon: 'mdi-format-font',
-      //        text: 'Typography'
-      //      },
-      //      {
-      //        to: '/icons',
-      //        icon: 'mdi-chart-bubble',
-      //        text: 'Icons'
-      //      },
-      //      {
-      //        to: '/maps',
-      //        icon: 'mdi-map-marker',
-      //        text: 'Maps'
-      //      },
-      //      {
-      //        to: '/notifications',
-      //        icon: 'mdi-bell',
-      //        text: 'Notifications'
-      //      }
-    ],
+    gymLinks: [],
     responsive: false
   }),
   computed: {
@@ -146,18 +108,95 @@ export default {
   mounted () {
     this.onResponsiveInverted()
     window.addEventListener('resize', this.onResponsiveInverted)
+    EventBus.$on('gym-navigation', this.gymNavigationListener)
   },
   beforeDestroy () {
     window.removeEventListener('resize', this.onResponsiveInverted)
+    EventBus.$off('gym-navigation', this.gymNavigationListener)
   },
   methods: {
     ...mapMutations('app', ['setDrawer', 'toggleDrawer']),
+    ...mapActions('gyms', {
+      getGym: 'get'
+    }),
     onResponsiveInverted () {
       if (window.innerWidth < 991) {
         this.responsive = true
       } else {
         this.responsive = false
       }
+    },
+    async gymNavigationListener (contents) {
+      this.gymLinks = []
+      let gymId = null
+      let gym = null
+      if (contents.gymId) {
+        gymId = parseInt(contents.gymId, 10)
+        gym = await this.getGym(gymId)
+
+        this.gymLinks.push({
+          to: {
+            name: '/gym',
+            params: {
+              id: gymId
+            }
+          },
+          text: gym.name,
+          icon: 'mdi-view-dashboard',
+        })
+
+        this.gymLinks.push({
+          to: {
+            name: 'gym-members',
+            params: {
+              id: gymId
+            }
+          },
+          text: 'Members',
+          icon: 'mdi-human-male-female',
+        })
+
+
+        if (this.isAdminForGym(gymId)) {
+          this.gymLinks.push({
+            to: {
+              name: 'gym-users',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Admins/Staff',
+            icon: 'mdi-account-star',
+            endsSection: true
+          })
+
+          this.gymLinks.push({
+            to: {
+              name: 'gym-scheduled-events',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Schedule',
+            icon: 'mdi-calendar',
+          })
+        }
+      }
+    },
+    isAdminForGym (gymId) {
+      const userGyms = this.$store.state.auth.user.user_gym_roles
+      console.log('user gyms: ', userGyms)
+      if (!userGyms) {
+        return false
+      }
+      for (let i = 0; i < userGyms.length; i++) {
+        let userGymRole = userGyms[i]
+        console.log(userGymRole)
+        if (userGymRole.gymId === gymId && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
+          return true
+        }
+      }
+      return false
     }
   }
 }

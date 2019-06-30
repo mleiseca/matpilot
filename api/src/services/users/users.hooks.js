@@ -68,7 +68,7 @@ module.exports = {
       context => {
         accountService(context.app).notifier('resendVerifySignup', context.result)
       },
-      verifyHooks.removeVerification()
+      verifyHooks.removeVerification(),
     ],
     update: [],
     patch: [],

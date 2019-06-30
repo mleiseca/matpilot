@@ -10,25 +10,32 @@
       <v-toolbar-title
         class="tertiary--text font-weight-light"
       >
-        <v-btn
-          v-if="responsive"
-          class="default v-btn--simple"
-          dark
-          icon
-          @click.stop="onClickBtn"
-        >
-          <v-icon>mdi-view-list</v-icon>
-        </v-btn>
+        <v-layout align-center>
+          <v-btn
+            v-if="responsive"
+            class="default v-btn--simple"
+            dark
+            icon
+            @click.stop="onClickBtn"
+          >
+            <v-icon>mdi-view-list</v-icon>
+          </v-btn>
 
-        <span v-for="(item, index) in breadcrumbs" v-bind:key="item.name">
-        <router-link :to="{ name: item.name, params: {id: item.gymId }} " >
-          <template v-if="index > 0">
-            >
+        <v-breadcrumbs v-if="responsive">
+          <v-breadcrumbs-item
+            dark
+            v-for="item in breadcrumbs"
+            :key="item.text"
+            :to="item.to"
+            :exact="true">
+            {{ item.text }}
+          </v-breadcrumbs-item>
+
+          <template v-slot:divider>
+            <v-icon>mdi-chevron-right</v-icon>
           </template>
-          {{ item.text }}
-        </router-link>
-        </span>
-
+        </v-breadcrumbs>
+        </v-layout>
       </v-toolbar-title>
     </div>
 
@@ -90,8 +97,8 @@ export default {
     EventBus.$on('gym-navigation', this.gymNavigationListener)
   },
   beforeDestroy () {
-    EventBus.$off('gym-navigation', this.gymNavigationListener)
     window.removeEventListener('resize', this.onResponsiveInverted)
+    EventBus.$off('gym-navigation', this.gymNavigationListener)
   },
 
   methods: {
@@ -116,9 +123,6 @@ export default {
       }
     },
     async gymNavigationListener (contents) {
-      //      { gymId: gymId }
-      //      '/gym'
-
       this.breadcrumbs = []
       let gymId = null
       let gym = null
@@ -126,16 +130,24 @@ export default {
         gymId = parseInt(contents.gymId, 10)
         gym = await this.getGym(gymId)
         this.breadcrumbs.push({
-          name: '/gym',
+          to: {
+            name: '/gym',
+            params: {
+              id: gymId
+            }
+          },
           text: gym.name,
-          gymId: contents.gymId
         })
       }
       if (gymId && contents.breadcrumb) {
         this.breadcrumbs.push({
-          name: contents.breadcrumb,
+          to: {
+            name: contents.breadcrumb,
+            params: {
+              id: gymId
+            }
+          },
           text: contents.breadcrumbText,
-          gymId: contents.gymId
         })
       }
     }

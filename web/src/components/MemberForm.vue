@@ -235,11 +235,11 @@ export default {
   },
   mounted: function () {
     this.$watch('member', m => {
-      if (m.emergencyContacts) {
+      if (m.emergencyContacts && m.emergencyContacts.length > 0) {
         this.emergencyContactName = m.emergencyContacts[0].name
         this.emergencyContactPhone = m.emergencyContacts[0].phone
       }
-      if (m.guardianContacts) {
+      if (m.guardianContacts && m.guardianContacts.length > 0) {
         this.guardianContactName = m.guardianContacts[0].name
         this.guardianContactPhone = m.guardianContacts[0].phone
       }
