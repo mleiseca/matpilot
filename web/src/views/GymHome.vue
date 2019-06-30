@@ -21,7 +21,7 @@ export default {
     }
   },
   computed: {
-//     TODO: this is wrong - needs to findInstore for this gym
+    //     TODO: this is wrong - needs to findInstore for this gym
     ...mapGetters('scheduled-events', {
       gymScheduledEvents: 'list'
     })

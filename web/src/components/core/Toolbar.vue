@@ -136,7 +136,7 @@ export default {
               id: gymId
             }
           },
-          text: gym.name,
+          text: gym.name
         })
       }
       if (gymId && contents.breadcrumb) {
@@ -147,7 +147,7 @@ export default {
               id: gymId
             }
           },
-          text: contents.breadcrumbText,
+          text: contents.breadcrumbText
         })
       }
     }

@@ -142,7 +142,7 @@ export default {
             }
           },
           text: gym.name,
-          icon: 'mdi-view-dashboard',
+          icon: 'mdi-view-dashboard'
         })
 
         this.gymLinks.push({
@@ -153,9 +153,8 @@ export default {
             }
           },
           text: 'Members',
-          icon: 'mdi-human-male-female',
+          icon: 'mdi-human-male-female'
         })
-
 
         if (this.isAdminForGym(gymId)) {
           this.gymLinks.push({
@@ -178,7 +177,7 @@ export default {
               }
             },
             text: 'Schedule',
-            icon: 'mdi-calendar',
+            icon: 'mdi-calendar'
           })
         }
       }
