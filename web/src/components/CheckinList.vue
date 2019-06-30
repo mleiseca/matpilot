@@ -19,7 +19,6 @@
 import { rrulestr } from 'rrule'
 import momentTz from 'moment-timezone'
 import CheckinEvent from './CheckinEvent.vue'
-import moment from 'moment'
 
 export default {
   components: { CheckinEvent },
@@ -39,16 +38,15 @@ export default {
       const upcomingEvents = []
       for (const seIndex in ses) {
         const se = ses[seIndex]
-//        console.log('scheduledEvent', se)
+        //        console.log('scheduledEvent', se)
 
-        let now = momentTz.tz(se.timezone);
+        let now = momentTz.tz(se.timezone)
         let earliestEventTime = now.clone().subtract(1, 'days')
 
         // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
         rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
-
           const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
-          const endDateTime =   momentTz.tz(se.endTime,   'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
+          const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
           const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
 
           let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
@@ -58,15 +56,15 @@ export default {
             upcomingEvents.push({
               startDateTime: startDateTime,
               endDateTime: endDateTime,
-              scheduledEvent: se, id: 'se-' + se.id + '-' + startDateTime,
+              scheduledEvent: se,
+              id: 'se-' + se.id + '-' + startDateTime,
               startDate: startDate,
               active: isActive
             })
           }
 
-          return true;
+          return true
         })
-
       }
 
       if (upcomingEvents.length === 0) {
@@ -109,7 +107,6 @@ export default {
   }
 }
 </script>
-
 
 <style>
   @media (max-width: 600px) {

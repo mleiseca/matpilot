@@ -57,7 +57,7 @@ export default {
         startDateTime: this.eventDetails.startDateTime.toISOString(),
         endDateTime: this.eventDetails.endDateTime.toISOString()
       }
-//      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
+      //      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
       this.$store.dispatch('events/create', event)
         .then((result) => {
           console.log('Got result:', result)
@@ -94,8 +94,8 @@ export default {
       padding-right:0 !important;
     }
     .checkinButton {
-      padding-left:.5rem !important;
-      padding-right:.5rem !important;
+      padding-left:.8rem !important;
+      padding-right:.8rem !important;
     }
   }
 

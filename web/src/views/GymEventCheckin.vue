@@ -9,35 +9,44 @@
             <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
-          <v-flex pt-0>
-            <v-layout>
-              <v-flex>
-                <v-text-field
-                  v-model="search"
-                  class="mr-0 mt-0"
-                  append-icon="mdi-search"
-                  label="Search"
-                  single-line
-                  hide-details
-                  px-100
-                  clearable
-                ></v-text-field>
-              </v-flex>
-              <!--<v-flex shrink>-->
-                <!--<v-switch v-model="showAttendeesOnly" label="Attendees Only"-->
-                <!--&gt;</v-switch>-->
-              <!--</v-flex>-->
-            </v-layout>
-          </v-flex>
+          <div class="controls">
+            <v-text-field
+              :disabled="showAttendees"
+              v-model="search"
+              @input="updateSearch"
+              append-icon="mdi-search"
+              label="Search by Name"
+              single-line
+              hide-details
+              clearable>
+            </v-text-field>
 
-          <div v-for="member in members" v-bind:key="member.id"
-               v-if="search !== null && search.length > 1">
-            <mp-checkin-member-row
-              v-bind:member="member"
-              v-bind:attendance-records="attendanceByMember"
-              v-on:attendance-change="attendanceChange">
-            </mp-checkin-member-row>
+            <v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"
+                      shrink v-if="$route.name !== 'gym-event-self-checkin'">
+            </v-switch>
           </div>
+
+          <transition>
+            <div v-show="((search !== null && search.length > 1) || showAttendees) && !loading">
+              <mp-checkin-member-row
+                v-for="member in members"
+                :key="member.id"
+                v-bind:key="member.id"
+                v-bind:member="member"
+                v-bind:attendance-records="attendanceByMember"
+                v-on:attendance-change="attendanceChange">
+              </mp-checkin-member-row>
+            </div>
+          </transition>
+          <transition>
+            <div class="loading" key="loading" v-show="loading">
+              <v-progress-linear
+                :size="50"
+                color="primary"
+                indeterminate
+              ></v-progress-linear>
+            </div>
+          </transition>
 
         </material-card>
       </v-flex>
@@ -47,19 +56,19 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { get } from 'lodash'
+import { get, debounce } from 'lodash'
 import CheckinMemberRow from '@/components/CheckinMemberRow.vue'
-const { paramsForServer } = require('feathers-hooks-common')
 
 export default {
   name: 'GymEventCheckin',
   props: ['gymId', 'eventId'],
   data () {
     return {
-      members: [],
+      //      members: [],
       search: '',
-      showAttendeesOnly: false,
-      attendanceByMember: []
+      showAttendees: false,
+      attendanceByMember: [],
+      loading: false
     }
   },
   components: {
@@ -68,6 +77,9 @@ export default {
   computed: {
     ...mapGetters('event-member-attendance', {
       findEventMemberAttendanceInStore: 'find'
+    }),
+    ...mapGetters('members', {
+      findMembersInStore: 'find'
     }),
     ...mapGetters('events', {
       getEventInStore: 'get'
@@ -81,6 +93,36 @@ export default {
           eventId: parseInt(this.eventId, 10)
         }
       }).data
+    },
+
+    members () {
+      let query = { gymId: parseInt(this.gymId, 10) }
+
+      let hasCriteria = false
+
+      if (this.showAttendees) {
+        hasCriteria = true
+        const memberIds = []
+        this.attendance.forEach(function (record) {
+          memberIds.push(record.memberId)
+        })
+        query.id = {
+          $in: memberIds
+        }
+      }
+
+      if (this.search !== null && this.search.length > 1) {
+        hasCriteria = true
+        query['$or'] = [
+          { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
+          { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
+        ]
+      }
+      if (!hasCriteria) {
+        return []
+      } else {
+        return this.findMembersInStore({ query }).data
+      }
     }
   },
 
@@ -96,7 +138,15 @@ export default {
       findEvents: 'find'
     }),
 
+    escapeRegExp (string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+    },
+
     async findMembers (searchValue) {
+      if (searchValue === null || searchValue.length < 2) {
+        return
+      }
+      this.startLoading()
       const query = {
         gymId: this.gymId,
         $limit: 50
@@ -108,15 +158,31 @@ export default {
           { lowerLastName: { $like: searchValue.toLowerCase() + '%' } }
         ]
       }
-      const foundMembers = await this.findGymMembers(paramsForServer({
-        query,
-        populate: {
-          entity: 'event-member-attendance',
-          id: this.eventId
-        }
-      }))
-      this.members = foundMembers.data
+      await this.findGymMembers({ query })
+      this.stopLoading()
     },
+    startLoading () {
+      this.$nextTick(() => this.loading = true)
+    },
+    stopLoading () {
+      this.$nextTick(() => this.loading = false)
+    },
+
+    async findAttendees () {
+      this.startLoading()
+      const query = {
+        gymId: this.gymId,
+        $limit: 50,
+        $include: [{
+          model: 'event-member-attendance',
+          where: { eventId: this.eventId }
+        }]
+      }
+
+      await this.findGymMembers({ query })
+      this.stopLoading()
+    },
+
     attendanceChange (event) {
       if (event.value) {
         this.$store.dispatch('event-member-attendance/create', {
@@ -133,7 +199,10 @@ export default {
             console.log('Deleted...result:', result)
           })
       }
-    }
+    },
+    updateSearch: debounce(function (searchValue) {
+      return this.findMembers(searchValue)
+    }, 300)
   },
   watch: {
     attendance: {
@@ -150,14 +219,15 @@ export default {
       },
       deep: true
     },
-    search: async function (searchValue) {
-      return this.findMembers(searchValue)
+    showAttendees: async function (show) {
+      this.search = null
+      console.log('changed to ', show)
+      if (show) {
+        return this.findAttendees()
+      }
     }
-
   },
   mounted () {
-    this.findMembers('')
-
     this.findEvents({
       query: {
         id: this.eventId
@@ -168,10 +238,38 @@ export default {
         eventId: this.eventId
       }
     })
-    //        .then(function(result) {
-    //        console.log('found', result)
-    //      })
-    //      this.findAttendance()
   }
 }
 </script>
+
+<style>
+
+  .showAttendeesSwitch{
+    padding-top: 1rem !important;
+  }
+
+  .showAttendeesSwitch .v-messages {
+    display: none
+  }
+
+  .controls {
+    border-radius: .333rem;
+    margin: .5rem auto 1rem auto;
+    background-color: white;
+    box-shadow: 0 .05rem .25rem rgba(0,0,0,.25);
+    padding: 1rem;
+  }
+
+  .loading{
+    padding-top: 1rem;
+    width: auto;
+
+  }
+
+  .fade-enter-active, .fade-leave-active {
+    transition: opacity .5s
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+    opacity: 0
+  }
+</style>

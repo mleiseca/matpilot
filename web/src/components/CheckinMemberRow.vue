@@ -9,7 +9,7 @@
                 @change="presentChange"
       ></v-switch>
     </v-flex>
-    <v-flex >
+    <v-flex px-0>
       {{ member.firstName }} {{ member.lastName }}
     </v-flex>
   </v-layout>

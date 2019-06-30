@@ -108,10 +108,41 @@ function createLowerName() {
   }
 }
 
+// This comes from https://stackoverflow.com/questions/48602085/using-feathers-client-and-sequelize-many-to-many-relation
+function include(hook) {
+  const { $include } = hook.params.query;
+
+  if (!$include) {
+    Promise.resolve(hook)
+    return
+  }
+  // Remove from the query so that it doesn't get included
+  // in the actual database query
+  console.log("Moving around incldue... Here is the raw query", hook.params.query)
+  delete hook.params.query.$include;
+
+  hook.params.sequelize = {
+    include: []
+  };
+
+  if(Array.isArray($include)) {
+    $include.forEach(inc => {
+      hook.params.sequelize.include.push({
+        // https://sequelize.readthedocs.io/en/latest/api/model/#findalloptions-promisearrayinstance
+        model: hook.app.services[inc.model].Model,
+        where: inc.where,
+        required: true
+      });
+    });
+  }
+  console.log("Final include: ", hook.params.sequelize.include)
+  return Promise.resolve(hook);
+}
+
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [paramsFromClient('populate')],
+    find: [paramsFromClient('populate'), include],
     get: [],
     create: [
       assignCreatedBy,

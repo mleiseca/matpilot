@@ -21,6 +21,25 @@
         Close
       </v-btn>
     </v-snackbar>
+    <v-dialog
+      v-model="loading"
+      persistent
+      width="300"
+    >
+      <v-card
+        color="primary"
+        dark
+      >
+        <v-card-text>
+          Loading
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -35,7 +54,8 @@ export default {
       notificationText: '',
       type: '',
       timeout: 10 * 1000,
-      buttonColor: ''
+      buttonColor: '',
+      loading: ''
     }
   },
   methods: {
@@ -53,6 +73,16 @@ export default {
         this.type = 'success'
       }
     },
+    loadingListener (contents) {
+      console.log('Loading bus:', contents)
+      if (contents.done) {
+        this.loading = false
+      } else {
+        this.loading = 'loading'
+      }
+
+      //      { message: `Loading attendees` }
+    },
     closeNotification () {
       this.notification = false
     }
@@ -64,9 +94,11 @@ export default {
   },
   mounted () {
     EventBus.$on('user-message', this.eventBusListener)
+    EventBus.$on('loading', this.loadingListener)
   },
   beforeDestroy () {
     EventBus.$off('user-message', this.eventBusListener)
+    EventBus.$off('loading', this.loadingListener)
   }
 }
 
@@ -78,6 +110,16 @@ export default {
   /* Remove in 1.2 */
   .v-datatable thead th.column.sortable i {
     vertical-align: unset;
+  }
+
+  .dialog.centered-dialog,
+  .v-dialog.centered-dialog
+  {
+    background: #282c2dad;
+    box-shadow: none;
+    border-radius: 6px;
+    width: auto;
+    color: whitesmoke;
   }
 </style>
 
