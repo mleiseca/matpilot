@@ -91,6 +91,7 @@ export default {
       if (!this.$refs.form.validate()) {
         return
       }
+      EventBus.$emit('loading', { message: 'Resetting password' })
 
       client.service('authManagement').create(
         {
@@ -103,10 +104,12 @@ export default {
         .then((result) => {
           console.log('Got result:', result)
           this.$router.push({ name: 'login' })
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: 'Password successfully reset' })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: `Error resetting password: ${e.message}`, type: 'error' })
         })
     }

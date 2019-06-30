@@ -30,7 +30,6 @@
             <div v-show="((search !== null && search.length > 1) || showAttendees) && !loading">
               <mp-checkin-member-row
                 v-for="member in members"
-                :key="member.id"
                 v-bind:key="member.id"
                 v-bind:member="member"
                 v-bind:attendance-records="attendanceByMember"
@@ -162,10 +161,14 @@ export default {
       this.stopLoading()
     },
     startLoading () {
-      this.$nextTick(() => this.loading = true)
+      this.$nextTick(() => {
+        this.loading = true
+      })
     },
     stopLoading () {
-      this.$nextTick(() => this.loading = false)
+      this.$nextTick(() => {
+        this.loading = false
+      })
     },
 
     async findAttendees () {

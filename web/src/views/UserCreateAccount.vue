@@ -114,14 +114,17 @@ export default {
         return
       }
 
+      EventBus.$emit('loading', { message: 'Creating account' })
       this.form.password = this.form.password1
       console.log('Saving account:', this.form)
       this.$store.dispatch('users/create', this.form)
         .then((result) => {
           this.$router.push({ name: 'login' })
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: 'Account successfully created!' })
         })
         .catch((e) => {
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: `Error creating account: ${e.message}`, type: 'error' })
         })
     }

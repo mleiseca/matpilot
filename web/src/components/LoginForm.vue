@@ -81,15 +81,18 @@ export default {
       if (!this.$refs.form.validate()) {
         return
       }
+      EventBus.$emit('loading', { message: 'Logging in' })
       console.log('username', this.username)
 
       authenticate({ strategy: 'local', email: this.email.toLowerCase(), password: this.password })
         .then((result) => {
           console.log('** Login result: ', result)
+          EventBus.$emit('loading', { done: true })
           this.$router.push({ name: 'userhome' })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: `Error logging in: ${e.message}`, type: 'error' })
         })
     }
