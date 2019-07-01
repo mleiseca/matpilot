@@ -1,4 +1,4 @@
-var webpack = require('webpack')
+// var webpack = require('webpack')
 
 module.exports = {
   configureWebpack:{
@@ -9,9 +9,9 @@ module.exports = {
         maxSize: 512000,
       }
     },
-    plugins: [
-      new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en.*/),
-    ]
+    // plugins: [
+    //   new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en.*/),
+    // ]
   },
   pluginOptions: {
     webpackBundleAnalyzer: {
