@@ -244,7 +244,9 @@ export default {
         this.guardianContactPhone = m.guardianContacts[0].phone
       }
 
-      this.saveDateOfBirth(m.dateOfBirth)
+      if (m.dateOfBirth) {
+        this.saveDateOfBirth(m.dateOfBirth)
+      }
       this.agreeToTerms = m.waiverSignedDate !== null
       this.needsToSign = m.waiverSignedDate === null
     })
