@@ -33,8 +33,15 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 // Host the public folder - and route any SPA urls to index.html (that's history)
-app.use(history())
-app.use('/', express.static(app.get('public')))
+// Basically, any request without a dot (.) will return index.html
+// The assumption is that your static assets (blahblah.js) are going to have a dot in them.
+app.use(history({
+  // logger: console.log.bind(console)
+}))
+app.use('/', express.static(app.get('public'), {
+  immutable: true,
+  maxAge: 31557600000 // 1 year
+}))
 
 // Set up Plugins and providers
 app.configure(express.rest())
