@@ -9,17 +9,15 @@ module.exports = {
         maxSize: 512000,
       }
     },
-    // plugins: [
-    //   new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en.*/),
-    // ]
-  },
-  pluginOptions: {
-    webpackBundleAnalyzer: {
-      openAnalyzer: false,
-      reportFilename: '.report.html',
-      generateStatsFile: true,
-      statsFilename: '.stats.json'
-    },
-
   }
+  // ,
+  // pluginOptions: {
+  //   webpackBundleAnalyzer: {
+  //     openAnalyzer: false,
+  //     reportFilename: '.report.html',
+  //     generateStatsFile: true,
+  //     statsFilename: '.stats.json'
+  //   },
+  //
+  // }
 }

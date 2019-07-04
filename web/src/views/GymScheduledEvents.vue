@@ -27,7 +27,7 @@
               <tr @click="navigateToScheduledEvent"
                   :data-scheduled-event-id="item.id">
                 <td>{{ item.title }}</td>
-                <td>{{ item.startTime }} -{{ item.endTime }}</td>
+                <td>{{ item.startTime }} - {{ item.endTime }}</td>
                 <td>{{ scheduleDescription(item) }}</td>
               </tr>
             </template>
@@ -48,6 +48,7 @@
 <script>
 import { mapActions } from 'vuex'
 import { rrulestr } from 'rrule'
+import moment from 'moment'
 
 // todo: search?
 export default {
@@ -91,7 +92,7 @@ export default {
       if (scheduledEvent.rrules) {
         return rrulestr(scheduledEvent.rrules).toText()
       } else {
-        return 'invalid schedule'
+        return moment(scheduledEvent.startDate).format('MMMM D, YYYY')
       }
     }
   },
