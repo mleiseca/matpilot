@@ -259,9 +259,11 @@ export default {
         return
       }
 
+      EventBus.$emit('loading', { message: 'Saving' })
       if (this.needsToSign) {
         if (this.$refs.signaturePad.isEmpty()) {
           EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
+          EventBus.$emit('loading', { done: true })
           return
         } else {
           this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })

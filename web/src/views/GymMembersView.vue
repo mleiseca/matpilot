@@ -59,10 +59,12 @@ export default {
       event.save()
         .then((result) => {
           console.log('Got result:', result)
+          EventBus.$emit('loading', { done: true })
           this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
+          EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: `Error saving member: ${e.message}`, type: 'error' })
         })
     },

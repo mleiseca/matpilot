@@ -65,10 +65,12 @@ export default {
         .then((result) => {
           console.log('Got result:', result)
           this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+          EventBus.$emit('loading', { done: true })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
           EventBus.$emit('user-message', { message: `Error adding member: ${e.message}`, type: 'error' })
+          EventBus.$emit('loading', { done: true })
         })
     }
   }
