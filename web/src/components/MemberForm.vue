@@ -149,21 +149,24 @@
               </template>
             </div>
           <VueSignaturePad
-            width="550px"
+            :width="'' + windowWidth"
             height="300px"
             ref="signaturePad"
             :customStyle="{ border: 'black 3px solid' }"
+
           />
-          <v-btn
-            class="mx-0 font-weight-light"
-            color="normal"
-            @click="clearSignature">
-            Clear Signature
-          </v-btn>
+          <v-flex xs12 text-xs-right>
+            <v-btn
+              class="mx-0 font-weight-light"
+              color="normal"
+              @click="clearSignature">
+              Clear Signature
+            </v-btn>
+          </v-flex>
           </template>
         </v-flex>
 
-        <v-flex xs12 text-xs-right>
+        <v-flex xs12>
           <v-btn
             class="mx-0 font-weight-light"
             color="success"
@@ -202,6 +205,7 @@ export default {
   },
   data () {
     return {
+      windowWidth: window.innerWidth,
       guardianContactName: '',
       guardianContactPhone: '',
       emergencyContactName: '',
@@ -249,6 +253,10 @@ export default {
       }
       this.agreeToTerms = m.waiverSignedDate !== null
       this.needsToSign = m.waiverSignedDate === null
+
+      window.onresize = () => {
+        this.windowWidth = window.innerWidth
+      }
     })
   },
   methods: {
