@@ -52,14 +52,16 @@ export default {
           let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
 
           // Only show events that are in progress or in the future
-          if (now.isBefore(endDateTime)) {
+          let displayStartTime = endDateTime.clone().add(3, 'hours')
+          if (now.isBefore(displayStartTime)) {
             upcomingEvents.push({
               startDateTime: startDateTime,
               endDateTime: endDateTime,
               scheduledEvent: se,
               id: 'se-' + se.id + '-' + startDateTime,
               startDate: startDate,
-              active: isActive
+              active: isActive,
+              past: now.isAfter(startDateTime)
             })
           }
 

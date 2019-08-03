@@ -13,7 +13,7 @@
   <!--title: (...)-->
   <!--updatedAt: (...)-->
   <v-container fill-height fluid grid-list-xl pt-0>
-    <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active }">
+    <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active, past:eventDetails.past }">
       <v-flex xs12 md6 sm6 lg6 py-0>
         <div class="description title">
           {{ eventDetails.scheduledEvent.title }}
@@ -105,6 +105,10 @@ export default {
 
   .row.active {
     box-shadow: 0 .05rem .25rem .15rem #4caf50;
+  }
+
+  .row.past {
+    background-color: lightgrey;
   }
 
   .row {
