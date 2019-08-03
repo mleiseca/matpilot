@@ -145,17 +145,19 @@ module.exports = {
     find: [paramsFromClient('populate'), include],
     get: [],
     create: [
+      commonHooks.lowerCase('email'),
       assignCreatedBy,
       writeWaiverSignatureToS3(),
       createLowerName()
 
     ],
-    update: [writeWaiverSignatureToS3(), createLowerName()],
+    update: [commonHooks.lowerCase('email'), writeWaiverSignatureToS3(), createLowerName()],
     patch: [
       // commonHooks.iff(
       //   commonHooks.isProvider('external'),
       //   commonHooks.preventChanges(true,
       //     ['waiverSignedDate'])),
+      commonHooks.lowerCase('email'),
       writeWaiverSignatureToS3(),
       createLowerName()
     ],
