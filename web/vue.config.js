@@ -1,14 +1,14 @@
 // var webpack = require('webpack')
 
 module.exports = {
-  configureWebpack:{
+  configureWebpack: {
     optimization: {
       splitChunks: {
         chunks: 'all',
         minSize: 10000,
-        maxSize: 512000,
+        maxSize: 512000
       }
-    },
+    }
   }
   // ,
   // pluginOptions: {

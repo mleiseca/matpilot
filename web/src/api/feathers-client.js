@@ -9,13 +9,13 @@ const socket = io(host, {
   transports: ['websocket'],
   reconnection: true,
   reconnectionDelay: 1000,
-  reconnectionDelayMax : 5000,
+  reconnectionDelayMax: 5000,
   reconnectionAttempts: Infinity
 })
 
 const feathersClient = feathers()
   .configure(socketio(socket, {
-    timeout: 5000
+    timeout: 30000
   }))
   .configure(auth({ storage: window.localStorage }))
 

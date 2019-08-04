@@ -1,6 +1,6 @@
 <template>
   <v-container py-0>
-    <v-form ref="form">
+    <v-form ref="form" autocomplete="off">
       <v-layout wrap>
 
         <v-flex xs12 md12>

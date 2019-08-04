@@ -1,5 +1,5 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <v-form ref="form">
+  <v-form ref="form" autocomplete="off">
     <v-container py-0>
       <v-layout wrap>
         <v-flex xs12 md12>

@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form">
+  <v-form ref="form" autocomplete="off">
     <v-container fill-height fluid grid-list-xl pt-0>
       <v-layout justify-center wrap>
         <v-flex xs12 md8>

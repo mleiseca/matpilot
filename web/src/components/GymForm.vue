@@ -1,5 +1,5 @@
 <template>
-  <v-form>
+  <v-form autocomplete="off">
     <v-container py-0>
       <v-layout wrap>
 
@@ -25,67 +25,6 @@
           />
         </v-flex>
 
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md4-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--label="Email Address"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md6-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--label="First Name"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md6-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--label="Last Name"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md12-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--label="Adress"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md4>-->
-          <!--<v-text-field-->
-            <!--label="City"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md4>-->
-          <!--<v-text-field-->
-            <!--label="Country"-->
-            <!--class="purple-input"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex-->
-          <!--xs12-->
-          <!--md4>-->
-          <!--<v-text-field-->
-            <!--class="purple-input"-->
-            <!--label="Postal Code"-->
-            <!--type="number"/>-->
-        <!--</v-flex>-->
-        <!--<v-flex xs12>-->
-          <!--<v-textarea-->
-            <!--class="purple-input"-->
-            <!--label="About Me"-->
-            <!--value="Lorem ipsum dolor sit amet, consectetur adipiscing elit."-->
-          <!--/>-->
-        <!--</v-flex>-->
         <v-flex
           xs12
           text-xs-right
