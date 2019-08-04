@@ -65,7 +65,7 @@ app.hooks(appHooks)
 
 function setCustomCacheControl (res, path) {
   logger.info("checking path: %s", path)
-  if (path !== 'index.html') {
+  if (!path.endsWith('index.html')) {
     // Custom Cache-Control for HTML files
     // 31557600000 - 1 year
     res.setHeader('Cache-Control', 'public, max-age=31557600000, immutable')
