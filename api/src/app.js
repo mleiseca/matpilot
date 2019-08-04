@@ -38,15 +38,10 @@ app.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 app.use(history({
   // logger: console.log.bind(console)
 }))
-app.use('/js', express.static(app.get('public'), {
-  immutable: true,
-  maxAge: 31557600000 // 1 year
+
+app.use('/', express.static(app.get('public'), {
+  setHeaders: setCustomCacheControl
 }))
-app.use('/css', express.static(app.get('public'), {
-  immutable: true,
-  maxAge: 31557600000 // 1 year
-}))
-app.use('/', express.static(app.get('public')))
 
 // Set up Plugins and providers
 app.configure(express.rest())
@@ -68,4 +63,12 @@ app.use(express.errorHandler({ logger }))
 
 app.hooks(appHooks)
 
+function setCustomCacheControl (res, path) {
+  logger.info("checking path: %s", path)
+  if (path !== 'index.html') {
+    // Custom Cache-Control for HTML files
+    // 31557600000 - 1 year
+    res.setHeader('Cache-Control', 'public, max-age=31557600000, immutable')
+  }
+}
 module.exports = app
