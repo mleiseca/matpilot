@@ -64,7 +64,7 @@ app.use(express.errorHandler({ logger }))
 app.hooks(appHooks)
 
 function setCustomCacheControl (res, path) {
-  logger.info("checking path: %s", path)
+  // logger.info("checking path: %s", path)
   if (!path.endsWith('index.html')) {
     // Custom Cache-Control for HTML files
     // 31557600000 - 1 year

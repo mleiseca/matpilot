@@ -21,6 +21,14 @@
         Close
       </v-btn>
     </v-snackbar>
+    <v-snackbar
+      v-model="disconnected"
+      bottom
+      center
+      color="warning"
+    >
+      Offline
+    </v-snackbar>
     <v-dialog
       v-model="loading"
       persistent
@@ -55,7 +63,8 @@ export default {
       type: '',
       timeout: 10 * 1000,
       buttonColor: '',
-      loading: ''
+      loading: '',
+      disconnected: false
     }
   },
   methods: {
@@ -80,8 +89,9 @@ export default {
       } else {
         this.loading = 'loading'
       }
-
-      //      { message: `Loading attendees` }
+    },
+    socketStatusListener (contents) {
+      this.disconnected = contents.disconnected
     },
     closeNotification () {
       this.notification = false
@@ -95,10 +105,12 @@ export default {
   mounted () {
     EventBus.$on('user-message', this.eventBusListener)
     EventBus.$on('loading', this.loadingListener)
+    EventBus.$on('socket-status', this.socketStatusListener)
   },
   beforeDestroy () {
     EventBus.$off('user-message', this.eventBusListener)
     EventBus.$off('loading', this.loadingListener)
+    EventBus.$off('socket-status', this.socketStatusListener)
   }
 }
 
