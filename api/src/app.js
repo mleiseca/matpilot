@@ -38,7 +38,7 @@ app.use(favicon(path.join(app.get('public'), 'favicon.ico')))
 app.use(history({
   // logger: console.log.bind(console)
 }))
-app.use('/', express.static(app.get('public'), {
+app.use('.*css$', '.*js$', express.static(app.get('public'), {
   immutable: true,
   maxAge: 31557600000 // 1 year
 }))
