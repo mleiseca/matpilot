@@ -57,7 +57,7 @@ const memberResolvers = {
 function writeWaiverSignatureToS3() {
   return function(hook) {
     if (hook.data.waiverSignature) {
-      logger.info('Writing waiver to S3, gym, member', hook.data.gymId, hook.data.lastName)
+      logger.info('Writing waiver to S3, gym, member %s, %s', hook.data.gymId, hook.data.lastName)
       let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''),'base64')
 
       // TODO: property name
@@ -80,7 +80,7 @@ function writeWaiverSignatureToS3() {
           hook.data.waiverSignedDate = moment()
         })
     } else {
-      logger.info('No need to write waiver to S3', hook.data.gymId, hook.data.userId)
+      logger.info('No need to write waiver to S3 %s, %s', hook.data.gymId, hook.data.userId)
     }
   }
 }

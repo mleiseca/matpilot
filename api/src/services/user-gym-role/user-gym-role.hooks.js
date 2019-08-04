@@ -29,25 +29,25 @@ function includeGymAndUser() {
 
 function replaceUserWithUserId() {
   return async function(hook) {
-    logger.info('Incoming:', hook.data)
+    logger.info('Incoming: %o', hook.data)
     let users = await hook.app.service('users').find({
       query: {
         email: hook.data.user.email.toLowerCase()
       }
     })
 
-    logger.info('Found user: ', users)
+    logger.info('Found user: %o', users)
     if (users.total === 0) {
       // Generate a random password. User will get a reset email to set their own password.
       hook.data.user.password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
       let newUser = await hook.app.service('users').create(hook.data.user)
-      logger.info('New User! ', newUser)
+      logger.info('New User! %o', newUser)
       hook.data.userId = newUser.id
     } else {
       hook.data.userId = users.data[0].id
     }
     delete hook.data.user
-    logger.info('Done:', hook.data)
+    logger.info('Done: %o', hook.data)
   }
 }
 

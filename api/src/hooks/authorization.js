@@ -75,14 +75,14 @@ function addGymIdParameter(hook, options) {
 
     let explicitGymId = get(hook.params.query, options.gymIdField)
 
-    logger.info('Found explicitGymId: ', explicitGymId)
+    logger.info('Found explicitGymId: %s', explicitGymId)
 
     if (isUndefined(explicitGymId )) {
       set(hook.params, `query.${options.gymIdField}`, Array.from(gymIds))
     } else {
       explicitGymId = parseInt(explicitGymId, 10)
       if (!gymIds.has(explicitGymId)) {
-        logger.info('Permission denied, gymIds is', gymIds, 'query wanted ', explicitGymId)
+        logger.info('Permission denied, gymIds is %s query wanted %s', gymIds, explicitGymId)
         throw new errors.Forbidden('You do not have the permissions to access this.')
       }
     }
@@ -96,7 +96,7 @@ function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
 
     explicitGymId = parseInt(explicitGymId, 10)
     if (!gymIds.has(explicitGymId)) {
-      logger.info('Permission denied, gymIds is', gymIds, 'query wanted ', explicitGymId)
+      logger.info('Permission denied, gymIds is %s query wanted %s',gymIds, explicitGymId)
       throw new errors.Forbidden('You do not have the permissions to access this.')
     }
     return hook
@@ -135,13 +135,13 @@ function restrictAccessForGym(options = {}) {
     const params = Object.assign({}, hook.params, { provider: undefined })
 
     return hook.service.get(hook.id, params).then(data => {
-      logger.info('running restrictAccessForGym...found some data....', data)
+      logger.info('running restrictAccessForGym...found some data....%o', data)
 
       return fetchUserGymIds(hook.app, hook.params.user.id, options.role).then(function (gymIds) {
 
-        logger.info('Checking GYMID: ', get(data, options.gymIdField))
+        logger.info('Checking GYMID: %s', get(data, options.gymIdField))
         if (!gymIds.has(get(data, options.gymIdField)) ) {
-          logger.info('Permission denied, gymIds is', gymIds)
+          logger.info('Permission denied, gymIds is %o', gymIds)
           throw new errors.Forbidden('You do not have the permissions to access this.')
         }
 

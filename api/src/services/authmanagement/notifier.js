@@ -9,9 +9,9 @@ module.exports = function(app) {
 
   function sendEmail(email) {
     return app.service('mailer').create(email).then(function (result) {
-      logger.info('Sent email', result)
+      logger.info('Sent email %o', result)
     }).catch(err => {
-      logger.warn('Error sending email', err)
+      logger.warn('Error sending email %o', err)
     })
   }
 
@@ -86,7 +86,7 @@ module.exports = function(app) {
       if (email) {
         sendEmail(email)
       } else {
-        logger.warn('No email sent for type: ' , type)
+        logger.warn('No email sent for type: %s' , type)
       }
     }
   }

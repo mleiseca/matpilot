@@ -17,14 +17,14 @@ module.exports = function (app) {
 
   let useSsl = true
   if (useSslEnv !== undefined) {
-    logger.info('use SSL (DB_DIALECT_OPTIONS_SSL)? ', process.env.DB_DIALECT_OPTIONS_SSL)
+    logger.info('use SSL (DB_DIALECT_OPTIONS_SSL)? %s', process.env.DB_DIALECT_OPTIONS_SSL)
     useSsl = useSslEnv === 'true'
   }
   if (useSsl === true) {
     dbOptions.dialectOptions = {ssl: useSsl}
   }
 
-  logger.info('dboptions', dbOptions)
+  logger.info('dboptions: %o', dbOptions)
   const sequelize = new Sequelize(connectionString, dbOptions)
   const oldSetup = app.setup
 

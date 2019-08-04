@@ -16,7 +16,7 @@ async function createUserGym(context) {
 
   userGymRoleModel.create({userId: parseInt(context.params.user.id, 10), gymId: context.result.id, role: 'OWNER'})
     .then((userGymRole) => {
-      logger.info('Create user gym', userGymRole.get({
+      logger.info('Create user gym %o', userGymRole.get({
         plain: true
       }))
     })
