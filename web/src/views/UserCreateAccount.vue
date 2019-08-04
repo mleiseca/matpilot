@@ -21,7 +21,7 @@
           title="Create Account"
           text="">
           <v-container py-0>
-            <v-form ref="form" autocomplete="off">
+            <v-form ref="form">
               <v-layout wrap>
 
                 <v-flex xs12 md12>

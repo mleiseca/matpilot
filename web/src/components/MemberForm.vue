@@ -1,5 +1,5 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <v-form ref="form" autocomplete="off">
+  <v-form ref="form">
     <v-container py-0>
       <v-layout wrap>
         <v-flex xs12 md12>
@@ -8,6 +8,7 @@
             label="First Name"
             :rules="[rules.required]"
             required
+            autocomplete="off"
             v-model="member.firstName"/>
         </v-flex>
 
@@ -15,6 +16,7 @@
           <v-text-field
             class="purple-input"
             label="Last Name"
+            autocomplete="off"
             :rules="[rules.required]"
             v-model="member.lastName"/>
         </v-flex>
@@ -23,6 +25,7 @@
           <v-text-field
             class="purple-input"
             label="Email"
+            autocomplete="off"
             :rules="[rules.email]"
             v-model="member.email"/>
         </v-flex>
@@ -31,6 +34,7 @@
           <v-text-field
             class="purple-input"
             label="Phone number"
+            autocomplete="off"
             :rules="[rules.phone]"
             v-model="member.phone"/>
         </v-flex>
@@ -72,6 +76,7 @@
             class="purple-input"
             label="Parent or Guardian"
             :rules="[rules.requiredIfMinor]"
+            autocomplete="off"
             v-model="guardianContactName"/>
         </v-flex>
         <v-flex xs12 md12 v-if="isMinor">
@@ -79,6 +84,7 @@
             class="purple-input"
             label="Parent or Guardian Contact Phone"
             :rules="[rules.requiredIfMinor, rules.phone]"
+            autocomplete="off"
             v-model="guardianContactPhone"/>
         </v-flex>
 
@@ -87,6 +93,7 @@
             class="purple-input"
             label="Emergency Contact Name"
             :rules="[]"
+            autocomplete="off"
             v-model="emergencyContactName"/>
         </v-flex>
         <v-flex xs12 md12>
@@ -94,6 +101,7 @@
             class="purple-input"
             label="Emergency Contact Phone"
             :rules="[rules.phone]"
+            autocomplete="off"
             v-model="emergencyContactPhone"/>
         </v-flex>
 
