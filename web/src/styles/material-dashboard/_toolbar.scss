@@ -66,6 +66,17 @@
       }
     }
   }
+
+
+}
+
+.v-navigation-drawer__content {
+  .v-list-item__title {
+    a {
+      color: $white;
+
+    }
+  }
 }
 
 @media all and (max-width: 990px) {
@@ -74,7 +85,3 @@
   }
 }
 
-
-.v-list__tile a{
-  color: white;
-}

@@ -1,81 +1,69 @@
 <template>
   <v-navigation-drawer
     id="app-drawer"
-    v-model="inputValue"
     app
     dark
     floating
-    persistent
     mobile-break-point="991"
     width="260"
+    :src="image"
   >
-    <v-img
-      :src="image"
-      height="100%"
-    >
+
+    <!--<v-img-->
+      <!--:src="image"-->
+      <!--height="100%"-->
+    <!--&gt;-->
+
       <v-layout
         class="fill-height"
-        tag="v-list"
         column
       >
-        <v-list-tile avatar>
-          <v-list-tile-avatar
-            color="white"
-          >
-            <v-img
-              :src="logo"
-              height="34"
-              contain
-            />
-          </v-list-tile-avatar>
-          <v-list-tile-title class="title">
-            <router-link :to="{ name: 'userhome'}">
-              MatPilot
-            </router-link>
-          </v-list-tile-title>
+        <v-list>
+          <v-list-item>
+            <v-list-item-avatar
+              color="white"
+            >
+              <v-img
+                :src="logo"
+                height="34"
+                contain
+              />
+            </v-list-item-avatar>
+            <v-list-item-title class="title">
+              <router-link :to="{ name: 'userhome'}">
+                MatPilot
+              </router-link>
+            </v-list-item-title>
 
-        </v-list-tile>
-        <v-divider/>
-        <!--<v-list-tile-->
-          <!--v-if="responsive"-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--class="purple-input search-input"-->
-            <!--label="Search..."-->
-            <!--color="purple"-->
-          <!--/>-->
-        <!--</v-list-tile>-->
-        <v-list-tile
-          v-for="(link, i) in gymLinks"
-          :key="i"
-          :to="link.to"
-          :active-class="color"
-          :exact="true"
-          avatar
-          class="v-list-item"
-        >
-          <v-list-tile-action>
-            <v-icon>{{ link.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title
-            v-text="link.text"
-          />
-        </v-list-tile>
-        <v-list-tile
-          disabled
-          active-class="primary"
-          class="v-list-item v-list__tile--buy"
-          to="/upgrade"
-        >
-          <!--<v-list-tile-action>-->
-            <!--<v-icon>mdi-package-up</v-icon>-->
-          <!--</v-list-tile-action>-->
-          <!--<v-list-tile-title class="font-weight-light">-->
-            <!--Upgrade To PRO-->
-          <!--</v-list-tile-title>-->
-        </v-list-tile>
+          </v-list-item>
+          <v-divider/>
+
+          <v-list-item
+            v-for="(link, i) in gymLinks"
+            :key="i"
+            :to="link.to"
+            :active-class="color"
+            :exact="true"
+            class="v-list-item"
+          >
+            <v-list-item-action>
+              <v-icon>{{ link.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-title
+              v-text="link.text"
+            />
+          </v-list-item>
+          <v-list-item
+            disabled
+            active-class="primary"
+            class="v-list-item v-list__item--buy"
+            to="/upgrade"
+          >
+          </v-list-item>
+        </v-list>
       </v-layout>
-    </v-img>
+    <!--</v-img>-->
+
   </v-navigation-drawer>
 </template>
 
@@ -93,14 +81,6 @@ export default {
   }),
   computed: {
     ...mapState('app', ['image', 'color']),
-    inputValue: {
-      get () {
-        return this.$store.state.app.drawer
-      },
-      set (val) {
-        this.setDrawer(val)
-      }
-    },
     items () {
       return this.$t('Layout.View.items')
     }
@@ -203,7 +183,7 @@ export default {
 
 <style lang="scss">
   #app-drawer {
-    .v-list__tile {
+    .v-list__item {
       border-radius: 4px;
 
       &--buy {

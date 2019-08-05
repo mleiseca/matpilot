@@ -8,35 +8,22 @@
           <v-data-table
             :headers="headers"
             :items="scheduledEvents"
-            hide-actions>
-            <!-- TODO: this pagination or search needs to work -->
-            <!--:pagination.sync="pagination"-->
-            <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
-            <!--:total-items="pagination.totalItems"-->
-            <template
-              slot="headerCell"
-              slot-scope="{ header }">
-              <span
-                class="subheading font-weight-light text--darken-3"
-                v-text="header.text"
-              />
+            :mobile-breakpoint="100"
+            @click:row="navigateToScheduledEvent"
+          >
+            <template v-slot:item.times="{ item }">
+              {{ item.startTime }} - {{ item.endTime }}
+
             </template>
-            <template
-              slot="items"
-              slot-scope="{ item }">
-              <tr @click="navigateToScheduledEvent"
-                  :data-scheduled-event-id="item.id">
-                <td>{{ item.title }}</td>
-                <td>{{ item.startTime }} - {{ item.endTime }}</td>
-                <td>{{ scheduleDescription(item) }}</td>
-              </tr>
+            <template v-slot:item.description="{ item }">
+              {{ scheduleDescription(item) }}
             </template>
+
           </v-data-table>
 
         </material-card>
 
-        <v-btn @click="navigateToAddScheduledEvent" fab
-               color="success">
+        <v-btn @click="navigateToAddScheduledEvent" fab color="success">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-flex>
@@ -46,7 +33,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { rrulestr } from 'rrule'
 import moment from 'moment'
 
@@ -59,22 +46,34 @@ export default {
       headers: [
         {
           sortable: false,
-          text: 'Title'
+          text: 'Title',
+          value: 'title'
         },
         {
           sortable: false,
-          text: 'Times'
+          text: 'Times',
+          value: 'times'
         },
         {
           sortable: false,
-          text: 'Description'
+          text: 'Description',
+          value: 'description'
         }
       ]
     }
   },
   computed: {
+    ...mapGetters('scheduled-events', {
+      findScheduledEventsInStore: 'find'
+    }),
     scheduledEvents () {
-      return this.$store.getters['scheduled-events/list']
+      return this.findScheduledEventsInStore({
+        query: {
+          gymId: parseInt(this.gymId, 10),
+          $sort: { createdAt: -1 },
+          $limit: 25
+        }
+      }).data
     }
   },
   methods: {
@@ -85,8 +84,8 @@ export default {
       this.$router.push({ name: 'gym-scheduled-event-add', params: { gymId: this.gymId } })
     },
     navigateToScheduledEvent: function (event) {
-      const scheduledEventId = event.currentTarget.dataset['scheduledEventId']
-      this.$router.push({ name: 'gym-scheduled-event-view', params: { gymId: this.gymId, scheduledEventId: scheduledEventId } })
+      console.log('editing event: ', event)
+      this.$router.push({ name: 'gym-scheduled-event-view', params: { gymId: this.gymId, scheduledEventId: event.id } })
     },
     scheduleDescription: function (scheduledEvent) {
       if (scheduledEvent.rrules) {
@@ -97,6 +96,7 @@ export default {
     }
   },
   mounted () {
+    console.log('Looking for scheduled events...')
     this.findScheduledEvents({
       query: {
         $sort: { createdAt: -1 },

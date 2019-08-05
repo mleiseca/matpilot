@@ -45,7 +45,6 @@
             v-model="dateOfBirthMenu"
             :close-on-content-click="false"
             :nudge-right="40"
-            lazy
             transition="scale-transition"
             offset-y
             full-width
@@ -168,7 +167,7 @@
               class="mx-0 font-weight-light"
               color="normal"
               @click="clearSignature">
-              Clear Signature
+              Clear
             </v-btn>
           </v-flex>
           </template>

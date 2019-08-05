@@ -8,30 +8,11 @@
           <v-data-table
             :headers="headers"
             :items="members"
-            hide-actions>
-            <!-- TODO: this pagination or search needs to work -->
-            <!--:pagination.sync="pagination"-->
-            <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
-            <!--:total-items="pagination.totalItems"-->
-            <template
-              slot="headerCell"
-              slot-scope="{ header }">
-              <span
-                class="subheading font-weight-light text--darken-3"
-                v-text="header.text"
-              />
-            </template>
-            <template
-              slot="items"
-              slot-scope="{ item }">
-              <tr @click="navigateToMember"
-                  :data-member-id="item.id">
-                <td>{{ item.firstName }}</td>
-                <td>{{ item.lastName  }}</td>
-              </tr>
-            </template>
-          </v-data-table>
+            :mobile-breakpoint="100"
+            @click:row="navigateToMember"
+          >
 
+          </v-data-table>
         </material-card>
 
         <v-btn @click="navigateToAddMember" fab
@@ -66,32 +47,7 @@ export default {
       ]
     }
   },
-  //  computed: {
-  //    ...mapGetters('members', {
-  //      members: 'list'
-  //    })
-  //  },
-  //  watch: {
-  //    pagination: {
-  //      handler () {
-  //        this.loading = true
-  //        this.$store.dispatch('queryItems')
-  //          .then(result => {
-  //            this.loading = false
-  //          })
-  //      },
-  //      deep: true
-  //    }
-  //  },
   computed: {
-  //    //    pagination: {
-  //    //      get: function () {
-  //    //        return this.$store.state.members.pagination
-  //    //      },
-  //    set: function (value) {
-  //      //        this.$store.commit('setPagination', value)
-  //      //      }
-  //    },
     members () {
       return this.$store.getters['members/list']
     }
@@ -100,19 +56,14 @@ export default {
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
-    //    ...mapState('members'),
     navigateToAddMember: function () {
       this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
     },
     navigateToMember: function (event) {
-      //      console.log("click for ", event)
-      const memberId = event.currentTarget.dataset['memberId']
-
-      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
+      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: event.id } })
     }
   },
   mounted () {
-    //    console.log("Looking for members...")
     this.findGymMembers({
       query: {
         $sort: { createdAt: -1 },

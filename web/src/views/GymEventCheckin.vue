@@ -9,6 +9,7 @@
             <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
+          <v-flex slot="v-card-text"></v-flex>
           <div class="controls">
             <v-text-field
               :disabled="showAttendees"
@@ -21,31 +22,54 @@
               clearable>
             </v-text-field>
 
-            <v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"
-                      shrink v-if="$route.name !== 'gym-event-self-checkin'">
-            </v-switch>
-          </div>
+            <!--<v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"-->
+                      <!--shrink v-if="$route.name !== 'gym-event-self-checkin'">-->
+            <!--</v-switch>-->
+            <transition>
+              <v-list>
+                <v-subheader>REPORTS</v-subheader>
+                <v-list-item-group v-model="members" color="primary">
+                  <v-list-item
+                    v-for="member in members"
+                    :key="member.id"
+                  >
+                    <!--<v-list-item-avatar v-if="avatar">-->
+                      <!--<v-img :src="item.avatar"></v-img>-->
+                    <!--</v-list-item-avatar>-->
+                    <v-list-item-content>
+                      <mp-checkin-member-row
+                        v-for="member in members"
+                        v-bind:key="member.id"
+                        v-bind:member="member"
+                        v-bind:attendance-records="attendanceByMember"
+                        v-on:attendance-change="attendanceChange">
+                      <!--<mp-checkin-member-row-->
+                        <!--v-for="member in members"-->
+                        <!--v-bind:key="member.id"-->
+                        <!--v-bind:member="member"-->
+                        <!--v-bind:attendance-records="attendanceByMember"-->
+                        <!--v-on:attendance-change="attendanceChange">-->
+                      </mp-checkin-member-row>
+                      <!--<v-list-item-title v-html="item.title"></v-list-item-title>-->
+                      <!--<v-list-item-subtitle v-if="twoLine || threeLine" v-html="item.subtitle"></v-list-item-subtitle>-->
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list-item-group>
+              </v-list>
 
-          <transition>
-            <div v-show="((search !== null && search.length > 1) || showAttendees) && !loading">
-              <mp-checkin-member-row
-                v-for="member in members"
-                v-bind:key="member.id"
-                v-bind:member="member"
-                v-bind:attendance-records="attendanceByMember"
-                v-on:attendance-change="attendanceChange">
-              </mp-checkin-member-row>
-            </div>
-          </transition>
-          <transition>
-            <div class="loading" key="loading" v-show="loading">
-              <v-progress-linear
-                :size="50"
-                color="primary"
-                indeterminate
-              ></v-progress-linear>
-            </div>
-          </transition>
+              <!--<div v-show="((search !== null && search.length > 1) || showAttendees) && !loading">-->
+              <!--</div>-->
+            </transition>
+            <transition>
+              <div class="loading" key="loading" v-show="loading">
+                <v-progress-linear
+                  :size="50"
+                  color="primary"
+                  indeterminate
+                ></v-progress-linear>
+              </div>
+            </transition>
+          </div>
 
         </material-card>
       </v-flex>
@@ -266,7 +290,12 @@ export default {
   .loading{
     padding-top: 1rem;
     width: auto;
+  }
 
+  .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .fade-enter-active, .fade-leave-active {

@@ -1,75 +1,90 @@
 <template>
-  <v-toolbar
+  <v-app-bar
     id="core-toolbar"
-
     flat
-    prominent
+    dense
     style="background: #eee;"
   >
-    <div class="v-toolbar-title">
-      <v-toolbar-title
-        class="tertiary--text font-weight-light"
-      >
-        <v-layout align-center>
-          <v-btn
-            v-if="responsive"
-            class="default v-btn--simple"
-            dark
-            icon
-            @click.stop="onClickBtn"
-          >
-            <v-icon>mdi-view-list</v-icon>
-          </v-btn>
+    <v-app-bar-nav-icon v-if="responsive"></v-app-bar-nav-icon>
 
-        <v-breadcrumbs v-if="responsive">
-          <v-breadcrumbs-item
-            dark
-            v-for="item in breadcrumbs"
-            :key="item.text"
-            :to="item.to"
-            :exact="true">
-            {{ item.text }}
-          </v-breadcrumbs-item>
+    <v-toolbar-title>
+      <v-breadcrumbs v-if="responsive">
+        <v-breadcrumbs-item
+          v-for="item in breadcrumbs"
+          :key="item.text"
+          :to="item.to"
+          :exact="true">
+          {{ item.text }}
+        </v-breadcrumbs-item>
+      </v-breadcrumbs>
+    </v-toolbar-title>
 
-          <template v-slot:divider>
-            <v-icon>mdi-chevron-right</v-icon>
-          </template>
-        </v-breadcrumbs>
-        </v-layout>
-      </v-toolbar-title>
-    </div>
+    <v-spacer></v-spacer>
 
-    <v-spacer />
-    <v-toolbar-items>
-      <v-flex
-        align-center
-        layout
-        py-2
-      >
+    <!--<div class="v-toolbar-title">-->
+      <!--<v-toolbar-title-->
+        <!--class="tertiary&#45;&#45;text font-weight-light"-->
+      <!--&gt;-->
+        <!--<v-layout align-center>-->
+          <!--<v-btn-->
+            <!--v-if="responsive"-->
+            <!--class="default v-btn&#45;&#45;simple"-->
+            <!--dark-->
+            <!--icon-->
+            <!--@click.stop="onClickBtn"-->
+          <!--&gt;-->
+            <!--<v-icon>mdi-view-list</v-icon>-->
+          <!--</v-btn>-->
 
-        <v-menu
-          bottom
-          left
-          content-class="dropdown-menu"
-          offset-y
-          transition="slide-y-transition">
+        <!--<v-breadcrumbs v-if="responsive">-->
+          <!--<v-breadcrumbs-item-->
+            <!--dark-->
+            <!--v-for="item in breadcrumbs"-->
+            <!--:key="item.text"-->
+            <!--:to="item.to"-->
+            <!--:exact="true">-->
+            <!--{{ item.text }}-->
+          <!--</v-breadcrumbs-item>-->
 
-              <v-icon
-                slot="activator"
-                color="tertiary">mdi-account</v-icon>
+          <!--<template v-slot:divider>-->
+            <!--<v-icon>mdi-chevron-right</v-icon>-->
+          <!--</template>-->
+        <!--</v-breadcrumbs>-->
+        <!--</v-layout>-->
+      <!--</v-toolbar-title>-->
+    <!--</div>-->
 
-          <v-card>
-            <v-list dense>
-              <v-list-tile @click="onLogout">
+    <!--<v-spacer />-->
+    <!--<v-toolbar-items>-->
+      <!--<v-flex-->
+        <!--align-center-->
+        <!--layout-->
+        <!--py-2-->
+      <!--&gt;-->
 
-                Logout
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-menu>
-      </v-flex>
-    </v-toolbar-items>
-  </v-toolbar>
+        <!--<v-menu-->
+          <!--bottom-->
+          <!--left-->
+          <!--content-class="dropdown-menu"-->
+          <!--offset-y-->
+          <!--transition="slide-y-transition">-->
+
+              <!--<v-icon-->
+                <!--slot="activator"-->
+                <!--color="tertiary">mdi-account</v-icon>-->
+
+          <!--<v-card>-->
+            <!--<v-list dense>-->
+              <!--<v-list-item @click="onLogout">-->
+
+                <!--Logout-->
+              <!--</v-list-item>-->
+            <!--</v-list>-->
+          <!--</v-card>-->
+        <!--</v-menu>-->
+      <!--</v-flex>-->
+    <!--</v-toolbar-items>-->
+  </v-app-bar>
 </template>
 
 <script>

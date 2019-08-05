@@ -2,8 +2,8 @@
   <v-app>
     <!--<core-footer v-if="$route.name !== 'Maps'" />-->
     <core-filter v-if="user && $route.name !== 'gym-event-self-checkin'"/>
-    <core-toolbar v-if="user && $route.name !== 'gym-event-self-checkin'"/>
     <core-drawer v-if="user && $route.name !== 'gym-event-self-checkin'"/>
+    <core-toolbar v-if="user && $route.name !== 'gym-event-self-checkin'"/>
     <core-view />
     <v-snackbar
       v-model="notification"
@@ -14,7 +14,7 @@
     >
       {{ notificationText }}
       <v-btn
-        flat
+        text
         dark
         @click="closeNotification"
       >

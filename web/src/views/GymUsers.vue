@@ -1,5 +1,4 @@
 <template>
-
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout justify-center wrap>
       <v-flex md12>
@@ -9,29 +8,31 @@
           <v-data-table
             :headers="headers"
             :items="userGyms"
-            hide-actions>
-            <!-- TODO: this pagination or search needs to work -->
-            <!--:pagination.sync="pagination"-->
-            <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
-            <!--:total-items="pagination.totalItems"-->
-            <template
-              slot="headerCell"
-              slot-scope="{ header }">
-              <span
-                class="subheading font-weight-light text--darken-3"
-                v-text="header.text"
-              />
-            </template>
-            <template
-              slot="items"
-              slot-scope="{ item }">
+            :mobile-breakpoint="100"
+            @click:row="navigateToUserGym"
+          >
+            <!--<template-->
+              <!--slot="headerCell"-->
+              <!--slot-scope="{ header }">-->
+              <!--<span-->
+                <!--class="subheading font-weight-light text&#45;&#45;darken-3"-->
+                <!--v-text="header.text"-->
+              <!--/>-->
+            <!--</template>-->
 
-              <tr @click="navigateToUserGym" :data-user-id="item.id">
-                <td>{{ get(item, 'user.name') }}</td>
-                <td>{{ get(item, 'user.email') }}</td>
-                <td>{{ item.role }}</td>
-              </tr>
-            </template>
+            <!--<template v-slot:item.description="{ item }">-->
+              <!---->
+            <!--</template>-->
+            <!---->
+            <!--<template-->
+              <!--slot="items"-->
+              <!--slot-scope="{ item }">-->
+              <!--<tr @click="navigateToUserGym" :data-user-id="item.id">-->
+                <!--<td>{{ get(item, 'user.name') }}</td>-->
+                <!--<td>{{ get(item, 'user.email') }}</td>-->
+                <!--<td>{{ item.role }}</td>-->
+              <!--</tr>-->
+            <!--</template>-->
           </v-data-table>
 
         </material-card>
@@ -74,27 +75,7 @@ export default {
       ]
     }
   },
-  //  watch: {
-  //    pagination: {
-  //      handler () {
-  //        this.loading = true
-  //        this.$store.dispatch('queryItems')
-  //          .then(result => {
-  //            this.loading = false
-  //          })
-  //      },
-  //      deep: true
-  //    }
-  //  },
   computed: {
-  //    //    pagination: {
-  //    //      get: function () {
-  //    //        return this.$store.state.members.pagination
-  //    //      },
-  //    set: function (value) {
-  //      //        this.$store.commit('setPagination', value)
-  //      //      }
-  //    },
     ...mapGetters('user-gym-role', {
       findUserGymsInStore: 'find'
     }),
@@ -117,7 +98,7 @@ export default {
       this.$router.push({ name: 'gym-users-add', params: { gymId: this.gymId } })
     },
     navigateToUserGym: function () {
-
+      console.log('navigating to user gym')
     }
   },
   mounted () {
