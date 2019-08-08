@@ -2,32 +2,41 @@
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout justify-center wrap>
       <v-flex md12>
-        <material-card>
+        <material-card offset="12">
           <v-flex slot="header" py-0>
             <div class="title font-weight-heavy">{{ get(event, 'title') }}</div>
 
             <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
-          <div class="controls">
-            <v-text-field
-              :disabled="showAttendees"
-              v-model="search"
-              @input="updateSearch"
-              append-icon="mdi-search"
-              label="Search by Name"
-              single-line
-              hide-details
-              clearable>
-            </v-text-field>
+          <v-layout justify-center wrap row>
+            <v-flex xs9>
+              <v-text-field
+                v-if="bottomNav === 'search'"
+                :disabled="showAttendees"
+                v-model="search"
+                @input="updateSearch"
+                label="Search by Name"
+                single-line
+                hide-details
+                clearable
+                class="pt-0 pl-4"
+              >
+              </v-text-field>
+            </v-flex>
+            <v-flex xs3>
+              <div class="attendee-count pt-2">
+              {{ attendanceByMember.length }} total
+              </div>
+            </v-flex>
+          </v-layout>
 
-            <v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"
-                      shrink v-if="$route.name !== 'gym-event-self-checkin'">
-            </v-switch>
-          </div>
+            <!--<v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"-->
+                      <!--shrink v-if="$route.name !== 'gym-event-self-checkin'">-->
+            <!--</v-switch>-->
 
           <transition>
-            <div v-show="((search !== null && search.length > 1) || showAttendees) && !loading">
+            <v-list v-if="members.length > 0">
               <mp-checkin-member-row
                 v-for="member in members"
                 v-bind:key="member.id"
@@ -35,7 +44,7 @@
                 v-bind:attendance-records="attendanceByMember"
                 v-on:attendance-change="attendanceChange">
               </mp-checkin-member-row>
-            </div>
+            </v-list>
           </transition>
           <transition>
             <div class="loading" key="loading" v-show="loading">
@@ -46,10 +55,42 @@
               ></v-progress-linear>
             </div>
           </transition>
-
         </material-card>
       </v-flex>
+      <v-bottom-nav
+        :active.sync="bottomNav"
+        :value="true"
+        fixed
+      >
+        <v-btn
+          color="teal"
+          flat
+          value="search"
+        >
+          <span>Search</span>
+          <v-icon>mdi-magnify</v-icon>
+        </v-btn>
+
+        <v-btn
+          color="teal"
+          flat
+          value="attendees"
+        >
+          <span>Attendees</span>
+          <v-icon>mdi-account-check</v-icon>
+        </v-btn>
+
+        <v-btn
+          color="teal"
+          flat
+          value="suggestions"
+        >
+          <span>Suggestions</span>
+          <v-icon>mdi-account-clock-outline</v-icon>
+        </v-btn>
+      </v-bottom-nav>
     </v-layout>
+
   </v-container>
 </template>
 
@@ -67,7 +108,8 @@ export default {
       search: '',
       showAttendees: false,
       attendanceByMember: [],
-      loading: false
+      loading: false,
+      bottomNav: 'search'
     }
   },
   components: {
@@ -261,6 +303,16 @@ export default {
     background-color: white;
     box-shadow: 0 .05rem .25rem rgba(0,0,0,.25);
     padding: 1rem;
+  }
+
+  .title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .attendee-count {
+
   }
 
   .loading{

@@ -1,19 +1,14 @@
 <template>
-  <v-container grid-list-md>
+  <v-list-tile v-on:click='presentChange()'>
+    <v-list-tile-action >
+      <v-icon color="pink" v-if="present">mdi-star</v-icon>
+    </v-list-tile-action>
 
-  <v-layout wrap>
-
-    <v-flex shrink>
-      <v-switch pt-0 mt-0
-                v-model="present"
-                @change="presentChange"
-      ></v-switch>
-    </v-flex>
-    <v-flex px-0>
+    <v-list-tile-content>
       {{ member.firstName }} {{ member.lastName }}
-    </v-flex>
-  </v-layout>
-  </v-container>
+    </v-list-tile-content>
+
+  </v-list-tile>
 </template>
 
 <script>
@@ -36,7 +31,6 @@ export default {
   },
   methods: {
     updateAttendanceRecords (value) {
-      //      console.log('UDPATED ATTENDANCE REOCRDS', value)
       for (let i = 0; i < value.length; i++) {
         let record = value[i]
         if (record.memberId === this.member.id) {
@@ -49,7 +43,8 @@ export default {
       this.eventMemberAttendanceId = null
       this.present = false
     },
-    presentChange (value) {
+    presentChange () {
+      let value = !this.present
       console.log('CHANGING ATTENDANCE ', {
         memberId: this.member.id,
         eventMemberAttendanceId: this.eventMemberAttendanceId,

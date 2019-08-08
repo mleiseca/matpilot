@@ -1,9 +1,8 @@
 <template>
   <v-toolbar
     id="core-toolbar"
-
     flat
-    prominent
+    dense
     style="background: #eee;"
   >
     <div class="v-toolbar-title">
