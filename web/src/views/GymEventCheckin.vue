@@ -60,7 +60,7 @@
       <v-bottom-nav
         :active.sync="bottomNav"
         :value="true"
-        fixed
+        absolute
       >
         <v-btn
           color="teal"
