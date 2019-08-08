@@ -53,6 +53,7 @@
 
 <script>
 import { EventBus } from './event-bus.js'
+import socket from './api/socket'
 
 export default {
   name: 'appview',
@@ -63,8 +64,7 @@ export default {
       type: '',
       timeout: 10 * 1000,
       buttonColor: '',
-      loading: '',
-      disconnected: false
+      loading: ''
     }
   },
   methods: {
@@ -90,9 +90,6 @@ export default {
         this.loading = 'loading'
       }
     },
-    socketStatusListener (contents) {
-      this.disconnected = contents.disconnected
-    },
     closeNotification () {
       this.notification = false
     }
@@ -100,17 +97,18 @@ export default {
   computed: {
     user () {
       return this.$store.state.auth.user
+    },
+    disconnected () {
+      return socket.disconnected
     }
   },
   mounted () {
     EventBus.$on('user-message', this.eventBusListener)
     EventBus.$on('loading', this.loadingListener)
-    EventBus.$on('socket-status', this.socketStatusListener)
   },
   beforeDestroy () {
     EventBus.$off('user-message', this.eventBusListener)
     EventBus.$off('loading', this.loadingListener)
-    EventBus.$off('socket-status', this.socketStatusListener)
   }
 }
 

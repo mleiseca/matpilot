@@ -13,7 +13,6 @@
             <v-flex xs9>
               <v-text-field
                 v-if="bottomNav === 'search'"
-                :disabled="showAttendees"
                 v-model="search"
                 @input="updateSearch"
                 label="Search by Name"
@@ -30,10 +29,6 @@
               </div>
             </v-flex>
           </v-layout>
-
-            <!--<v-switch v-model="showAttendees" label="Show Attendees Only" class="showAttendeesSwitch"-->
-                      <!--shrink v-if="$route.name !== 'gym-event-self-checkin'">-->
-            <!--</v-switch>-->
 
           <transition>
             <v-list v-if="members.length > 0">
@@ -60,7 +55,7 @@
       <v-bottom-nav
         :active.sync="bottomNav"
         :value="true"
-        absolute
+        fixed
       >
         <v-btn
           color="teal"
@@ -75,6 +70,7 @@
           color="teal"
           flat
           value="attendees"
+          v-on:click="findAttendees()"
         >
           <span>Attendees</span>
           <v-icon>mdi-account-check</v-icon>
@@ -106,7 +102,6 @@ export default {
     return {
       //      members: [],
       search: '',
-      showAttendees: false,
       attendanceByMember: [],
       loading: false,
       bottomNav: 'search'
@@ -139,10 +134,7 @@ export default {
     members () {
       let query = { gymId: parseInt(this.gymId, 10) }
 
-      let hasCriteria = false
-
       if (this.bottomNav === 'attendees') {
-        hasCriteria = true
         const memberIds = []
         this.attendance.forEach(function (record) {
           memberIds.push(record.memberId)
@@ -150,20 +142,16 @@ export default {
         query.id = {
           $in: memberIds
         }
-      }
-
-      if (this.search !== null && this.search.length > 1) {
-        hasCriteria = true
+      } else if (this.bottomNav === 'search' && this.search !== null && this.search.length > 1) {
         query['$or'] = [
           { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
           { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
         ]
-      }
-      if (!hasCriteria) {
-        return []
       } else {
-        return this.findMembersInStore({ query }).data
+        return []
       }
+
+      return this.findMembersInStore({ query }).data
     }
   },
 
@@ -263,13 +251,6 @@ export default {
         console.log('ATTENDANCE!! ', this.attendanceByMember)
       },
       deep: true
-    },
-    showAttendees: async function (show) {
-      this.search = null
-      console.log('changed to ', show)
-      if (show) {
-        return this.findAttendees()
-      }
     }
   },
   mounted () {
