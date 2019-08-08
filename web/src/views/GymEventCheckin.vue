@@ -80,14 +80,14 @@
           <v-icon>mdi-account-check</v-icon>
         </v-btn>
 
-        <v-btn
-          color="teal"
-          flat
-          value="suggestions"
-        >
-          <span>Suggestions</span>
-          <v-icon>mdi-account-clock-outline</v-icon>
-        </v-btn>
+        <!--<v-btn-->
+          <!--color="teal"-->
+          <!--flat-->
+          <!--value="suggestions"-->
+        <!--&gt;-->
+          <!--<span>Suggestions</span>-->
+          <!--<v-icon>mdi-account-clock-outline</v-icon>-->
+        <!--</v-btn>-->
       </v-bottom-nav>
     </v-layout>
 
@@ -141,7 +141,7 @@ export default {
 
       let hasCriteria = false
 
-      if (this.showAttendees) {
+      if (this.bottomNav === 'attendees') {
         hasCriteria = true
         const memberIds = []
         this.attendance.forEach(function (record) {
@@ -288,23 +288,6 @@ export default {
 </script>
 
 <style>
-
-  .showAttendeesSwitch{
-    padding-top: 1rem !important;
-  }
-
-  .showAttendeesSwitch .v-messages {
-    display: none
-  }
-
-  .controls {
-    border-radius: .333rem;
-    margin: .5rem auto 1rem auto;
-    background-color: white;
-    box-shadow: 0 .05rem .25rem rgba(0,0,0,.25);
-    padding: 1rem;
-  }
-
   .title {
     white-space: nowrap;
     overflow: hidden;
