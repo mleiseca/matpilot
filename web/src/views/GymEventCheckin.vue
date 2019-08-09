@@ -15,6 +15,8 @@
                 v-if="bottomNav === 'search'"
                 v-model="search"
                 @input="updateSearch"
+                @focus="focusSearchBox"
+                v-on:blur="unfocusSearchBox"
                 label="Search by Name"
                 single-line
                 hide-details
@@ -53,6 +55,7 @@
         </material-card>
       </v-flex>
       <v-bottom-nav
+        v-if="!keyboardUp"
         :active.sync="bottomNav"
         :value="true"
         fixed
@@ -104,7 +107,8 @@ export default {
       search: '',
       attendanceByMember: [],
       loading: false,
-      bottomNav: 'search'
+      bottomNav: 'search',
+      keyboardUp: false
     }
   },
   components: {
@@ -169,6 +173,13 @@ export default {
 
     escapeRegExp (string) {
       return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+    },
+
+    focusSearchBox () {
+      this.keyboardUp = true
+    },
+    unfocusSearchBox () {
+      this.keyboardUp = false
     },
 
     async findMembers (searchValue) {

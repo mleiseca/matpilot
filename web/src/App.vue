@@ -64,7 +64,9 @@ export default {
       type: '',
       timeout: 10 * 1000,
       buttonColor: '',
-      loading: ''
+      loading: '',
+      disconnected: false,
+      intervalTracker: null
     }
   },
   methods: {
@@ -97,18 +99,21 @@ export default {
   computed: {
     user () {
       return this.$store.state.auth.user
-    },
-    disconnected () {
-      return socket.disconnected
     }
   },
   mounted () {
     EventBus.$on('user-message', this.eventBusListener)
     EventBus.$on('loading', this.loadingListener)
+
+    let self = this
+    this.intervalTracker = setInterval(function() {
+      self.disconnected = socket.disconnected
+    }, 250)
   },
   beforeDestroy () {
     EventBus.$off('user-message', this.eventBusListener)
     EventBus.$off('loading', this.loadingListener)
+    clearInterval(this.intervalTracker)
   }
 }
 
