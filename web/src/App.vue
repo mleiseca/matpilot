@@ -106,7 +106,7 @@ export default {
     EventBus.$on('loading', this.loadingListener)
 
     let self = this
-    this.intervalTracker = setInterval(function() {
+    this.intervalTracker = setInterval(function () {
       self.disconnected = socket.disconnected
     }, 250)
   },

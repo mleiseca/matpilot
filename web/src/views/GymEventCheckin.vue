@@ -136,7 +136,9 @@ export default {
     },
 
     members () {
-      let query = { gymId: parseInt(this.gymId, 10) }
+      let query = {
+        gymId: parseInt(this.gymId, 10)
+      }
 
       if (this.bottomNav === 'attendees') {
         const memberIds = []
@@ -270,9 +272,11 @@ export default {
         id: this.eventId
       }
     })
+    // TODO: now this is hardcoded at 50...need something better!
     this.findMemberEventAttendance({
       query: {
-        eventId: this.eventId
+        eventId: this.eventId,
+        $limit: 50
       }
     })
   }
