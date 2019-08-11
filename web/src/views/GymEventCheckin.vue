@@ -137,7 +137,11 @@ export default {
 
     members () {
       let query = {
-        gymId: parseInt(this.gymId, 10)
+        gymId: parseInt(this.gymId, 10),
+        $sort: {
+          lowerFirstName: 1,
+          lowerLastName: 1
+        }
       }
 
       if (this.bottomNav === 'attendees') {
