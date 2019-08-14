@@ -15,7 +15,7 @@
     "core-js": "^2.6.5",
     "feathers-authentication-management": "^2.0.1",
     "feathers-vuex": "^1.7.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.25",
     "node-sass": "^4.12.0",
