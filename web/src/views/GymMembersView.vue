@@ -4,7 +4,7 @@
     <v-layout  justify-center wrap>
       <v-flex xs12 md8>
         <material-card
-          title="Edit member"
+          :title="title"
           text="">
           <member-form
             v-on:member-save="saveMemberAndDisplay"
@@ -28,7 +28,8 @@ export default {
   data () {
     return {
       gym: {},
-      member: {}
+      member: {},
+      title: 'Edit member'
     }
   },
   computed: {
