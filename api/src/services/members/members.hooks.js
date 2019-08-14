@@ -54,6 +54,35 @@ const memberResolvers = {
   }
 }
 
+function addUrlForWaiver() {
+  return function(hook) {
+    const member = hook.result
+
+    if (member && member.waiverUrl) {
+      logger.info(member)
+      let key = member.waiverUrl
+      let bucket = WAIVER_S3_BUCKET
+      if (member.waiverUrl.startsWith('https')) {
+        let regex = /.*?([^/]*)$/
+        let match = member.waiverUrl.match(regex)
+        key = match[1]
+      } else {
+        let regex = /^(.*?)\/([^/]*)$/
+        let match = member.waiverUrl.match(regex)
+        bucket = match[1]
+        key = match[2]
+      }
+      if (key) {
+        const params = {
+          Bucket: bucket,
+          Key: key,
+          Expires: 60 * 60 // expires in 1 hour
+        }
+        member.waiverSignedUrl = new AWS.S3({apiVersion: '2006-03-01'}).getSignedUrl('getObject', params)
+      }
+    }
+  }
+}
 function writeWaiverSignatureToS3() {
   return function(hook) {
     if (hook.data.waiverSignature) {
@@ -76,7 +105,7 @@ function writeWaiverSignatureToS3() {
           delete hook.data.waiverSignature
           logger.info('Successfully uploaded data to ' + WAIVER_S3_BUCKET + '/' + keyName, data)
           // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
-          hook.data.waiverUrl = 'https://s3.amazonaws.com/' + WAIVER_S3_BUCKET + '/' + keyName
+          hook.data.waiverUrl = WAIVER_S3_BUCKET + '/' + keyName
           hook.data.waiverSignedDate = moment()
         })
     } else {
@@ -167,7 +196,7 @@ module.exports = {
   after: {
     all: [ fastJoin(memberResolvers) ],
     find: [],
-    get: [],
+    get: [addUrlForWaiver()],
     create: [],
     update: [],
     patch: [],

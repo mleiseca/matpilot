@@ -105,7 +105,12 @@
             v-model="emergencyContactPhone"/>
         </v-flex>
 
-        <v-flex xs12 md12 ref="fullWaiver">
+        <v-flex xs12 md12 v-if="!this.needsToSign">
+          <a :href="member.waiverSignedUrl" target="_blank">
+            View signed waiver
+          </a>
+        </v-flex>
+        <v-flex xs12 md12 ref="fullWaiver" v-if="this.needsToSign">
           <strong>WAIVER AND RELEASE OF LIABILITY AND AGREEMENT TO PARTICIPATE IN ACTIVITY WITH:</strong><br>
           <strong>FOUNDATIONS BJJ ACADEMY</strong><br>
           <strong>IN THE MARTIAL ART STYLES OF BRAZILIAN JIU JITSU, JUDO, WRESTLING, SUBMISSION GRAPPLING</strong><br>
@@ -138,7 +143,6 @@
           <v-checkbox
             @change="clickedAgreeToTerms"
             :rules="[rules.required]"
-            :disabled="!this.needsToSign"
             v-model="agreeToTerms" label="I agree to the terms above"/>
 
           <template v-if="expandSignature">
