@@ -26,7 +26,9 @@
       bottom
       center
       color="warning"
+      :timeout="0"
     >
+      <v-icon>mdi-cloud-off-outline</v-icon>
       Offline
     </v-snackbar>
     <v-dialog

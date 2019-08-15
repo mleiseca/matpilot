@@ -191,7 +191,6 @@
                   >
                     <v-form ref="formStep4">
 
-
                       <v-flex xs12 md12 ref="fullWaiver">
                         <strong>WAIVER AND RELEASE OF LIABILITY AND AGREEMENT TO PARTICIPATE IN ACTIVITY WITH:</strong><br>
                         <strong>FOUNDATIONS BJJ ACADEMY</strong><br>
@@ -284,172 +283,172 @@
 </template>
 
 <script>
-  import { EventBus } from '../event-bus'
-  import { trim } from 'lodash'
-  import moment from 'moment'
+import { EventBus } from '../event-bus'
+import { trim } from 'lodash'
+import moment from 'moment'
 
-  export default {
-    name: 'GymMembersAdd',
-    props: ['gymId'],
-    data () {
-      return {
-        windowWidth: window.innerWidth,
-        stepperState: [true, true, true, true],
-        e1: 0,
-        member: {
-          firstName: '',
-          lastName: '',
+export default {
+  name: 'GymMembersAdd',
+  props: ['gymId'],
+  data () {
+    return {
+      windowWidth: window.innerWidth,
+      stepperState: [true, true, true, true],
+      e1: 0,
+      member: {
+        firstName: '',
+        lastName: '',
 
-          email: '',
-          phone: ''
+        email: '',
+        phone: ''
+      },
+      guardianContactName: '',
+      guardianContactPhone: '',
+      emergencyContactName: '',
+      emergencyContactPhone: '',
+      dateOfBirth: null,
+      isMinor: false,
+      agreeToTerms: false,
+      expandSignature: false,
+      dateOfBirthMenu: false,
+      needsToSign: true,
+      rules: {
+        requiredIfMinor: value => !this.isMinor || !!value || 'Required for minors',
+        required: value => !!value || 'Required.',
+        email: value => {
+          value = trim(value)
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          return (value.length === 0) || pattern.test(value) || 'Invalid e-mail.'
         },
-        guardianContactName: '',
-        guardianContactPhone: '',
-        emergencyContactName: '',
-        emergencyContactPhone: '',
-        dateOfBirth: null,
-        isMinor: false,
-        agreeToTerms: false,
-        expandSignature: false,
-        dateOfBirthMenu: false,
-        needsToSign: true,
-        rules: {
-          requiredIfMinor: value => !this.isMinor || !!value || 'Required for minors',
-          required: value => !!value || 'Required.',
-          email: value => {
-            value = trim(value)
-            const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-            return (value.length === 0) || pattern.test(value) || 'Invalid e-mail.'
-          },
-          phone: value => {
-            value = trim(value)
-            const pattern = /^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$/
-            return (value.length === 0) || pattern.test(value) || 'Invalid phone number.'
-          }
+        phone: value => {
+          value = trim(value)
+          const pattern = /^\(?([0-9]{3})\)?[-.●]?([0-9]{3})[-.●]?([0-9]{4})$/
+          return (value.length === 0) || pattern.test(value) || 'Invalid phone number.'
         }
       }
-    },
-    //  components: {
-    //    'mp-member-form': MemberForm
-    //  },
-    computed: {
-    },
-    watch: {
-      dateOfBirthMenu (val) {
-        val && setTimeout(() => (this.$refs.dateOfBirthPicker.activePicker = 'YEAR'))
-      }
-    },
-    methods: {
-      validatePreviousSteps: function(stepNumber) {
-        let forms = [this.$refs.formStep1, this.$refs.formStep2, this.$refs.formStep3]
-
-        let allValid = true
-        for (let i = 0; i < stepNumber - 1; i++) {
-          let formValid = forms[i].validate()
-          allValid = allValid && formValid;
-          this.stepperState[i] = formValid
-        }
-        return allValid
-      },
-      validateAndStep: function (form, nextStep) {
-        if (!form.validate()) {
-//          EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
-          this.stepperState[nextStep - 2] = false
-          return
-        }
-        this.stepperState[nextStep - 2] = true
-        this.e1 = nextStep
-      },
-      // TODO: copied from MemberForm
-      validateAndCreate: async function (form) {
-        if (!form.validate()) {
-//          EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
-          return
-        }
-
-        EventBus.$emit('loading', { message: 'Saving' })
-        if (this.needsToSign) {
-          if (this.$refs.signaturePad.isEmpty()) {
-            EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
-            EventBus.$emit('loading', { done: true })
-            return
-          } else {
-            this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
-          }
-        }
-
-        this.member.emergencyContacts = [
-          {
-            name: this.emergencyContactName,
-            phone: this.emergencyContactPhone
-          }
-        ]
-        this.member.guardianContacts = [
-          {
-            name: this.guardianContactName,
-            phone: this.guardianContactPhone
-          }
-        ]
-
-        this.saveMemberAndDisplay(this.member)
-      },
-      saveMemberAndDisplay: function (event) {
-        event.gymId = this.gymId
-        console.log('Saving member and redisplaying:', event)
-        this.$store.dispatch('members/create', event)
-          .then((result) => {
-            console.log('Got result:', result)
-            this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
-            EventBus.$emit('loading', { done: true })
-          })
-          .catch((e) => {
-            console.log('** Login catch: ', e)
-            EventBus.$emit('user-message', { message: `Error adding member: ${e.message}`, type: 'error' })
-            EventBus.$emit('loading', { done: true })
-          })
-      },
-      // TODO: copied from MemberForm
-      saveDateOfBirth (date) {
-        console.log('Saving dateOfBirth: ', date)
-        this.member.dateOfBirth = moment(date).format('YYYY-MM-DD')
-        this.$refs.dateOfBirthMenu.save(this.formatDateTime(date))
-        this.dateOfBirth = this.member.dateOfBirth
-        this.evaluateDateOfBirth(date)
-      },
-      // TODO: copied from MemberForm
-      formatDateTime (dateTime) {
-        return dateTime + 'T00:00:00'
-      },
-      // TODO: copied from MemberForm
-      evaluateDateOfBirth (date) {
-        const age = moment().diff(date, 'years')
-        this.isMinor = age < 18
-      },
-      // TODO: copied from MemberForm
-      async clearSignature () {
-        await this.$refs.signaturePad.clearSignature()
-      },
-      // TODO: copied from MemberForm
-      clickedAgreeToTerms () {
-        if (this.agreeToTerms && !this.$refs.form.validate()) {
-          EventBus.$emit('user-message', { message: 'Please finish filling out the form before agreeing', type: 'error' })
-          this.$nextTick(function () { this.agreeToTerms = false })
-          return
-        }
-        this.showSignatureBox()
-        this.$vuetify.goTo(document.getElementById('waiverApprovalCheckbox'), {})
-      },
-      // TODO: copied from MemberForm
-      async showSignatureBox () {
-        if (!this.agreeToTerms) {
-        } else {
-          this.expandSignature = true
-        }
-      },
-      currentDate () { return moment().format('MMMM D, YYYY') }
     }
+  },
+  //  components: {
+  //    'mp-member-form': MemberForm
+  //  },
+  computed: {
+  },
+  watch: {
+    dateOfBirthMenu (val) {
+      val && setTimeout(() => (this.$refs.dateOfBirthPicker.activePicker = 'YEAR'))
+    }
+  },
+  methods: {
+    validatePreviousSteps: function (stepNumber) {
+      let forms = [this.$refs.formStep1, this.$refs.formStep2, this.$refs.formStep3]
 
+      let allValid = true
+      for (let i = 0; i < stepNumber - 1; i++) {
+        let formValid = forms[i].validate()
+        allValid = allValid && formValid
+        this.stepperState[i] = formValid
+      }
+      return allValid
+    },
+    validateAndStep: function (form, nextStep) {
+      if (!form.validate()) {
+        //          EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
+        this.stepperState[nextStep - 2] = false
+        return
+      }
+      this.stepperState[nextStep - 2] = true
+      this.e1 = nextStep
+    },
+    // TODO: copied from MemberForm
+    validateAndCreate: async function (form) {
+      if (!form.validate()) {
+        //          EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
+        return
+      }
+
+      EventBus.$emit('loading', { message: 'Saving' })
+      if (this.needsToSign) {
+        if (this.$refs.signaturePad.isEmpty()) {
+          EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
+          EventBus.$emit('loading', { done: true })
+          return
+        } else {
+          this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
+        }
+      }
+
+      this.member.emergencyContacts = [
+        {
+          name: this.emergencyContactName,
+          phone: this.emergencyContactPhone
+        }
+      ]
+      this.member.guardianContacts = [
+        {
+          name: this.guardianContactName,
+          phone: this.guardianContactPhone
+        }
+      ]
+
+      this.saveMemberAndDisplay(this.member)
+    },
+    saveMemberAndDisplay: function (event) {
+      event.gymId = this.gymId
+      console.log('Saving member and redisplaying:', event)
+      this.$store.dispatch('members/create', event)
+        .then((result) => {
+          console.log('Got result:', result)
+          this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+          EventBus.$emit('loading', { done: true })
+        })
+        .catch((e) => {
+          console.log('** Login catch: ', e)
+          EventBus.$emit('user-message', { message: `Error adding member: ${e.message}`, type: 'error' })
+          EventBus.$emit('loading', { done: true })
+        })
+    },
+    // TODO: copied from MemberForm
+    saveDateOfBirth (date) {
+      console.log('Saving dateOfBirth: ', date)
+      this.member.dateOfBirth = moment(date).format('YYYY-MM-DD')
+      this.$refs.dateOfBirthMenu.save(this.formatDateTime(date))
+      this.dateOfBirth = this.member.dateOfBirth
+      this.evaluateDateOfBirth(date)
+    },
+    // TODO: copied from MemberForm
+    formatDateTime (dateTime) {
+      return dateTime + 'T00:00:00'
+    },
+    // TODO: copied from MemberForm
+    evaluateDateOfBirth (date) {
+      const age = moment().diff(date, 'years')
+      this.isMinor = age < 18
+    },
+    // TODO: copied from MemberForm
+    async clearSignature () {
+      await this.$refs.signaturePad.clearSignature()
+    },
+    // TODO: copied from MemberForm
+    clickedAgreeToTerms () {
+      if (this.agreeToTerms && !this.$refs.form.validate()) {
+        EventBus.$emit('user-message', { message: 'Please finish filling out the form before agreeing', type: 'error' })
+        this.$nextTick(function () { this.agreeToTerms = false })
+        return
+      }
+      this.showSignatureBox()
+      this.$vuetify.goTo(document.getElementById('waiverApprovalCheckbox'), {})
+    },
+    // TODO: copied from MemberForm
+    async showSignatureBox () {
+      if (!this.agreeToTerms) {
+      } else {
+        this.expandSignature = true
+      }
+    },
+    currentDate () { return moment().format('MMMM D, YYYY') }
   }
+
+}
 </script>
 
 <style scoped>

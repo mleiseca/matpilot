@@ -2,8 +2,8 @@ const { createLogger, format, transports } = require('winston')
 
 
 const myFormat = format.printf(({ level, message, timestamp }) => {
-  return `${timestamp} [${level}] ${message}`;
-});
+  return `${timestamp} [${level}] ${message}`
+})
 
 // Configure the Winston logger. For the complete documentation see https://github.com/winstonjs/winston
 const logger = createLogger({

@@ -11,8 +11,7 @@ const { getResultsByKey, getUniqueKeys } = BatchLoader
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
 
-
-const { paramsFromClient } = require('feathers-hooks-common')
+const errors = require('@feathersjs/errors')
 
 const WAIVER_S3_BUCKET = process.env.WAIVER_S3_BUCKET || 'com.matpilot.production.waivers'
 
@@ -137,9 +136,47 @@ function createLowerName() {
   }
 }
 
+function customQuery(hook) {
+  const { $customQuery } = hook.params.query
+
+  // console.log('checking custom query')
+  // console.log($customQuery)
+  if (!$customQuery) {
+    Promise.resolve(hook)
+    return
+  }
+  // delete hook.params.query.$customQuery;
+
+  const queries = {
+    'SUGGESTED_ATTENDEES': 'select members.* from members\n' +
+      'where\n' +
+      '  id in (\n' +
+      '   select ema."memberId" from events e, events sc, event_member_attendance ema where' +
+      '   e."startDateTime" > $attendedAfter and ' +
+      '   e."scheduledEventId" = sc."scheduledEventId" AND ' +
+      '    e.id <> sc.id AND\n' +
+      '   ema."eventId" = e.id and ' +
+      '      sc.id = $currentEventId) ' +
+      '  order by members."lowerFirstName" , members."lowerLastName" desc'
+
+  }
+
+  const sequelize = hook.app.get('sequelizeClient')
+
+  return sequelize.query(queries[$customQuery.type], {
+    model: sequelize.models['members'],
+    // bind: { currentEventId: 13, attendedAfter: '2019-08-10' }
+    bind: $customQuery.bind
+  }).then(results => {
+    hook.result = results // this tells feathers to skip the DATA STORE step above
+    return hook // always resolve the promise chain with the context
+  })
+}
+
+
 // This comes from https://stackoverflow.com/questions/48602085/using-feathers-client-and-sequelize-many-to-many-relation
 function include(hook) {
-  const { $include } = hook.params.query;
+  const { $include } = hook.params.query
 
   if (!$include) {
     Promise.resolve(hook)
@@ -147,12 +184,11 @@ function include(hook) {
   }
   // Remove from the query so that it doesn't get included
   // in the actual database query
-  console.log("Moving around incldue... Here is the raw query", hook.params.query)
-  delete hook.params.query.$include;
+  delete hook.params.query.$include
 
   hook.params.sequelize = {
     include: []
-  };
+  }
 
   if(Array.isArray($include)) {
     $include.forEach(inc => {
@@ -161,17 +197,16 @@ function include(hook) {
         model: hook.app.services[inc.model].Model,
         where: inc.where,
         required: true
-      });
-    });
+      })
+    })
   }
-  console.log("Final include: ", hook.params.sequelize.include)
-  return Promise.resolve(hook);
+  return Promise.resolve(hook)
 }
 
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [paramsFromClient('populate'), include],
+    find: [customQuery, include],
     get: [],
     create: [
       commonHooks.lowerCase('email'),

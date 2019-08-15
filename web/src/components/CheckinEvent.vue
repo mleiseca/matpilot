@@ -23,8 +23,8 @@
         </div>
       </v-flex>
       <v-flex xs12 md6 sm6 lg6 py-0 class="checkinButtonHolder">
-            <v-btn color="primary" class="checkinButton" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)" >
-              Desk Mode</v-btn>
+            <!--<v-btn color="primary" class="checkinButton" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)" >-->
+              <!--Desk Mode</v-btn>-->
 
             <v-btn color="primary" class="checkinButton" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
               Check in</v-btn>

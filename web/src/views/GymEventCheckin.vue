@@ -22,8 +22,7 @@
                 hide-details
                 clearable
                 class="pt-0 pl-4"
-              >
-              </v-text-field>
+              ></v-text-field>
             </v-flex>
             <v-flex xs3>
               <div class="attendee-count pt-2">
@@ -33,7 +32,24 @@
           </v-layout>
 
           <transition>
-            <v-list v-if="members.length > 0">
+            <v-flex xs12 v-if="members && members.length === 0 && !loading"  pl-4>
+              <div v-if="bottomNav === 'search'">
+                <div v-if="search && search.length > 0">
+                  <v-icon>mdi-account-off</v-icon>
+                  No results found
+                </div>
+              </div>
+              <div v-if="bottomNav === 'attendees'">
+                <v-icon>mdi-set-none</v-icon>
+                No attendees added
+              </div>
+
+              <div v-if="bottomNav === 'suggestions'">
+                <v-icon>mdi-account-off</v-icon>
+                No suggestions found
+              </div>
+            </v-flex>
+            <v-list v-if="members && members.length > 0">
               <mp-checkin-member-row
                 v-for="member in members"
                 v-bind:key="member.id"
@@ -78,15 +94,16 @@
           <span>Attendees</span>
           <v-icon>mdi-account-check</v-icon>
         </v-btn>
+        <v-btn
+          color="teal"
+          flat
+          value="suggestions"
+          v-on:click="findSuggestions()"
+        >
+          <span>Suggestions</span>
+          <v-icon>mdi-exclamation</v-icon>
+        </v-btn>
 
-        <!--<v-btn-->
-          <!--color="teal"-->
-          <!--flat-->
-          <!--value="suggestions"-->
-        <!--&gt;-->
-          <!--<span>Suggestions</span>-->
-          <!--<v-icon>mdi-account-clock-outline</v-icon>-->
-        <!--</v-btn>-->
       </v-bottom-nav>
     </v-layout>
 
@@ -96,6 +113,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { get, debounce } from 'lodash'
+import moment from 'moment'
 import CheckinMemberRow from '@/components/CheckinMemberRow.vue'
 
 export default {
@@ -108,7 +126,8 @@ export default {
       attendanceByMember: [],
       loading: false,
       bottomNav: 'search',
-      keyboardUp: false
+      keyboardUp: false,
+      suggestions: []
     }
   },
   components: {
@@ -136,6 +155,9 @@ export default {
     },
 
     members () {
+      if (this.loading) {
+        return []
+      }
       let query = {
         gymId: parseInt(this.gymId, 10),
         $sort: {
@@ -152,6 +174,8 @@ export default {
         query.id = {
           $in: memberIds
         }
+      } else if (this.bottomNav === 'suggestions') {
+        return this.suggestions
       } else if (this.bottomNav === 'search' && this.search !== null && this.search.length > 1) {
         query['$or'] = [
           { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
@@ -233,6 +257,23 @@ export default {
       this.stopLoading()
     },
 
+    async findSuggestions () {
+      this.startLoading()
+
+      const attendedAfter = moment().subtract(15, 'days')
+      const query = {
+        $limit: 50,
+        $customQuery: {
+          type: 'SUGGESTED_ATTENDEES',
+          bind: { currentEventId: this.eventId, attendedAfter: attendedAfter.format('YYYY-MM-DD') }
+        }
+      }
+
+      this.suggestions = await this.findGymMembers({ query })
+      //      console.log('suggestions: ', this.suggestions)
+      this.stopLoading()
+    },
+
     attendanceChange (event) {
       if (event.value) {
         this.$store.dispatch('event-member-attendance/create', {
@@ -265,7 +306,7 @@ export default {
           })
         })
         this.attendanceByMember = attendanceMap
-        console.log('ATTENDANCE!! ', this.attendanceByMember)
+        //        console.log('ATTENDANCE!! ', this.attendanceByMember)
       },
       deep: true
     }
