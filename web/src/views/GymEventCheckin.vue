@@ -16,7 +16,7 @@
                 v-model="search"
                 @input="updateSearch"
                 @focus="focusSearchBox"
-                v-on:blur="unfocusSearchBox"
+                @blur="unfocusSearchBox"
                 label="Search by Name"
                 single-line
                 hide-details
