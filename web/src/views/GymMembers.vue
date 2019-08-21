@@ -2,17 +2,40 @@
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout justify-center wrap>
       <v-flex md12>
-        <material-card
-          title="Members"
-          text="">
+        <material-card>
+          <template slot="header">
+            <v-layout align-center justify-space-between fill-height>
+
+              <v-flex>
+                <h4 class="title font-weight-light mb-2">
+                  Members
+                </h4>
+              </v-flex>
+
+              <v-flex>
+
+                <v-text-field
+                  v-model="search"
+                  append-icon="mdi-search"
+                  label="Search"
+                  placeholder="Search"
+                  single-line
+                  hide-details
+                  pt-0
+                  mt-0
+                  outline
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </template>
+
           <v-data-table
             :headers="headers"
             :items="members"
-            hide-actions>
-            <!-- TODO: this pagination or search needs to work -->
-            <!--:pagination.sync="pagination"-->
-            <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
-            <!--:total-items="pagination.totalItems"-->
+            :pagination.sync="pagination"
+            :total-items="totalMembers"
+            :loading="loading"
+          >
             <template
               slot="headerCell"
               slot-scope="{ header }">
@@ -30,6 +53,7 @@
                 <td>{{ item.lastName  }}</td>
               </tr>
             </template>
+
           </v-data-table>
 
         </material-card>
@@ -52,48 +76,40 @@ export default {
   props: ['gymId'],
   data () {
     return {
+      loading: true,
+      search: '',
+      pagination: {
+        rowsPerPage: 10
+      },
+      totalMembers: 0,
+      members: [],
       headers: [
         {
-          sortable: false,
+          sortable: true,
           text: 'First Name',
           value: 'firstName'
         },
         {
-          sortable: false,
+          sortable: true,
           text: 'Last Name',
           value: 'lastName'
         }
       ]
     }
   },
-  //  computed: {
-  //    ...mapGetters('members', {
-  //      members: 'list'
-  //    })
-  //  },
-  //  watch: {
-  //    pagination: {
-  //      handler () {
-  //        this.loading = true
-  //        this.$store.dispatch('queryItems')
-  //          .then(result => {
-  //            this.loading = false
-  //          })
-  //      },
-  //      deep: true
-  //    }
-  //  },
-  computed: {
-  //    //    pagination: {
-  //    //      get: function () {
-  //    //        return this.$store.state.members.pagination
-  //    //      },
-  //    set: function (value) {
-  //      //        this.$store.commit('setPagination', value)
-  //      //      }
-  //    },
-    members () {
-      return this.$store.getters['members/list']
+
+  watch: {
+    pagination: {
+      handler () {
+        //        console.log('pagination updated: ', this.pagination)
+        this.dataFromApi()
+      },
+      deep: true
+    },
+    search: {
+      handler () {
+        this.dataFromApi()
+      }
     }
   },
   methods: {
@@ -109,17 +125,50 @@ export default {
       const memberId = event.currentTarget.dataset['memberId']
 
       this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
-    }
-  },
-  mounted () {
-    //    console.log("Looking for members...")
-    this.findGymMembers({
-      query: {
-        $sort: { createdAt: -1 },
-        $limit: 50,
+    },
+    dataFromApi: function () {
+      const self = this
+      const { sortBy, descending, page, rowsPerPage } = this.pagination
+
+      this.loading = true
+      const query = {
+        $limit: rowsPerPage,
         gymId: this.gymId
       }
-    })
+
+      if (sortBy) {
+        query.$sort = { }
+        query.$sort[sortBy] = descending ? -1 : 1
+      }
+
+      query.$limit = rowsPerPage
+      if (page > 1) {
+        query.$skip = rowsPerPage * (page - 1)
+      }
+      if (this.search != null && this.search.length > 1) {
+        query['$or'] = [
+          { lowerFirstName: { $like: this.search.toLowerCase() + '%' } },
+          { lowerLastName: { $like: this.search.toLowerCase() + '%' } }
+        ]
+        //        query['$or'] = [
+        //          { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
+        //          { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
+        //        ]
+      }
+
+      //      console.log(query)
+      this.findGymMembers({ query }).then(function (results) {
+        //        console.log('found results:  ',results)
+        self.totalMembers = results.total
+        self.members = results.data
+        self.loading = false
+      })
+    }
+  },
+
+  mounted () {
+    //    console.log("Looking for members...")
+    this.dataFromApi()
   }
 }
 </script>
