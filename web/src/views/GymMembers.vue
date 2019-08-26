@@ -148,6 +148,7 @@ export default {
       if (this.search != null && this.search.length > 1) {
         query['$or'] = [
           { lowerFirstName: { $like: this.search.toLowerCase() + '%' } },
+          { lowerNickname: { $like: this.search.toLowerCase() + '%' } },
           { lowerLastName: { $like: this.search.toLowerCase() + '%' } }
         ]
         //        query['$or'] = [

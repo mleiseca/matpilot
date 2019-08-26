@@ -15,6 +15,15 @@
         <v-flex xs12 md12>
           <v-text-field
             class="purple-input"
+            label="Nickname"
+            required
+            autocomplete="off"
+            v-model="member.nickname"/>
+        </v-flex>
+
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
             label="Last Name"
             autocomplete="off"
             :rules="[rules.required]"

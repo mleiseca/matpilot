@@ -135,7 +135,7 @@ function restrictAccessForGym(options = {}) {
     const params = Object.assign({}, hook.params, { provider: undefined })
 
     return hook.service.get(hook.id, params).then(data => {
-      logger.info('running restrictAccessForGym...found some data....%o', data)
+      // logger.info('running restrictAccessForGym...found some data....%o', data)
 
       return fetchUserGymIds(hook.app, hook.params.user.id, options.role).then(function (gymIds) {
 

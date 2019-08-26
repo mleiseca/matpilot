@@ -124,11 +124,15 @@ function createLowerName() {
     }
 
     delete hook.data.lowerFirstName
+    delete hook.data.lowerNickname
     delete hook.data.lowerLastName
 
 
     if (hook.data.firstName) {
       hook.data.lowerFirstName = hook.data.firstName.toLowerCase()
+    }
+    if (hook.data.nickname) {
+      hook.data.lowerNickname = hook.data.nickname.toLowerCase()
     }
     if (hook.data.lastName) {
       hook.data.lowerLastName = hook.data.lastName.toLowerCase()

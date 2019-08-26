@@ -5,7 +5,13 @@
     </v-list-tile-action>
 
     <v-list-tile-content>
-      {{ member.firstName }} {{ member.lastName }}
+      <template v-if="member.nickname">
+        {{ member.nickname }}
+      </template>
+      <template v-else>
+        {{ member.firstName }}
+      </template>
+       {{ member.lastName }}
     </v-list-tile-content>
 
   </v-list-tile>

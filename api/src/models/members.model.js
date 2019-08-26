@@ -10,11 +10,19 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: false
     },
+    nickname: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false
     },
     lowerFirstName: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    lowerNickname: {
       type: DataTypes.STRING,
       allowNull: false
     },

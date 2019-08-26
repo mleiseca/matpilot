@@ -179,6 +179,7 @@ export default {
       } else if (this.bottomNav === 'search' && this.search !== null && this.search.length > 1) {
         query['$or'] = [
           { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
+          { lowerNickname: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
           { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
         ]
       } else {
@@ -225,6 +226,7 @@ export default {
       if (this.search !== null && this.search.length > 1) {
         query['$or'] = [
           { lowerFirstName: { $like: searchValue.toLowerCase() + '%' } },
+          { lowerNickname: { $like: searchValue.toLowerCase() + '%' } },
           { lowerLastName: { $like: searchValue.toLowerCase() + '%' } }
         ]
       }
