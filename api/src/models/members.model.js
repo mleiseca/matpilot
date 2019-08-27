@@ -12,7 +12,7 @@ module.exports = function (app) {
     },
     nickname: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     lastName: {
       type: DataTypes.STRING,
@@ -24,7 +24,7 @@ module.exports = function (app) {
     },
     lowerNickname: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: true
     },
     lowerLastName: {
       type: DataTypes.STRING,
