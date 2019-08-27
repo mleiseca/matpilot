@@ -133,6 +133,8 @@ function createLowerName() {
     }
     if (hook.data.nickname) {
       hook.data.lowerNickname = hook.data.nickname.toLowerCase()
+    } else {
+      hook.data.lowerNickname = null
     }
     if (hook.data.lastName) {
       hook.data.lowerLastName = hook.data.lastName.toLowerCase()
