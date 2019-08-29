@@ -79,7 +79,7 @@ export default {
       loading: true,
       search: '',
       pagination: {
-        rowsPerPage: 10
+        rowsPerPage: 5
       },
       totalMembers: 0,
       members: [],

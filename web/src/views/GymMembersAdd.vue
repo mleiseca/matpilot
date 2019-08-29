@@ -404,11 +404,31 @@ export default {
     saveMemberAndDisplay: function (event) {
       event.gymId = this.gymId
       console.log('Saving member and redisplaying:', event)
+      const waiverSignature = event.waiverSignature
+      delete event.waiverSignature
       this.$store.dispatch('members/create', event)
         .then((result) => {
           console.log('Got result:', result)
-          this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
-          EventBus.$emit('loading', { done: true })
+
+          EventBus.$emit('loading', { message: 'Uploading waiver' })
+//          const waiverMember = {
+//            id: result.id,
+//            waiverSignature: waiverSignature
+//          }
+
+          result.waiverSignature = waiverSignature
+          console.log('patching', result)
+          result.save()
+            .then((uploadResult) => {
+              console.log('upload result', uploadResult)
+              this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+              EventBus.$emit('loading', { done: true })
+            })
+            .catch((uploadError) => {
+              EventBus.$emit('user-message', { message: `Error uploading waiver: ${uploadError.message}. Please resign and save.`, type: 'error' })
+              EventBus.$emit('loading', { done: true })
+              this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: result.id } })
+            })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)

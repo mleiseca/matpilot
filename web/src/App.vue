@@ -41,7 +41,7 @@
         dark
       >
         <v-card-text>
-          Loading
+          {{ loadingMessage }}
           <v-progress-linear
             indeterminate
             color="white"
@@ -67,6 +67,7 @@ export default {
       timeout: 10 * 1000,
       buttonColor: '',
       loading: '',
+      loadingMessage: 'Loading',
       disconnected: false,
       intervalTracker: null
     }
@@ -92,6 +93,7 @@ export default {
         this.loading = false
       } else {
         this.loading = 'loading'
+        this.loadingMessage = contents.message || 'Loading'
       }
     },
     closeNotification () {
