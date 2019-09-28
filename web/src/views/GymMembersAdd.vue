@@ -382,7 +382,7 @@ export default {
           EventBus.$emit('loading', { done: true })
           return
         } else {
-          this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
+          this.member.waiverSignature = await this.readWaiverAsPng()
         }
       }
 
@@ -401,6 +401,14 @@ export default {
 
       this.saveMemberAndDisplay(this.member)
     },
+    readWaiverAsPng: function() {
+      const self = this
+      return new Promise(async function(resolve) {
+        const canvas = await self.$html2canvas(self.$refs.fullWaiver, { type: 'canvas',windowWidth: 1000 })
+        canvas.toBlob(resolve)
+      })
+    },
+
     saveMemberAndDisplay: function (event) {
       event.gymId = this.gymId
       console.log('Saving member and redisplaying:', event)
@@ -411,10 +419,6 @@ export default {
           console.log('Got result:', result)
 
           EventBus.$emit('loading', { message: 'Uploading waiver' })
-//          const waiverMember = {
-//            id: result.id,
-//            waiverSignature: waiverSignature
-//          }
 
           result.waiverSignature = waiverSignature
           console.log('patching', result)

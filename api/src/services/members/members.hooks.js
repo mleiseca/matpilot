@@ -85,11 +85,14 @@ function addUrlForWaiver() {
 function writeWaiverSignatureToS3() {
   return function(hook) {
     if (hook.data.waiverSignature) {
-      logger.info('Writing waiver to S3, gym, member %s, %s', hook.data.gymId, hook.data.lastName)
-      let buf = new Buffer(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''),'base64')
+
+      const MembersModel = hook.app.get('sequelizeClient').models['members']
+      const memberId = hook.data.id
+      logger.info('Writing waiver to S3, gym, member %s, %s, %s', hook.data.gymId, hook.data.lastName, memberId)
+      let buf = Buffer.from(hook.data.waiverSignature,'base64')
 
       // TODO: property name
-      let keyName = 'gym_'  + hook.data.gymId + '_' +  uuid.v4() + '.png'
+      let keyName = 'gym_'  + hook.data.gymId + '_' + hook.data.id + '_' +  uuid.v4() + '.png'
       const objectParams = {
         Bucket: WAIVER_S3_BUCKET,
         Key: keyName,
@@ -98,17 +101,31 @@ function writeWaiverSignatureToS3() {
         ContentType: 'image/png'
       }
 
-      // console.log(objectParams)
-      return new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise()
+      delete hook.data.waiverSignature
+
+      new AWS.S3({apiVersion: '2006-03-01'}).putObject(objectParams).promise()
         .then(function(data) {
-          delete hook.data.waiverSignature
           logger.info('Successfully uploaded data to ' + WAIVER_S3_BUCKET + '/' + keyName, data)
-          // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
-          hook.data.waiverUrl = WAIVER_S3_BUCKET + '/' + keyName
-          hook.data.waiverSignedDate = moment()
+
+          MembersModel.update(
+            {
+              // https://s3.amazonaws.com/com.matpilot.development.waivers/waiver_ea5ad235-ce8b-43c4-a497-8565a0041dc0.png
+              waiverUrl: WAIVER_S3_BUCKET + '/' + keyName,
+              waiverSignedDate: moment()
+            },
+            {returning: true, where: {id: memberId} },
+            {
+              where: { id: memberId }
+            }
+          ).then(function() {
+            logger.info('Saved waiver data of memberId ' + memberId)
+          })
         })
+
+      logger.info('Finished initial processing of waiver for member ' + memberId)
+      return hook
     } else {
-      logger.info('No need to write waiver to S3 %s, %s', hook.data.gymId, hook.data.userId)
+      logger.info('No need to write waiver to S3 %s, member: %s', hook.data.gymId, hook.data.id)
     }
   }
 }
@@ -217,7 +234,6 @@ module.exports = {
     create: [
       commonHooks.lowerCase('email'),
       assignCreatedBy,
-      writeWaiverSignatureToS3(),
       createLowerName()
 
     ],
