@@ -401,10 +401,10 @@ export default {
 
       this.saveMemberAndDisplay(this.member)
     },
-    readWaiverAsPng: function() {
+    readWaiverAsPng: function () {
       const self = this
-      return new Promise(async function(resolve) {
-        const canvas = await self.$html2canvas(self.$refs.fullWaiver, { type: 'canvas',windowWidth: 1000 })
+      return new Promise(async function (resolve) {
+        const canvas = await self.$html2canvas(self.$refs.fullWaiver, { type: 'canvas', windowWidth: 1000 })
         canvas.toBlob(resolve)
       })
     },
