@@ -8,7 +8,8 @@
           text="">
           <member-form
             v-on:member-save="saveMemberAndDisplay"
-            v-bind:member="member"></member-form>
+            v-bind:member="member"
+            v-bind:gym="gym"></member-form>
 
         </material-card>
       </v-flex>
@@ -56,7 +57,6 @@ export default {
     }),
     saveMemberAndDisplay: function (event) {
       console.log('Saving member and redisplaying:', event)
-      //      this.$store.dispatch('members/patch', [event])
       event.save()
         .then((result) => {
           console.log('Got result:', result)

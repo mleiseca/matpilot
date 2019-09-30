@@ -190,7 +190,7 @@ export default {
       }
       for (let i = 0; i < userGyms.length; i++) {
         let userGymRole = userGyms[i]
-        console.log(userGymRole)
+//        console.log(userGymRole)
         if (userGymRole.gymId === gymId && (userGymRole.role === 'ADMIN' || userGymRole.role === 'OWNER')) {
           return true
         }

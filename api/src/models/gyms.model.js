@@ -22,7 +22,11 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       // TODO: shouldn't be nullable
       allowNull: true
-    }
+    },
+    memberTags: {
+      type: Sequelize.JSONB,
+      allowNull: false
+    },
   }, {
     hooks: {
       beforeCount(options) {

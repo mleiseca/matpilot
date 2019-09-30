@@ -15,7 +15,7 @@
         <v-flex xs12 md12>
           <v-text-field
             class="purple-input"
-            label="Nickname"
+            label="Nickname (optional)"
             required
             autocomplete="off"
             v-model="member.nickname"/>
@@ -78,6 +78,12 @@
               @change="saveDateOfBirth"
             ></v-date-picker>
           </v-menu>
+        </v-flex>
+
+        <v-flex xs12 md12 v-if="gym && gym.memberTags && gym.memberTags.length > 0">
+          <div v-for="tagType in gym.memberTags" v-bind:key="tagType.tag">
+            <v-checkbox v-model="member.tags" :label="tagType.name" :value="tagType.tag"></v-checkbox>
+          </div>
         </v-flex>
 
         <v-flex xs12 md12 v-if="isMinor">
@@ -209,20 +215,8 @@ import { EventBus } from './../event-bus.js'
 export default {
   name: 'MemberForm',
   props: {
-    //    Note: if you provide a vuex member object, the vuex object will be included with the 'member-save' event
-    //    If you don't provide a member, you will get back just a data object.
-    member: {
-      type: Object,
-      default: function () {
-        return {
-          firstName: '',
-          lastName: '',
-
-          email: '',
-          phone: ''
-        }
-      }
-    }
+    member: { type: Object },
+    gym: { type: Object }
   },
   data () {
     return {

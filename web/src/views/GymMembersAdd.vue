@@ -43,7 +43,7 @@
                       <v-flex xs12 md12>
                         <v-text-field
                           class="purple-input"
-                          label="Nickname"
+                          label="Nickname (optional)"
                           required
                           autocomplete="off"
                           v-model="member.nickname"/>
@@ -89,6 +89,13 @@
                           ></v-date-picker>
                         </v-menu>
                       </v-flex>
+
+                      <v-flex xs12 md12 v-if="gym.memberTags.length > 0">
+                        <div v-for="tagType in gym.memberTags" v-bind:key="tagType.tag">
+                          <v-checkbox v-model="member.tags" :label="tagType.name" :value="tagType.tag"></v-checkbox>
+                        </div>
+                      </v-flex>
+
                     </v-form>
                   </v-card>
                   <v-btn
@@ -292,6 +299,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import { EventBus } from '../event-bus'
 import { trim } from 'lodash'
 import moment from 'moment'
@@ -304,12 +312,14 @@ export default {
       windowWidth: window.innerWidth,
       stepperState: [true, true, true, true],
       e1: 0,
+      gym: {"memberTags": []},
       member: {
         firstName: '',
         lastName: '',
 
         email: '',
-        phone: ''
+        phone: '',
+        tags: []
       },
       guardianContactName: '',
       guardianContactPhone: '',
@@ -347,7 +357,14 @@ export default {
       val && setTimeout(() => (this.$refs.dateOfBirthPicker.activePicker = 'YEAR'))
     }
   },
+  mounted: async function () {
+    await this.getGym(this.gymId).then(result => { this.gym = result })
+  },
   methods: {
+    ...mapActions('gyms', {
+      getGym: 'get'
+    }),
+
     validatePreviousSteps: function (stepNumber) {
       let forms = [this.$refs.formStep1, this.$refs.formStep2, this.$refs.formStep3]
 

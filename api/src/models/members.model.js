@@ -58,6 +58,10 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: true
     },
+    tags: {
+      type: Sequelize.JSONB,
+      allowNull: false
+    },
   }, {
     hooks: {
       beforeCount(options) {
