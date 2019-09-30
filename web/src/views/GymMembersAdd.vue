@@ -312,7 +312,7 @@ export default {
       windowWidth: window.innerWidth,
       stepperState: [true, true, true, true],
       e1: 0,
-      gym: {"memberTags": []},
+      gym: { 'memberTags': [] },
       member: {
         firstName: '',
         lastName: '',
