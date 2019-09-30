@@ -62,7 +62,8 @@ export default {
     return {
       form: {
         name: '',
-        description: ''
+        description: '',
+        memberTags: []
       }
     }
   },
