@@ -41,8 +41,9 @@ export default {
         //        console.log('scheduledEvent', se)
 
         let now = momentTz.tz(se.timezone)
-        let earliestEventTime = now.clone().subtract(1, 'days')
+        let earliestEventTime = now.clone().subtract(2, 'days')
 
+//        console.log('earliestEventTime', earliestEventTime.format('MMMM Do YYYY, h:mm:ss a'))
         // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
         rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
           const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
@@ -52,7 +53,11 @@ export default {
           let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
 
           // Only show events that are in progress or in the future
-          let displayStartTime = endDateTime.clone().add(3, 'hours')
+          let displayStartTime = endDateTime.clone().add(48, 'hours')
+
+//          console.log('startDateTime', startDateTime.format('MMMM Do YYYY, h:mm:ss a'))
+//          console.log('endDateTime', endDateTime.format('MMMM Do YYYY, h:mm:ss a'))
+//          console.log('displayStartTime', displayStartTime.format('MMMM Do YYYY, h:mm:ss a'))
           if (now.isBefore(displayStartTime)) {
             upcomingEvents.push({
               startDateTime: startDateTime,
