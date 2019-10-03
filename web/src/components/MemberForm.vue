@@ -67,7 +67,6 @@
                 prepend-icon="mdi-calendar"
                 readonly
                 v-on="on"
-                :rules="[rules.required]"
               ></v-text-field>
             </template>
             <v-date-picker
