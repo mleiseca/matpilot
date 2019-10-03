@@ -35,6 +35,8 @@
             :pagination.sync="pagination"
             :total-items="totalMembers"
             :loading="loading"
+            :rows-per-page-items="rowsPerPageItems"
+
           >
             <template
               slot="headerCell"
@@ -78,6 +80,7 @@ export default {
     return {
       loading: true,
       search: '',
+      rowsPerPageItems: [5, 10, 25, 50],
       pagination: {
         rowsPerPage: 5
       },
@@ -141,7 +144,6 @@ export default {
         query.$sort[sortBy] = descending ? -1 : 1
       }
 
-      query.$limit = rowsPerPage
       if (page > 1) {
         query.$skip = rowsPerPage * (page - 1)
       }
@@ -157,7 +159,6 @@ export default {
         //        ]
       }
 
-      //      console.log(query)
       this.findGymMembers({ query }).then(function (results) {
         //        console.log('found results:  ',results)
         self.totalMembers = results.total
