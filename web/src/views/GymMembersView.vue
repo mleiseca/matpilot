@@ -4,16 +4,34 @@
     <v-layout  justify-center wrap>
       <v-flex xs12 md8>
         <material-card
+          v-if="editMode"
           :title="title"
           text="">
           <member-form
             v-on:member-save="saveMemberAndDisplay"
+            v-on:member-edit-cancel="editCancelled"
             v-bind:member="member"
             v-bind:gym="gym"></member-form>
 
         </material-card>
-      </v-flex>
 
+        <v-card v-if="!editMode">
+          <v-card-text>
+
+            <member-view
+              v-on:member-edit-mode="editMode = true"
+              v-bind:member="member"
+              v-bind:gym="gym"></member-view>
+
+            <v-divider></v-divider>
+
+            <member-attendance
+              v-bind:member="member"
+              v-bind:gym="gym"></member-attendance>
+
+          </v-card-text>
+        </v-card>
+      </v-flex>
     </v-layout>
   </v-container>
 
@@ -30,7 +48,8 @@ export default {
     return {
       gym: {},
       member: {},
-      title: 'Edit member'
+      title: 'Edit member',
+      editMode: false
     }
   },
   computed: {
@@ -60,8 +79,10 @@ export default {
       event.save()
         .then((result) => {
           console.log('Got result:', result)
+          this.editMode = false
+
           EventBus.$emit('loading', { done: true })
-          this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+          EventBus.$emit('user-message', { message: 'Saved' })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)
@@ -69,15 +90,8 @@ export default {
           EventBus.$emit('user-message', { message: `Error saving member: ${e.message}`, type: 'error' })
         })
     },
-    enterEditMode: function (event) {
-      console.log('Entering edit mode')
-      //      event.gymId = this.gymId
-      //      console.log('Saving member and redisplaying:', event)
-      //      this.$store.dispatch('members/create', event)
-      //        .then((result) => {
-      //          console.log('Got result:', result)
-      //          this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
-      //        })
+    editCancelled: function (event) {
+      this.editMode = false
     }
   }
 }

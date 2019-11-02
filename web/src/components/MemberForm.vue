@@ -9,7 +9,7 @@
             :rules="[rules.required]"
             required
             autocomplete="off"
-            v-model="member.firstName"/>
+            v-model="memberCopy.firstName"/>
         </v-flex>
 
         <v-flex xs12 md12>
@@ -18,7 +18,7 @@
             label="Nickname (optional)"
             required
             autocomplete="off"
-            v-model="member.nickname"/>
+            v-model="memberCopy.nickname"/>
         </v-flex>
 
         <v-flex xs12 md12>
@@ -27,7 +27,7 @@
             label="Last Name"
             autocomplete="off"
             :rules="[rules.required]"
-            v-model="member.lastName"/>
+            v-model="memberCopy.lastName"/>
         </v-flex>
 
         <v-flex xs12 md12>
@@ -36,7 +36,7 @@
             label="Email"
             autocomplete="off"
             :rules="[rules.email]"
-            v-model="member.email"/>
+            v-model="memberCopy.email"/>
         </v-flex>
 
         <v-flex xs12 md12>
@@ -45,7 +45,7 @@
             label="Phone number"
             autocomplete="off"
             :rules="[rules.phone]"
-            v-model="member.phone"/>
+            v-model="memberCopy.phone"/>
         </v-flex>
 
         <v-flex xs12 md12>
@@ -81,7 +81,7 @@
 
         <v-flex xs12 md12 v-if="gym && gym.memberTags && gym.memberTags.length > 0">
           <div v-for="tagType in gym.memberTags" v-bind:key="tagType.tag">
-            <v-checkbox v-model="member.tags" :label="tagType.name" :value="tagType.tag"></v-checkbox>
+            <v-checkbox v-model="memberCopy.tags" :label="tagType.name" :value="tagType.tag"></v-checkbox>
           </div>
         </v-flex>
 
@@ -119,11 +119,11 @@
             v-model="emergencyContactPhone"/>
         </v-flex>
 
-        <v-flex xs12 md12 v-if="!this.needsToSign">
-          <a :href="member.waiverSignedUrl" target="_blank">
-            View signed waiver
-          </a>
-        </v-flex>
+        <!--<v-flex xs12 md12 v-if="!this.needsToSign">-->
+          <!--<a :href="memberCopy.waiverSignedUrl" target="_blank">-->
+            <!--View signed waiver-->
+          <!--</a>-->
+        <!--</v-flex>-->
         <v-flex xs12 md12 ref="fullWaiver" v-if="this.needsToSign">
           <strong>WAIVER AND RELEASE OF LIABILITY AND AGREEMENT TO PARTICIPATE IN ACTIVITY WITH:</strong><br>
           <strong>FOUNDATIONS BJJ ACADEMY</strong><br>
@@ -160,7 +160,7 @@
             v-model="agreeToTerms" label="I agree to the terms above"/>
 
           <template v-if="expandSignature">
-            <div><span>Name: </span><span>{{ this.member.firstName + ' ' + this.member.lastName }}</span></div>
+            <div><span>Name: </span><span>{{ this.memberCopy.firstName + ' ' + this.memberCopy.lastName }}</span></div>
             <template v-if="isMinor">
               <div><span>Parent or Guardian: </span><span>{{ this.guardianContactName }}</span></div>
             </template>
@@ -192,15 +192,20 @@
           </template>
         </v-flex>
 
-        <v-flex xs12>
+        <v-flex xs6 md3>
           <v-btn
-            class="mx-0 font-weight-light"
             color="success"
             @click="save">
             Save
           </v-btn>
         </v-flex>
-
+        <v-flex xs6 md3>
+          <v-btn
+            class="font-weight-light"
+            @click="cancel">
+            Cancel
+          </v-btn>
+        </v-flex>
       </v-layout>
     </v-container>
   </v-form>
@@ -220,6 +225,7 @@ export default {
   data () {
     return {
       windowWidth: window.innerWidth,
+      memberCopy: {},
       guardianContactName: '',
       guardianContactPhone: '',
       emergencyContactName: '',
@@ -252,7 +258,17 @@ export default {
     }
   },
   mounted: function () {
+    window.onresize = () => {
+      this.windowWidth = window.innerWidth
+    }
+    this.loadMemberIntoForm(this.member)
     this.$watch('member', m => {
+      this.loadMemberIntoForm(m)
+    })
+  },
+  methods: {
+    loadMemberIntoForm (m) {
+      this.memberCopy = m.clone()
       if (m.emergencyContacts && m.emergencyContacts.length > 0) {
         this.emergencyContactName = m.emergencyContacts[0].name
         this.emergencyContactPhone = m.emergencyContacts[0].phone
@@ -267,13 +283,8 @@ export default {
       }
       this.agreeToTerms = m.waiverSignedDate !== null
       this.needsToSign = m.waiverSignedDate === null
+    },
 
-      window.onresize = () => {
-        this.windowWidth = window.innerWidth
-      }
-    })
-  },
-  methods: {
     save: async function (event) {
       event.preventDefault()
       if (!this.$refs.form.validate()) {
@@ -288,25 +299,29 @@ export default {
           EventBus.$emit('loading', { done: true })
           return
         } else {
-          this.member.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
+          this.memberCopy.waiverSignature = await this.$html2canvas(this.$refs.fullWaiver, { type: 'dataURL' })
         }
       }
 
-      this.member.emergencyContacts = [
+      this.memberCopy.emergencyContacts = [
         {
           name: this.emergencyContactName,
           phone: this.emergencyContactPhone
         }
       ]
-      this.member.guardianContacts = [
+      this.memberCopy.guardianContacts = [
         {
           name: this.guardianContactName,
           phone: this.guardianContactPhone
         }
       ]
 
-      console.log('Member saved!', this.member)
-      this.$emit('member-save', this.member)
+      console.log('Member saved!', this.memberCopy)
+      this.$emit('member-save', this.memberCopy)
+    },
+    cancel: function (event) {
+      event.preventDefault()
+      this.$emit('member-edit-cancel', this.member)
     },
     currentDate () { return moment().format('MMMM D, YYYY') },
     evaluateDateOfBirth (date) {
@@ -314,10 +329,9 @@ export default {
       this.isMinor = age < 18
     },
     saveDateOfBirth (date) {
-      console.log('Saving dateOfBirth: ', date)
-      this.member.dateOfBirth = moment(date).format('YYYY-MM-DD')
-      this.$refs.dateOfBirthMenu.save(this.formatDateTime(date))
-      this.dateOfBirth = this.member.dateOfBirth
+      this.dateOfBirth = moment(date).format('YYYY-MM-DD')
+      this.memberCopy.dateOfBirth = this.formatDateTime(this.dateOfBirth)
+      this.$refs.dateOfBirthMenu.save(this.memberCopy.dateOfBirth)
       this.evaluateDateOfBirth(date)
     },
     async clearSignature () {
