@@ -26,8 +26,8 @@
             <v-divider></v-divider>
 
             <member-attendance
-              v-bind:member="member"
-              v-bind:gym="gym"></member-attendance>
+              v-bind:memberId="memberId"
+              v-bind:gymId="gymId"></member-attendance>
 
           </v-card-text>
         </v-card>
