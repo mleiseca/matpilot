@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row wrap>
       <v-flex xs12>
-        <div class="headline">Attendance</div>
+        <div class="headline">Training History</div>
       </v-flex>
 
       <v-flex xs4>
