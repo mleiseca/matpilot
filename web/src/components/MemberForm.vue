@@ -194,16 +194,16 @@
 
         <v-flex xs6 md3>
           <v-btn
-            color="success"
-            @click="save">
-            Save
+            class="font-weight-light"
+            @click="cancel">
+            Cancel
           </v-btn>
         </v-flex>
         <v-flex xs6 md3>
           <v-btn
-            class="font-weight-light"
-            @click="cancel">
-            Cancel
+            color="success"
+            @click="save">
+            Save
           </v-btn>
         </v-flex>
       </v-layout>

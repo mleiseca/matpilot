@@ -62,6 +62,14 @@ module.exports = function (app) {
       type: Sequelize.JSONB,
       allowNull: false
     },
+    rank: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
+    rankAwardDate: {
+      type: DataTypes.DATE,
+      allowNull: true
+    },
   }, {
     hooks: {
       beforeCount(options) {

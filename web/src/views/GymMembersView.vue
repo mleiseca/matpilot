@@ -25,9 +25,19 @@
 
             <v-divider></v-divider>
 
+            <member-rank
+              v-bind:member="member"
+              v-bind:gym="gym">
+            </member-rank>
+
+            <v-divider></v-divider>
+
             <member-attendance
               v-bind:memberId="memberId"
-              v-bind:gymId="gymId"></member-attendance>
+              v-bind:gymId="gymId"
+              v-bind:member="member">
+
+            </member-attendance>
 
           </v-card-text>
         </v-card>

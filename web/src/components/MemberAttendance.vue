@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row wrap>
       <v-flex xs12>
-        <div class="headline">Training History</div>
+        <div class="headline">Training Record</div>
       </v-flex>
 
       <v-flex xs4>
@@ -17,27 +17,31 @@
           {{ trainingAverage }}
         </div>
         <div class="circlehelper">per week</div>
-        <div class="circlehelper">(past month)</div>
+        <div class="circlehelper circlehelperaux">past month</div>
       </v-flex>
       <v-flex xs4>
-        <!--<div>-->
-          <!--<div class="circle">-->
-            <!--10h-->
-          <!--</div>-->
-          <!--<div class="circlehelper">since promo</div>-->
-        <!--</div>-->
+        <div v-if="trainingSincePromo">
+          <div class="circle">
+            {{ trainingSincePromo }}
+          </div>
+          <div class="circlehelper">since promo</div>
+        </div>
       </v-flex>
 
-      <v-flex xs3 pb-0 pt-0 pl-0>
+      <v-flex xs12>
+        <div class="headline">Attendance</div>
+      </v-flex>
+
+      <v-flex xs3 pb-0 pt-0 pl-0 class="monthArrow">
         <v-btn flat @click="changeMonth(-1)">
           <v-icon>mdi-arrow-left-bold</v-icon>
         </v-btn>
       </v-flex>
-      <v-flex xs6 pb-0>
+      <v-flex xs7 pb-0>
         <div class="title attendanceMonth">{{ activeMonthText }}</div>
       </v-flex>
-      <v-flex xs3 pb-0 pt-0>
-        <v-btn flat @click="changeMonth(1)" v-show="nextAttendanceMonthShown">
+      <v-flex xs2 pb-0 pt-0 class="monthArrow" >
+        <v-btn flat @click="changeMonth(1)" v-show="nextAttendanceMonthShown" >
           <v-icon>mdi-arrow-right-bold</v-icon>
         </v-btn>
       </v-flex>
@@ -68,7 +72,11 @@ import moment from 'moment'
 
 export default {
   name: 'MemberAttendance',
-  props: ['gymId', 'memberId'],
+  props: {
+    member: { type: Object },
+    gymId: { type: String },
+    memberId: { type: String }
+  },
   data () {
     return {
       attendances: [],
@@ -78,17 +86,48 @@ export default {
       attendanceLoading: false,
       nextAttendanceMonthShown: true,
       trainingTimeThisWeek: '...',
-      trainingAverage: '...'
+      trainingAverage: '...',
+      trainingSincePromo: null
     }
   },
   mounted: async function () {
     this.activeMonth = moment().startOf('month')
     this.setActiveMonth()
+    //    await this.getMember(this.memberId).then(result => {
+    //      this.member = result
+    //    })
+
+    //    TODO:
+    //    console.log('m.rankAwardDate', this.member.rankAwardDate)
+    this.loadHoursSinceLastPromo(this.member)
+
+    this.$watch('member', async function (m) {
+      console.log('m.rankAwardDate', m.rankAwardDate)
+      this.loadHoursSinceLastPromo(m)
+    })
   },
   methods: {
     ...mapActions('event-member-attendance', {
       findMemberEventAttendance: 'find'
     }),
+    loadHoursSinceLastPromo: async function (m) {
+      if (m.rankAwardDate) {
+        const sinceLastPromoResults = await this.findMemberEventAttendance({
+          query: {
+            $limit: 50,
+            $customQuery: {
+              type: 'TRAINING_TIME_DURING_PERIOD',
+              bind: {
+                startDateTime: moment(m.rankAwardDate).format('YYYY-MM-DD'),
+                endDateTime: moment().add(1, 'day').format('YYYY-MM-DD'),
+                gymId: this.gymId,
+                memberId: this.memberId
+              }
+            }
+          } })
+        this.trainingSincePromo = this.getHoursSpent(sinceLastPromoResults, 1)
+      }
+    },
     formatClassDateTime (dateTime) {
       return moment(dateTime).format('MMM D, H:mmA')
     },
@@ -109,9 +148,15 @@ export default {
       const times = results[0]
       console.log('gethoursspent', times, divisor)
       if (times.length > 0) {
-        let time = (times[0].total_time.hours + times[0].total_time.minutes / 60) / divisor
+        const hours = times[0].total_time.hours || 0
+        const minutes = times[0].total_time.minutes || 0
+        let time = (hours + minutes / 60) / divisor
         time = Math.round(time * 10) / 10
-        return time + 'h'
+        if (isNaN(time)) {
+          return '0h'
+        } else {
+          return time + 'h'
+        }
       } else {
         return '0h'
       }
@@ -192,11 +237,18 @@ export default {
   font-weight: bold;
   padding-left: 8px;
 }
+.circlehelperaux{
+  font-size: 10px;
+  font-weight: normal;
+}
 .attendanceMonth{
   text-align: center;
   vertical-align: bottom;
   width:100%;
 
+}
+.monthArrow{
+  margin-left: -20px;
 }
 .attendanceRecord{
   padding: 5px;
