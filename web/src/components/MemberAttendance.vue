@@ -46,22 +46,73 @@
         </v-btn>
       </v-flex>
 
-      <v-flex xs12 v-show="!attendanceLoading">
+      <div v-for="attendance in attendances"
+           v-bind:key="attendance.id"
+           v-bind:class="getAttendanceClass(attendance.id)"
+           v-show="!attendanceLoading"
+           class="attendanceRow"
+           @click="selectedAttendanceId = attendance.id">
 
-        <div v-for="attendance in attendances"
-             v-bind:key="attendance.id"
-             class="attendanceRecord"
-             @click="openEvent(attendance.eventId)">
+        <div class="attendanceRecord">
           {{formatClassDateTime(attendance.startDateTime)}} - {{attendance.title}}
         </div>
-        <div v-if="attendances.length === 0" class="noAttendance">
-          No attendance
+        <div v-if="attendance.id == selectedAttendanceId" class="action">
+          <v-btn flat @click="editAttendance(attendance)">
+            <v-icon>mdi-redo</v-icon>
+          </v-btn>
         </div>
+        <div v-if="attendance.id == selectedAttendanceId"  class="action">
+          <v-btn flat @click="attendanceDeleteConfirmDialog = true">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
+        </div>
+      </div>
+
+      <v-flex xs12 v-if="attendances.length === 0 && !attendanceLoading"
+              class="noAttendance">
+        No attendance
       </v-flex>
-      <v-flex xs12 v-show="attendanceLoading" class="noAttendance">
+
+      <v-flex xs12 v-if="attendanceLoading"  class="noAttendance">
         ... loading ...
       </v-flex>
+
+
+
     </v-layout>
+
+    <v-dialog
+      v-model="attendanceDeleteConfirmDialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">Delete attendance?</v-card-title>
+
+        <v-card-text>
+          Confirm that you want to delete this attendance record.
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="grey darken-1"
+            flat="flat"
+            @click="attendanceDeleteConfirmDialog = false"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="red darken-1"
+            flat="flat"
+            @click="deleteSelectedAttendance()"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 
 </template>
@@ -87,18 +138,14 @@ export default {
       nextAttendanceMonthShown: true,
       trainingTimeThisWeek: '...',
       trainingAverage: '...',
-      trainingSincePromo: null
+      trainingSincePromo: null,
+      selectedAttendanceId: null,
+      attendanceDeleteConfirmDialog: null
     }
   },
   mounted: async function () {
     this.activeMonth = moment().startOf('month')
     this.setActiveMonth()
-    //    await this.getMember(this.memberId).then(result => {
-    //      this.member = result
-    //    })
-
-    //    TODO:
-    //    console.log('m.rankAwardDate', this.member.rankAwardDate)
     this.loadHoursSinceLastPromo(this.member)
 
     this.$watch('member', async function (m) {
@@ -110,6 +157,27 @@ export default {
     ...mapActions('event-member-attendance', {
       findMemberEventAttendance: 'find'
     }),
+    getAttendanceClass(id) {
+      return id === this.selectedAttendanceId ? 'selectedAttendanceRow' : ''
+    },
+    editAttendance(attendance){
+      this.$router.push({ name: 'gym-event-checkin', params: { gymId: this.gymId, eventId: attendance.eventId } })
+    },
+    deleteSelectedAttendance() {
+      console.log('deleting attendance ', this.selectedAttendanceId)
+      this.attendanceDeleteConfirmDialog = null
+      this.$store.dispatch('event-member-attendance/remove', this.selectedAttendanceId)
+        .then((result) => {
+          this.loadMonthAttendance()
+          this.loadHoursSinceLastPromo(this.member)
+        })
+        .catch((e) => {
+          console.log('** Login catch: ', e)
+          EventBus.$emit('user-message', { message: `Error deleting attendance: ${e.message}`, type: 'error' })
+        })
+
+//      this.selectedAttendance.remove()
+    },
     loadHoursSinceLastPromo: async function (m) {
       if (m.rankAwardDate) {
         const sinceLastPromoResults = await this.findMemberEventAttendance({
@@ -130,10 +198,6 @@ export default {
     },
     formatClassDateTime (dateTime) {
       return moment(dateTime).format('MMM D, H:mmA')
-    },
-    openEvent (eventId) {
-      console.log('opening eventid: ', eventId)
-      this.$router.push({ name: 'gym-event-checkin', params: { gymId: this.gymId, eventId: eventId } })
     },
     changeMonth (diff) {
       this.activeMonth.add(diff, 'months')
@@ -166,12 +230,11 @@ export default {
 
       const results = await this.findMemberEventAttendance({
         query: {
-          $limit: 50,
           $customQuery: {
             type: 'ATTENDANCE_DURING_PERIOD',
             bind: {
-              startDateTime: this.activeMonth.clone().startOf('month').format('YYYY-MM-DD'),
-              endDateTime: this.activeMonth.clone().endOf('month').format('YYYY-MM-DD'),
+              startDateTime: this.activeMonth.clone().startOf('month').toDate(),
+              endDateTime: this.activeMonth.clone().endOf('month').toDate(),
               gymId: this.gymId,
               memberId: this.memberId
             }
@@ -183,29 +246,26 @@ export default {
 
       const lastWeekTrainingResults = await this.findMemberEventAttendance({
         query: {
-          $limit: 50,
           $customQuery: {
             type: 'TRAINING_TIME_DURING_PERIOD',
             bind: {
-              startDateTime: moment().subtract(1, 'week').format('YYYY-MM-DD'),
-              endDateTime: moment().add(1, 'day').format('YYYY-MM-DD'),
+              startDateTime: moment().subtract(1, 'week').toDate(),
+              endDateTime: moment().add(1, 'day').toDate(),
               gymId: this.gymId,
               memberId: this.memberId
             }
           }
         } })
 
-      console.log(lastWeekTrainingResults)
       this.trainingTimeThisWeek = this.getHoursSpent(lastWeekTrainingResults, 1)
 
       const averageTrainingResults = await this.findMemberEventAttendance({
         query: {
-          $limit: 50,
           $customQuery: {
             type: 'TRAINING_TIME_DURING_PERIOD',
             bind: {
-              startDateTime: moment().subtract(4, 'week').format('YYYY-MM-DD'),
-              endDateTime: moment().add(1, 'day').format('YYYY-MM-DD'),
+              startDateTime: moment().subtract(4, 'week').toDate(),
+              endDateTime: moment().add(1, 'day').toDate(),
               gymId: this.gymId,
               memberId: this.memberId
             }
@@ -255,5 +315,16 @@ export default {
 }
 .noAttendance{
   text-align: center;
+}
+.selectedAttendanceRow {
+  background-color: #dadada;
+  border-radius: 25px;
+  padding: 20px;
+}
+.attendanceRow{
+  width: 100%;
+}
+.action {
+  display: inline;
 }
 </style>
