@@ -38,14 +38,11 @@ export default {
       const upcomingEvents = []
       for (const seIndex in ses) {
         const se = ses[seIndex]
-        //        console.log('scheduledEvent', se)
 
         let now = momentTz.tz(se.timezone)
         let earliestEventTime = now.clone().subtract(2, 'days')
 
-        //        console.log('earliestEventTime', earliestEventTime.format('MMMM Do YYYY, h:mm:ss a'))
-        // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
-        rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
+        function addEvent(se, date) {
           const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
           const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
           const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
@@ -69,9 +66,17 @@ export default {
               past: now.isAfter(startDateTime)
             })
           }
+        }
 
-          return true
-        })
+        if (se.rrules) {
+          // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
+          rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
+            addEvent(se, date)
+            return true
+          })
+        } else {
+          addEvent(se, new Date(se.startDate))
+        }
       }
 
       if (upcomingEvents.length === 0) {
