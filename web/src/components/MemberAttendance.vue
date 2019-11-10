@@ -89,7 +89,7 @@
         <v-card-title class="headline">Delete attendance?</v-card-title>
 
         <v-card-text>
-          Confirm that you want to delete this attendance record.
+          Are you sure you want to delete this attendance?
         </v-card-text>
 
         <v-card-actions>
@@ -125,7 +125,7 @@ export default {
   name: 'MemberAttendance',
   props: {
     member: { type: Object },
-    gymId: { type: String },
+    gymId: [ String, Number],
     memberId: { type: String }
   },
   data () {
@@ -149,7 +149,6 @@ export default {
     this.loadHoursSinceLastPromo(this.member)
 
     this.$watch('member', async function (m) {
-      console.log('m.rankAwardDate', m.rankAwardDate)
       this.loadHoursSinceLastPromo(m)
     })
   },
@@ -210,7 +209,7 @@ export default {
     },
     getHoursSpent (results, divisor) {
       const times = results[0]
-      console.log('gethoursspent', times, divisor)
+//      console.log('gethoursspent', times, divisor)
       if (times.length > 0) {
         const hours = times[0].total_time.hours || 0
         const minutes = times[0].total_time.minutes || 0
@@ -312,6 +311,7 @@ export default {
 }
 .attendanceRecord{
   padding: 5px;
+  display: inline;
 }
 .noAttendance{
   text-align: center;

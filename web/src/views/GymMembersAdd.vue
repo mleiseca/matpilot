@@ -441,7 +441,7 @@ export default {
           result.save()
             .then((uploadResult) => {
               console.log('upload result', uploadResult)
-              this.$router.push({ name: 'gym-members', params: { id: this.gymId } })
+              this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: result.id } })
               EventBus.$emit('loading', { done: true })
             })
             .catch((uploadError) => {

@@ -11,7 +11,8 @@
         <v-dialog v-model="addRankDialog" max-width="500px" :persistent=true>
           <v-card>
             <v-card-title>
-              <div class="headline">Add Rank</div>
+              <div class="headline" v-if="!selectedRank">Add Rank</div>
+              <div class="headline" v-if="selectedRank">Edit Rank</div>
             </v-card-title>
             <v-card-text>
               <v-form ref="newRankForm" :lazyValidation=true>
@@ -63,23 +64,55 @@
         </v-dialog>
       </v-flex>
 
-      <v-flex xs12 v-if="rankHistory && rankHistory.length > 0" >
-        <div v-for="r in rankHistory" v-bind:key="r.id" class="rankHistoryWrapper">
-          {{ formatAwardDate(r.awardDate) }} - {{ r.newRank }}
+      <div class="rankHistoryWrapper">
+        <div v-for="r in rankHistory" v-bind:key="r.id"
+             v-bind:class="getRankClass(r.id)"
+             class="rankRow" @click="selectedRank = r">
+          <span class="rankDescription">{{ r.newRank }}</span> - <span class="rankDate">{{ formatAwardDate(r.awardDate) }}</span>
+
+          <div v-if="selectedRank && r.id == selectedRank.id" class="action">
+            <v-btn flat @click="editRank(r)">
+              <v-icon>mdi-pencil</v-icon>
+            </v-btn>
+            <v-btn flat @click="deleteConfirmDialog = true">
+              <v-icon>mdi-close-circle</v-icon>
+            </v-btn>
+          </div>
         </div>
-      </v-flex>
-        <!--<div class="headline">Rank</div>-->
-      <!--</v-flex>-->
-
-      <!--<v-flex xs12 v-if="!member.rank">-->
-        <!--<div class="leadingIcon">-->
-          <!--<v-icon >mdi-email-outline</v-icon>-->
-        <!--</div>-->
-
-        <!--<div class="dataElement">{{ member.rank }}</div>-->
-        <!--<div class="dataElement">{{ member.rankAwardDate }}</div>-->
-      <!--</v-flex>-->
+      </div>
     </v-layout>
+    <v-dialog
+      v-model="deleteConfirmDialog"
+      max-width="290"
+    >
+      <v-card>
+        <v-card-title class="headline">Delete rank?</v-card-title>
+
+        <v-card-text>
+          Are you sure you want to delete this rank?
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="grey darken-1"
+            flat="flat"
+            @click="deleteConfirmDialog = false"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            color="red darken-1"
+            flat="flat"
+            @click="deleteSelected()"
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -101,6 +134,8 @@ export default {
       promotionDate: null,
       promotionDateMenu: false,
       newPromotionDate: null,
+      deleteConfirmDialog: null,
+      selectedRank: null,
       rules: {
         required: value => !!value || 'Required.'
       }
@@ -135,17 +170,32 @@ export default {
       findMemberRankHistory: 'find'
     }),
     addRank: function () {
-      this.addRankDialog = true
       this.newRank = null
-      this.promotionDate = null
+      this.promotionDate = moment().format('YYYY-MM-DD')
       this.$refs.newRankForm.resetValidation()
-      //      this.addRankDialog = true
+      this.selectedRank = null
+      this.addRankDialog = true
     },
     savePromotionDate (date) {
       this.newPromotionDate = moment(date).format('YYYY-MM-DD') + 'T00:00:00'
     },
     formatAwardDate: function (date) {
       return moment(date).format('MMM D, YYYY')
+    },
+    getRankClass(id) {
+      return this.selectedRank !== null && id === this.selectedRank.id ? 'selectedRankRow' : ''
+    },
+    deleteSelected: function() {
+      this.selectedRank.remove()
+      this.deleteConfirmDialog = null
+    },
+    editRank: function(rank) {
+      console.log('editing rank', rank)
+      this.newRank = this.selectedRank.newRank
+      this.promotionDate = moment(this.selectedRank.awardDate).format('YYYY-MM-DD')
+      this.savePromotionDate(this.selectedRank.awardDate)
+
+      this.addRankDialog = true
     },
     saveNewRank: function () {
       console.log(this.$refs)
@@ -155,31 +205,72 @@ export default {
       }
 
       this.addRankDialog = false
-
-      console.log('saving new rank')
-      EventBus.$emit('loading', { message: 'Adding Rank' })
-      this.$store.dispatch('member-rank-history/create', {
-        gymId: this.gym.id,
-        memberId: this.member.id,
-        awardDate: this.newPromotionDate,
-        newRank: this.newRank
-      })
-        .then((result) => {
-          console.log('Got result for new rank:', result)
+      if (this.selectedRank) {
+        EventBus.$emit('loading', { message: 'Saving Rank' })
+        const copyRank = this.selectedRank.clone()
+        copyRank.awardDate = this.newPromotionDate
+        copyRank.newRank = this.newRank
+        copyRank.save()
+          .then((result) => {
+            console.log('Got result for new rank:', result)
+            EventBus.$emit('loading', { done: true })
+          }).catch((e) => {
           EventBus.$emit('loading', { done: true })
-        }).catch((e) => {
+          EventBus.$emit('user-message', { message: `Error saving rank: ${e.message}`, type: 'error' })
+        })
+      } else {
+        console.log('saving new rank')
+        EventBus.$emit('loading', { message: 'Adding Rank' })
+        this.$store.dispatch('member-rank-history/create', {
+          gymId: this.gym.id,
+          memberId: this.member.id,
+          awardDate: this.newPromotionDate,
+          newRank: this.newRank
+        })
+          .then((result) => {
+            console.log('Got result for new rank:', result)
+            EventBus.$emit('loading', { done: true })
+          }).catch((e) => {
           EventBus.$emit('loading', { done: true })
           EventBus.$emit('user-message', { message: `Error saving new rank: ${e.message}`, type: 'error' })
         })
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.rankHistoryWrapper:first-child{
-  font-weight: bold;
+
+.rankHistoryWrapper{
+  padding: 10px;
+  width: 100%;
+}
+
+.rankDescription{
   font-size: large;
+}
+.rankDate {
+  font-style: italic;
+  white-space: nowrap;
+}
+.rankHistoryWrapper .rankRow:first-child {
   padding-bottom: 10px;
 }
+.rankHistoryWrapper .rankRow:first-child .rankDescription {
+  font-size: larger;
+  font-weight: bold;
+}
+
+.selectedRankRow {
+  background-color: #dadada;
+  border-radius: 25px;
+  padding: 20px;
+}
+
+.action {
+  display: inline;
+  white-space: nowrap;
+}
+
 </style>
