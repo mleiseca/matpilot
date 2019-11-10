@@ -74,27 +74,7 @@ export default {
       ]
     }
   },
-  //  watch: {
-  //    pagination: {
-  //      handler () {
-  //        this.loading = true
-  //        this.$store.dispatch('queryItems')
-  //          .then(result => {
-  //            this.loading = false
-  //          })
-  //      },
-  //      deep: true
-  //    }
-  //  },
   computed: {
-  //    //    pagination: {
-  //    //      get: function () {
-  //    //        return this.$store.state.members.pagination
-  //    //      },
-  //    set: function (value) {
-  //      //        this.$store.commit('setPagination', value)
-  //      //      }
-  //    },
     ...mapGetters('user-gym-role', {
       findUserGymsInStore: 'find'
     }),

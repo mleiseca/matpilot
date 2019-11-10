@@ -126,7 +126,7 @@ export default {
   props: {
     member: { type: Object },
     gymId: [ String, Number],
-    memberId: { type: String }
+    memberId: [ String, Number]
   },
   data () {
     return {

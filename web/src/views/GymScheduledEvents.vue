@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { rrulestr } from 'rrule'
 import moment from 'moment'
 
@@ -73,8 +73,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('scheduled-events', {
+      findScheduledEventsInStore: 'find'
+    }),
     scheduledEvents () {
-      return this.$store.getters['scheduled-events/list']
+      return this.findScheduledEventsInStore( {
+        query: {
+          gymId: parseInt(this.gymId, 10)
+        }
+      }).data
     }
   },
   methods: {

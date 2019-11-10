@@ -21,10 +21,16 @@ export default {
     }
   },
   computed: {
-    //     TODO: this is wrong - needs to findInstore for this gym
     ...mapGetters('scheduled-events', {
-      gymScheduledEvents: 'list'
-    })
+      findScheduledEventsInStore: 'find'
+    }),
+    gymScheduledEvents () {
+      return this.findScheduledEventsInStore( {
+        query: {
+          gymId: parseInt(this.gymId, 10)
+        }
+      }).data
+    }
   },
   methods: {
     ...mapActions('gyms', {

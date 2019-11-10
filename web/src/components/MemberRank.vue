@@ -172,6 +172,7 @@ export default {
     addRank: function () {
       this.newRank = null
       this.promotionDate = moment().format('YYYY-MM-DD')
+      this.savePromotionDate(this.promotionDate)
       this.$refs.newRankForm.resetValidation()
       this.selectedRank = null
       this.addRankDialog = true

@@ -459,9 +459,9 @@ export default {
     // TODO: copied from MemberForm
     saveDateOfBirth (date) {
       console.log('Saving dateOfBirth: ', date)
-      this.member.dateOfBirth = moment(date).format('YYYY-MM-DD')
-      this.$refs.dateOfBirthMenu.save(this.formatDateTime(date))
-      this.dateOfBirth = this.member.dateOfBirth
+      this.dateOfBirth = moment(date).format('YYYY-MM-DD')
+      this.member.dateOfBirth = this.formatDateTime(this.dateOfBirth)
+      this.$refs.dateOfBirthMenu.save(this.member.dateOfBirth)
       this.evaluateDateOfBirth(date)
     },
     // TODO: copied from MemberForm
