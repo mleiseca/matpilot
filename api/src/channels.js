@@ -66,15 +66,13 @@ module.exports = function(app) {
   // });
 
 
-  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'scheduled-events', 'user-gym-role']
+  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
     app.service(service).publish((data) => {
       return app.channel(`gyms/${data.gymId}`)
     })
   })
-
-  // TODO: MEMBERS???
 
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel

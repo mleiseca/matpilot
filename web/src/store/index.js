@@ -13,9 +13,11 @@ Vue.use(FeathersVuex)
 Vue.config.devtools = true
 
 export default new Vuex.Store({
+  strict: process.env.NODE_ENV !== 'production',
   plugins: [
     service('gyms'),
     service('members'),
+    service('member-rank-history'),
     service('events'),
     service('event-member-attendance'),
     service('scheduled-events'),

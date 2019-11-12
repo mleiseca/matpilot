@@ -237,12 +237,17 @@ module.exports = {
       createLowerName()
 
     ],
-    update: [commonHooks.lowerCase('email'), writeWaiverSignatureToS3(), createLowerName()],
+    update: [
+      commonHooks.discard('rank', 'rankAwardDate'),
+      commonHooks.lowerCase('email'),
+      writeWaiverSignatureToS3(),
+      createLowerName()],
     patch: [
       // commonHooks.iff(
       //   commonHooks.isProvider('external'),
       //   commonHooks.preventChanges(true,
       //     ['waiverSignedDate'])),
+      commonHooks.discard('rank', 'rankAwardDate'),
       commonHooks.lowerCase('email'),
       writeWaiverSignatureToS3(),
       createLowerName()

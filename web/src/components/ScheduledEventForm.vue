@@ -278,7 +278,7 @@ export default {
 
       let selectedWeekdays = this.parseWeekdays(this.form.byweekday)
 
-      const se = this.scheduledEvent ? this.scheduledEvent : {}
+      const se = this.scheduledEvent ? this.scheduledEvent.clone() : {}
 
       if (selectedWeekdays.length > 0) {
         const rule = new RRule({
@@ -309,8 +309,6 @@ export default {
       se.startTime = this.form.startTime
       se.endTime = this.form.endTime
 
-      // TODO: validation
-      console.log('scheduled-event saved!', se)
       this.$emit('scheduled-event-save', se)
     }
   }

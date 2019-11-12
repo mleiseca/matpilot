@@ -36,42 +36,48 @@ export default {
   mounted: function () {
     this.$watch('scheduledEvents', ses => {
       const upcomingEvents = []
+      function addEvent (se, date) {
+        let now = momentTz.tz(se.timezone)
+        const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
+        const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
+        const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
+
+        let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
+
+        // Only show events that are in progress or in the future
+        let displayStartTime = endDateTime.clone().add(48, 'hours')
+
+        //          console.log('startDateTime', startDateTime.format('MMMM Do YYYY, h:mm:ss a'))
+        //          console.log('endDateTime', endDateTime.format('MMMM Do YYYY, h:mm:ss a'))
+        //          console.log('displayStartTime', displayStartTime.format('MMMM Do YYYY, h:mm:ss a'))
+        if (now.isBefore(displayStartTime)) {
+          upcomingEvents.push({
+            startDateTime: startDateTime,
+            endDateTime: endDateTime,
+            scheduledEvent: se,
+            id: 'se-' + se.id + '-' + startDateTime,
+            startDate: startDate,
+            active: isActive,
+            past: now.isAfter(startDateTime)
+          })
+        }
+      }
+
       for (const seIndex in ses) {
         const se = ses[seIndex]
-        //        console.log('scheduledEvent', se)
 
-        let now = momentTz.tz(se.timezone)
-        let earliestEventTime = now.clone().subtract(2, 'days')
+        if (se.rrules) {
+          let now = momentTz.tz(se.timezone)
+          let earliestEventTime = now.clone().subtract(2, 'days')
 
-//        console.log('earliestEventTime', earliestEventTime.format('MMMM Do YYYY, h:mm:ss a'))
-        // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
-        rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
-          const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
-          const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
-          const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
-
-          let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
-
-          // Only show events that are in progress or in the future
-          let displayStartTime = endDateTime.clone().add(48, 'hours')
-
-//          console.log('startDateTime', startDateTime.format('MMMM Do YYYY, h:mm:ss a'))
-//          console.log('endDateTime', endDateTime.format('MMMM Do YYYY, h:mm:ss a'))
-//          console.log('displayStartTime', displayStartTime.format('MMMM Do YYYY, h:mm:ss a'))
-          if (now.isBefore(displayStartTime)) {
-            upcomingEvents.push({
-              startDateTime: startDateTime,
-              endDateTime: endDateTime,
-              scheduledEvent: se,
-              id: 'se-' + se.id + '-' + startDateTime,
-              startDate: startDate,
-              active: isActive,
-              past: now.isAfter(startDateTime)
-            })
-          }
-
-          return true
-        })
+          // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
+          rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
+            addEvent(se, date)
+            return true
+          })
+        } else {
+          addEvent(se, new Date(se.startDate))
+        }
       }
 
       if (upcomingEvents.length === 0) {
