@@ -107,7 +107,7 @@ export default {
         this.guardianContactPhone = m.guardianContacts[0].phone
       }
     },
-    formatBirthday (date) { return moment(date).format('MMMM D, YYYY') },
+    formatBirthday (date) { return moment.utc(date).format('MMMM D, YYYY') },
     editClick () {
       this.$emit('member-edit-mode', this.member)
     }
