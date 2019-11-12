@@ -183,14 +183,14 @@ export default {
     formatAwardDate: function (date) {
       return moment(date).format('MMM D, YYYY')
     },
-    getRankClass(id) {
+    getRankClass (id) {
       return this.selectedRank !== null && id === this.selectedRank.id ? 'selectedRankRow' : ''
     },
-    deleteSelected: function() {
+    deleteSelected: function () {
       this.selectedRank.remove()
       this.deleteConfirmDialog = null
     },
-    editRank: function(rank) {
+    editRank: function (rank) {
       console.log('editing rank', rank)
       this.newRank = this.selectedRank.newRank
       this.promotionDate = moment(this.selectedRank.awardDate).format('YYYY-MM-DD')
@@ -216,9 +216,9 @@ export default {
             console.log('Got result for new rank:', result)
             EventBus.$emit('loading', { done: true })
           }).catch((e) => {
-          EventBus.$emit('loading', { done: true })
-          EventBus.$emit('user-message', { message: `Error saving rank: ${e.message}`, type: 'error' })
-        })
+            EventBus.$emit('loading', { done: true })
+            EventBus.$emit('user-message', { message: `Error saving rank: ${e.message}`, type: 'error' })
+          })
       } else {
         console.log('saving new rank')
         EventBus.$emit('loading', { message: 'Adding Rank' })
@@ -232,9 +232,9 @@ export default {
             console.log('Got result for new rank:', result)
             EventBus.$emit('loading', { done: true })
           }).catch((e) => {
-          EventBus.$emit('loading', { done: true })
-          EventBus.$emit('user-message', { message: `Error saving new rank: ${e.message}`, type: 'error' })
-        })
+            EventBus.$emit('loading', { done: true })
+            EventBus.$emit('user-message', { message: `Error saving new rank: ${e.message}`, type: 'error' })
+          })
       }
     }
   }

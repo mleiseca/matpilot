@@ -77,7 +77,7 @@ export default {
       findScheduledEventsInStore: 'find'
     }),
     scheduledEvents () {
-      return this.findScheduledEventsInStore( {
+      return this.findScheduledEventsInStore({
         query: {
           gymId: parseInt(this.gymId, 10)
         }

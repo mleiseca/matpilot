@@ -60,8 +60,6 @@
           <v-btn flat @click="editAttendance(attendance)">
             <v-icon>mdi-redo</v-icon>
           </v-btn>
-        </div>
-        <div v-if="attendance.id == selectedAttendanceId"  class="action">
           <v-btn flat @click="attendanceDeleteConfirmDialog = true">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
@@ -76,8 +74,6 @@
       <v-flex xs12 v-if="attendanceLoading"  class="noAttendance">
         ... loading ...
       </v-flex>
-
-
 
     </v-layout>
 
@@ -120,13 +116,14 @@
 <script>
 import { mapActions } from 'vuex'
 import moment from 'moment'
+import { EventBus } from './../event-bus.js'
 
 export default {
   name: 'MemberAttendance',
   props: {
     member: { type: Object },
-    gymId: [ String, Number],
-    memberId: [ String, Number]
+    gymId: [String, Number],
+    memberId: [String, Number]
   },
   data () {
     return {
@@ -156,13 +153,13 @@ export default {
     ...mapActions('event-member-attendance', {
       findMemberEventAttendance: 'find'
     }),
-    getAttendanceClass(id) {
+    getAttendanceClass (id) {
       return id === this.selectedAttendanceId ? 'selectedAttendanceRow' : ''
     },
-    editAttendance(attendance){
+    editAttendance (attendance) {
       this.$router.push({ name: 'gym-event-checkin', params: { gymId: this.gymId, eventId: attendance.eventId } })
     },
-    deleteSelectedAttendance() {
+    deleteSelectedAttendance () {
       console.log('deleting attendance ', this.selectedAttendanceId)
       this.attendanceDeleteConfirmDialog = null
       this.$store.dispatch('event-member-attendance/remove', this.selectedAttendanceId)
@@ -175,7 +172,7 @@ export default {
           EventBus.$emit('user-message', { message: `Error deleting attendance: ${e.message}`, type: 'error' })
         })
 
-//      this.selectedAttendance.remove()
+      //      this.selectedAttendance.remove()
     },
     loadHoursSinceLastPromo: async function (m) {
       if (m.rankAwardDate) {
@@ -209,7 +206,7 @@ export default {
     },
     getHoursSpent (results, divisor) {
       const times = results[0]
-//      console.log('gethoursspent', times, divisor)
+      //      console.log('gethoursspent', times, divisor)
       if (times.length > 0) {
         const hours = times[0].total_time.hours || 0
         const minutes = times[0].total_time.minutes || 0
@@ -326,5 +323,6 @@ export default {
 }
 .action {
   display: inline;
+  white-space: nowrap;
 }
 </style>
