@@ -329,7 +329,7 @@ export default {
       this.isMinor = age < 18
     },
     saveDateOfBirth (date) {
-      this.dateOfBirth = moment(date).format('YYYY-MM-DD')
+      this.dateOfBirth = moment.utc(date).format('YYYY-MM-DD')
       this.memberCopy.dateOfBirth = this.formatDateTime(this.dateOfBirth)
       this.$refs.dateOfBirthMenu.save(this.memberCopy.dateOfBirth)
       this.evaluateDateOfBirth(date)
