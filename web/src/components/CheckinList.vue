@@ -40,7 +40,7 @@ export default {
         let now = momentTz.tz(se.timezone)
         const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
         const endDateTime = momentTz.tz(se.endTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())
-        const startDate = momentTz.tz(date, se.timezone).format('dddd, MMMM D')
+        const startDate = startDateTime.format('dddd, MMMM D')
 
         let isActive = now.clone().add(1, 'hours').isAfter(startDateTime) && now.isBefore(endDateTime)
 
@@ -70,8 +70,16 @@ export default {
           let now = momentTz.tz(se.timezone)
           let earliestEventTime = now.clone().subtract(2, 'days')
 
+          let lastDateToDisplay = earliestEventTime.clone().add(7, 'days')
+          if (se.endDate) {
+            const endDate = momentTz.tz(se.endDate, se.timezone)
+            if (endDate.isBefore(lastDateToDisplay)) {
+              lastDateToDisplay = endDate
+            }
+          }
+
           // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
-          rrulestr(se.rrules).between(earliestEventTime.toDate(), earliestEventTime.clone().add(7, 'days').toDate(), true, function (date, i) {
+          rrulestr(se.rrules).between(earliestEventTime.toDate(), lastDateToDisplay.toDate(), true, function (date, i) {
             addEvent(se, date)
             return true
           })
