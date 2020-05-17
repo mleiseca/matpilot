@@ -38,6 +38,8 @@ module.exports = function(app) {
         })
       })
 
+      // Get updates about this user
+      app.channel(`/users/${user.id}`).join(connection)
 
 
       // Channels can be named anything and joined on any condition
@@ -66,6 +68,7 @@ module.exports = function(app) {
   // });
 
 
+  // maybe 'user-gym-role', members, member-rank-history, 'event-member-attendance', should only be for admin users?
   const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
@@ -73,6 +76,12 @@ module.exports = function(app) {
       return app.channel(`gyms/${data.gymId}`)
     })
   })
+
+  // User needs updates when their things change. Maybe just every service with a user id?
+  // users
+  // user-gym-role
+  // associated members ??!!
+  app.service('users').publish((user) => app.channel(`/users/${user.id}`))
 
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel
