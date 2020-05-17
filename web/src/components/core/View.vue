@@ -1,6 +1,9 @@
 <template>
   <v-content>
+
     <div id="core-view">
+      <email-confirmation-banner></email-confirmation-banner>
+
       <v-fade-transition mode="out-in">
         <router-view />
       </v-fade-transition>
@@ -10,8 +13,9 @@
 </template>
 
 <script>
+
 export default {
-  metaInfo () {
+   metaInfo () {
     return {
       title: 'MatPilot'
     }
@@ -19,7 +23,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 #core-view {
   padding-bottom: 100px;
 }

@@ -1,0 +1,8 @@
+.email-unconfirmed-warning {
+  color: rgba($white, 1);
+  font-size: $font-size-default + 2;
+
+  a {
+    text-decoration: underline;
+  }
+}
