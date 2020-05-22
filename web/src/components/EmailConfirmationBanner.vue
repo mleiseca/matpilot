@@ -3,7 +3,7 @@
     <v-container wrap fluid class="warning email-unconfirmed-warning" v-if="!userVerified">
       <v-layout row>
         <v-flex xs12 v-if="!emailSending">
-          <a @click="resendEmail()">Confirm your email address</a> to access to your member accounts.
+          <a @click="resendEmail()">Verify your email address</a> to access to your member accounts.
         </v-flex>
 
         <v-flex xs12 v-if="emailSending === 'SENDING'">
@@ -37,7 +37,6 @@
     watch: {
       '$store.state.auth.user.isVerified': function() {
         const user = this.$store.state.auth.user
-        console.log('user is...', user)
         if (user) {
           this.userVerified = user.isVerified
           this.emailSending = false

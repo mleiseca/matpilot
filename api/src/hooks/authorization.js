@@ -48,25 +48,33 @@ const restrictAccessForGymDefaults = {
   role: null
 }
 
-function fetchUserGymIds(app, userId, optionalRequiredRoles) {
-  const userGymRoleModel = app.services['user-gym-role'].Model
-  return userGymRoleModel.findAll({
-    where: {
-      userId: userId
-    }
-  }).then(function (gymRoles) {
-    const gymIds = new Set()
 
-    gymRoles.forEach(userGymRole => {
-      if (isUndefined(optionalRequiredRoles) || optionalRequiredRoles === null) {
-        gymIds.add(userGymRole.gymId)
-      } else if (optionalRequiredRoles.includes(userGymRole.role)) {
-        gymIds.add(userGymRole.gymId)
+const userRolesQuery = 'select "gymId", role from user_gym_role where "userId" = $userId ' +
+  'union ' +
+  'select "gymId", \'MEMBER\' as role from members where email in (select email from users where id = $userId and "isVerified" = true)'
+
+function fetchUserGymIds(app, userId, optionalRequiredRoles) {
+  const sequelize = app.get('sequelizeClient')
+  return sequelize.query(userRolesQuery,
+    {
+      raw: true,
+      bind: {
+        userId: userId
       }
     })
+    .then(results => {
+      const gymIds = new Set()
 
-    return gymIds
-  })
+      results[0].forEach(userGymRole => {
+        if (isUndefined(optionalRequiredRoles) || optionalRequiredRoles === null) {
+          gymIds.add(userGymRole.gymId)
+        } else if (optionalRequiredRoles.includes(userGymRole.role)) {
+          gymIds.add(userGymRole.gymId)
+        }
+      })
+
+      return gymIds
+    })
 }
 
 function addGymIdParameter(hook, options) {
@@ -75,14 +83,15 @@ function addGymIdParameter(hook, options) {
 
     let explicitGymId = get(hook.params.query, options.gymIdField)
 
-    logger.info('Found explicitGymId: %s', explicitGymId)
-
     if (isUndefined(explicitGymId )) {
+      logger.info('No explicitGymId. Adding ids %s', Array.from(gymIds))
       set(hook.params, `query.${options.gymIdField}`, Array.from(gymIds))
     } else {
+      logger.info('Found explicitGymId: %s', explicitGymId)
+
       explicitGymId = parseInt(explicitGymId, 10)
       if (!gymIds.has(explicitGymId)) {
-        logger.info('Permission denied, gymIds is %s query wanted %s', gymIds, explicitGymId)
+        logger.info('Permission denied, gymIds is [%s] query wanted %s', Array.from(gymIds).join(','), explicitGymId)
         throw new errors.Forbidden('You do not have the permissions to access this.')
       }
     }
@@ -94,9 +103,10 @@ function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
   return fetchUserGymIds(hook.app, hook.params.user.id, optionalRequiredRoles).then(function (gymIds) {
     let explicitGymId = get(hook.data, options.gymIdField)
 
+    // TODO: this isn't really a permission issue - we are creating a gym and there should be no gymId passed in, right?
     explicitGymId = parseInt(explicitGymId, 10)
     if (!gymIds.has(explicitGymId)) {
-      logger.info('Permission denied, gymIds is %s query wanted %s',gymIds, explicitGymId)
+      logger.info('Permission denied, gymIds is [%s] query wanted %s',Array.from(gymIds).join(','), explicitGymId)
       throw new errors.Forbidden('You do not have the permissions to access this.')
     }
     return hook

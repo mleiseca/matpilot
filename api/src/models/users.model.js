@@ -29,7 +29,8 @@ module.exports = function (app) {
     verifyExpires: { type: Sequelize.DATE },
     verifyChanges: { type: Sequelize.JSON },
     resetToken: { type: Sequelize.STRING },
-    resetExpires: { type: Sequelize.DATE }
+    resetExpires: { type: Sequelize.DATE },
+    memberGyms: { type: Sequelize.VIRTUAL }
   }, {
     hooks: {
       beforeCount(options) {

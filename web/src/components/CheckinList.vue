@@ -18,10 +18,8 @@
 <script>
 import { rrulestr } from 'rrule'
 import momentTz from 'moment-timezone'
-import CheckinEvent from './CheckinEvent.vue'
 
 export default {
-  components: { CheckinEvent },
   name: 'CheckinList',
   props: {
     scheduledEvents: Array
@@ -70,6 +68,7 @@ export default {
           let now = momentTz.tz(se.timezone)
           let earliestEventTime = now.clone().subtract(2, 'days')
 
+          // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
           let lastDateToDisplay = earliestEventTime.clone().add(7, 'days')
           if (se.endDate) {
             const endDate = momentTz.tz(se.endDate, se.timezone)
@@ -78,7 +77,6 @@ export default {
             }
           }
 
-          // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
           rrulestr(se.rrules).between(earliestEventTime.toDate(), lastDateToDisplay.toDate(), true, function (date, i) {
             addEvent(se, date)
             return true
