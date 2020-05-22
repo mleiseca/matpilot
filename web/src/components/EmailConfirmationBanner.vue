@@ -21,53 +21,52 @@
 </template>
 
 <script>
-  import client from '../api/feathers-client'
+import client from '../api/feathers-client'
 
-  export default {
-    name: 'EmailConfirmationBanner',
-    data() {
-      return {
-        userVerified: true,
-        emailSending: false
-      }
-    },
-    mounted: async function() {
+export default {
+  name: 'EmailConfirmationBanner',
+  data () {
+    return {
+      userVerified: true,
+      emailSending: false
+    }
+  },
+  mounted: async function () {
 
-    },
-    watch: {
-      '$store.state.auth.user.isVerified': function() {
-        const user = this.$store.state.auth.user
-        if (user) {
-          this.userVerified = user.isVerified
-          this.emailSending = false
-        }
-      }
-    },
-    methods: {
-      resendEmail: function() {
-        console.log("resending email")
-        const user = this.$store.state.auth.user
-        this.emailSending = 'SENDING'
-
-        client.service('authManagement').create({
-          action: 'resendVerifySignup',
-          value: {
-            email: user.email,
-            verifyToken : user.verifyToken,
-            verifyShortToken: user.verifyShortToken
-          }
-        })
-          .then((result) => {
-            console.log('result:', result)
-            this.emailSending = 'SENT'
-          })
-          .catch((error) => {
-            console.log('error:', error)
-            this.emailSending = 'ERROR'
-          })
+  },
+  watch: {
+    '$store.state.auth.user.isVerified': function () {
+      const user = this.$store.state.auth.user
+      if (user) {
+        this.userVerified = user.isVerified
+        this.emailSending = false
       }
     }
+  },
+  methods: {
+    resendEmail: function () {
+      console.log('resending email')
+      const user = this.$store.state.auth.user
+      this.emailSending = 'SENDING'
 
+      client.service('authManagement').create({
+        action: 'resendVerifySignup',
+        value: {
+          email: user.email,
+          verifyToken: user.verifyToken,
+          verifyShortToken: user.verifyShortToken
+        }
+      })
+        .then((result) => {
+          console.log('result:', result)
+          this.emailSending = 'SENT'
+        })
+        .catch((error) => {
+          console.log('error:', error)
+          this.emailSending = 'ERROR'
+        })
+    }
   }
-</script>
 
+}
+</script>

@@ -10,7 +10,7 @@
         MatPilot helps you keep track of scheduling and attendance at your gym.
       </div>
 
-      <div v-if="userGyms.length == 0">
+      <div v-if="userGyms.length === 0">
         To get started,
         <router-link :to="{ name: 'gymsadd'}">
           create a gym
@@ -37,41 +37,40 @@
 
 </template>
 
-
 <script>
-  import { mapActions, mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
-  export default {
-    name: 'UserAdministration',
+export default {
+  name: 'UserAdministration',
 
-    computed: {
-      ...mapGetters('user-gym-role', {
-        findUserGymsInStore: 'find'
-      }),
-      userGyms () {
-        return this.findUserGymsInStore({
-          query: {
-            userId: this.$store.state.auth.user.id,
-            $sort: { createdAt: -1 },
-            $limit: 25
-          }
-        }).data
-      }
-    },
-    methods: {
-      ...mapActions('user-gym-role', {
-        findUserGyms: 'find'
-      })
-    },
-    mounted () {
-      //        createdBy: 1,
-      this.findUserGyms({
+  computed: {
+    ...mapGetters('user-gym-role', {
+      findUserGymsInStore: 'find'
+    }),
+    userGyms () {
+      return this.findUserGymsInStore({
         query: {
           userId: this.$store.state.auth.user.id,
           $sort: { createdAt: -1 },
           $limit: 25
         }
-      })
+      }).data
     }
+  },
+  methods: {
+    ...mapActions('user-gym-role', {
+      findUserGyms: 'find'
+    })
+  },
+  mounted () {
+    //        createdBy: 1,
+    this.findUserGyms({
+      query: {
+        userId: this.$store.state.auth.user.id,
+        $sort: { createdAt: -1 },
+        $limit: 25
+      }
+    })
   }
+}
 </script>

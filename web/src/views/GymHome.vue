@@ -10,51 +10,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import fetchGymScheduledEvents from '../mixins/fetchGymScheduledEvents'
 
 export default {
   name: 'GymHome',
   props: ['gymId'],
-  data () {
-    return {
-      gym: {}
-    }
-  },
-  computed: {
-    ...mapGetters('scheduled-events', {
-      findScheduledEventsInStore: 'find'
-    }),
-    gymScheduledEvents () {
-      return this.findScheduledEventsInStore({
-        query: {
-          gymId: parseInt(this.gymId, 10)
-        }
-      }).data
-    }
-  },
-  methods: {
-    ...mapActions('gyms', {
-      getGym: 'get'
-    }),
-    ...mapActions('scheduled-events', {
-      findScheduledEvents: 'find'
-    })
-  },
+  mixins: [fetchGymScheduledEvents]
 
-  mounted: async function () {
-    console.log('GymHome for id: ', this.gymId)
-    if (!this.gymId) {
-      return
-    }
-
-    await this.getGym(this.gymId).then(result => { this.gym = result })
-
-    this.findScheduledEvents({
-      query: {
-        gymId: this.gymId
-      }
-    })
-  }
 }
 </script>
 

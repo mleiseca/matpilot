@@ -23,9 +23,6 @@
         </div>
       </v-flex>
       <v-flex xs12 md6 sm6 lg6 py-0 class="checkinButtonHolder">
-            <!--<v-btn color="primary" class="checkinButton" @click="selfCheckinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)" >-->
-              <!--Desk Mode</v-btn>-->
-
             <v-btn color="primary" class="checkinButton" @click="checkinScheduledEvent(eventDetails.scheduledEvent, eventDetails.time)">
               Check in</v-btn>
       </v-flex>
@@ -34,6 +31,7 @@
 </template>
 
 <script>
+import eventCreation from '../mixins/eventCreation'
 export default {
   name: 'CheckinEvent',
   props: {
@@ -43,40 +41,10 @@ export default {
     //    id: 'se-' + se.id + '-' + startDateTime}
     eventDetails: Object
   },
-  data () {
-    return {}
-  },
+  mixins: [eventCreation],
   methods: {
-    selfCheckinScheduledEvent: function (scheduledEvent) {
-      const event = {
-        scheduledEventId: scheduledEvent.id,
-        gymId: scheduledEvent.gymId,
-        title: scheduledEvent.title,
-        description: scheduledEvent.description,
-        timezone: scheduledEvent.timezone,
-        startDateTime: this.eventDetails.startDateTime.toISOString(),
-        endDateTime: this.eventDetails.endDateTime.toISOString()
-      }
-      //      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
-      this.$store.dispatch('events/create', event)
-        .then((result) => {
-          console.log('Got result:', result)
-          let route = this.$router.resolve({ name: 'gym-event-self-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
-          window.open(route.href, '_blank')
-        })
-    },
     checkinScheduledEvent: function (scheduledEvent) {
-      const event = {
-        scheduledEventId: scheduledEvent.id,
-        gymId: scheduledEvent.gymId,
-        title: scheduledEvent.title,
-        description: scheduledEvent.description,
-        timezone: scheduledEvent.timezone,
-        startDateTime: this.eventDetails.startDateTime.toISOString(),
-        endDateTime: this.eventDetails.endDateTime.toISOString()
-      }
-      console.log('with event', event, 'startdatetime', this.eventDetails.startDateTime.inspect())
-      this.$store.dispatch('events/create', event)
+      this.createEvent(scheduledEvent, this.eventDetails)
         .then((result) => {
           console.log('Got result:', result)
           this.$router.push({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })

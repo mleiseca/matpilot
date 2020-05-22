@@ -15,30 +15,15 @@
       <!--<checkin-list v-bind:scheduled-events="gymScheduledEvents"></checkin-list>-->
       <!--</v-flex>-->
 
-
     </v-layout>
 
   </v-container>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
 
 export default {
-  name: 'UserHome',
-
+  name: 'UserHome'
 
 }
 </script>
-
-<style scoped>
-
-  .welcome-text {
-    margin-bottom: 1rem;
-  }
-
-  .welcome-container {
-    width: 100%;
-    margin-bottom: 3rem;
-  }
-</style>
