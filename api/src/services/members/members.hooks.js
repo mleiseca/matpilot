@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const { fastJoin, makeCallingParams } = require('feathers-hooks-common')
+const customQuery = require('../../hooks/custom-query').customQuery
 const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
 const logger = require('../../logger')
 const moment = require('moment')
@@ -159,41 +160,17 @@ function createLowerName() {
   }
 }
 
-function customQuery(hook) {
-  const { $customQuery } = hook.params.query
-
-  // console.log('checking custom query')
-  // console.log($customQuery)
-  if (!$customQuery) {
-    Promise.resolve(hook)
-    return
-  }
-  // delete hook.params.query.$customQuery;
-
-  const queries = {
-    'SUGGESTED_ATTENDEES': 'select members.* from members\n' +
-      'where\n' +
-      '  id in (\n' +
-      '   select ema."memberId" from events e, events sc, event_member_attendance ema where' +
-      '   e."startDateTime" > $attendedAfter and ' +
-      '   e."scheduledEventId" = sc."scheduledEventId" AND ' +
-      '    e.id <> sc.id AND\n' +
-      '   ema."eventId" = e.id and ' +
-      '      sc.id = $currentEventId) ' +
-      '  order by members."lowerFirstName" , members."lowerLastName" desc'
-
-  }
-
-  const sequelize = hook.app.get('sequelizeClient')
-
-  return sequelize.query(queries[$customQuery.type], {
-    model: sequelize.models['members'],
-    // bind: { currentEventId: 13, attendedAfter: '2019-08-10' }
-    bind: $customQuery.bind
-  }).then(results => {
-    hook.result = results // this tells feathers to skip the DATA STORE step above
-    return hook // always resolve the promise chain with the context
-  })
+const queries = {
+  'SUGGESTED_ATTENDEES': 'select members.* from members\n' +
+    'where\n' +
+    '  id in (\n' +
+    '   select ema."memberId" from events e, events sc, event_member_attendance ema where ' +
+    '   e."startDateTime" > $attendedAfter and ' +
+    '   e."scheduledEventId" = sc."scheduledEventId" AND ' +
+    '    e.id <> sc.id AND\n' +
+    '   ema."eventId" = e.id and ' +
+    '      sc.id = $currentEventId) ' +
+    '  order by members."lowerFirstName" , members."lowerLastName" desc'
 }
 
 
@@ -229,7 +206,7 @@ function include(hook) {
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [customQuery, include],
+    find: [customQuery({queries: queries, model: 'members'}), include],
     get: [],
     create: [
       commonHooks.lowerCase('email'),

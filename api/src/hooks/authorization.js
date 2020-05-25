@@ -98,7 +98,7 @@ function addGymIdParameter(hook, options) {
     return hook
   })
 }
-
+// TODO: need to add checks for 'gymIds' and 'memberId' and 'memberIds'
 function verifyGymIdParameter(hook, options, optionalRequiredRoles) {
   return fetchUserGymIds(hook.app, hook.params.user.id, optionalRequiredRoles).then(function (gymIds) {
     let explicitGymId = get(hook.data, options.gymIdField)

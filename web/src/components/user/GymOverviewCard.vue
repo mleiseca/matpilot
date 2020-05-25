@@ -7,9 +7,11 @@
         </div>
         <v-card-text >
           <v-progress-circular :indeterminate="true" v-if="gymScheduledEvents.length === 0"/>
-
-            <user-gym-event-registration v-bind:scheduled-events="gymScheduledEvents"></user-gym-event-registration>
-
+            <user-gym-event-registration
+              v-bind:scheduled-events="gymScheduledEvents"
+              v-bind:existing-events="gymEvents"
+              v-bind:members="members"
+              v-bind:gymId="gymId" />
         </v-card-text>
       </template>
     </material-card>
@@ -21,7 +23,12 @@ import fetchGymScheduledEvents from '../../mixins/fetchGymScheduledEvents'
 
 export default {
   name: 'UserGymOverviewCard',
-  mixins: [fetchGymScheduledEvents]
+  mixins: [fetchGymScheduledEvents],
+  props: {
+    gymId: [String, Number],
+    members: Array,
+    registrationRecords: Array
+  }
 }
 </script>
 

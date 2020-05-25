@@ -15,7 +15,7 @@
 <script>
 
 export default {
-   metaInfo () {
+  metaInfo () {
     return {
       title: 'MatPilot'
     }

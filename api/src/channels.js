@@ -68,8 +68,8 @@ module.exports = function(app) {
   // });
 
 
-  // maybe 'user-gym-role', members, member-rank-history, 'event-member-attendance', should only be for admin users?
-  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
+  // TODO: maybe 'user-gym-role', members, member-rank-history, 'event-member-attendance', should only be for admin users?
+  const servicesWithGymId = ['event-member-attendance', 'event-member-registration', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
     app.service(service).publish((data) => {

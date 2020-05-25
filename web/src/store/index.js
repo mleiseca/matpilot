@@ -20,6 +20,7 @@ export default new Vuex.Store({
     service('member-rank-history'),
     service('events'),
     service('event-member-attendance'),
+    service('event-member-registration'),
     service('scheduled-events'),
     service('users'),
     service('user-gym-role'),

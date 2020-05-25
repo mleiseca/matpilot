@@ -3,7 +3,7 @@
   <v-container fluid grid-list-xl fill-height pt-0>
     <v-layout wrap>
       <v-flex xs12 py-0>
-        <checkin-list v-bind:scheduled-events="gymScheduledEvents"></checkin-list>
+        <checkin-list v-bind:scheduled-events="gymScheduledEvents" v-bind:events="gymEvents"></checkin-list>
       </v-flex>
     </v-layout>
   </v-container>
