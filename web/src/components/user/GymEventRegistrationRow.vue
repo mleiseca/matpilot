@@ -4,26 +4,16 @@
     <v-container fill-height fluid grid-list-xl pa-2>
       <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active, past:eventDetails.past }">
         <v-flex xs8 md10 py-0>
-          <div class="event-title">
-            <span class="">{{ eventDetails.scheduledEvent.title }}</span>
-            <span class="event-description" v-if="eventDetails.scheduledEvent.description"> - {{ eventDetails.scheduledEvent.description }}</span>
-          </div>
-          <div class="times">
-            {{ eventDetails.startDateTime | moment("h:mma") }} - {{ eventDetails.endDateTime | moment("h:mma") }}
-<!--                      <div>{{ eventDetails }}</div>-->
-            <!--          <div>{{ registrationRecords }}</div>-->
-<!--                      <div>{{ members }}</div>-->
-          </div>
+          <slot v-bind:eventDetails="eventDetails"></slot>
         </v-flex>
         <v-flex xs4 md2 py-0 class="checkinButtonHolder">
-          <!--        {{ present }}-->
 
           <v-btn v-if="!present && !loading"
-                 outlined color="primary" class="checkinButton" @click="registerForEvent(eventDetails.scheduledEvent, eventDetails.time)">
+                 outlined color="primary" class="checkinButton" @click="registerForEvent()">
             Book</v-btn>
 
           <v-btn v-if="present && !loading"
-                 color="primary" class="checkinButton" @click="unregisterForEvent(eventDetails.scheduledEvent, eventDetails.time)">
+                 color="primary" class="checkinButton" @click="unregisterForEvent()">
             Booked</v-btn>
 
           <v-progress-circular v-if="loading"
@@ -49,65 +39,53 @@ export default {
     //    scheduledEvent: se,
     //    id: 'se-' + se.id + '-' + startDateTime}
     eventDetails: Object,
-    members: Array,
+    memberIds: Array,
+    memberId: Number,
     registrationRecords: Array
   },
   data () {
     return {
       eventMemberRegistrationId: null,
-      memberIds: [],
       present: false, // Is any member registered for this event?
       loading: false
     }
   },
   methods: {
-    extractIds: function (members) {
-      const memberIds = []
-      members.forEach(member => {
-        memberIds.push(parseInt(member.id, 10))
-      })
-      this.memberIds = memberIds
-    },
     unregisterForEvent: async function () {
-      this.loading = true
-      // console.log('unregister')
-      await this.$store.dispatch('event-member-registration/remove', this.eventMemberRegistrationId)
-      this.loading = false
-    },
-    registerForEvent: async function (scheduledEvent) {
-      this.loading = true
-      if (this.members.length === 1) {
-        let eventId
-        if (isUndefined(this.eventDetails.event)) {
-          const event = await this.createEvent(scheduledEvent, this.eventDetails)
-          eventId = event.id
-        } else {
-          eventId = this.eventDetails.event.id
-        }
-        await this.$store.dispatch('event-member-registration/create', {
-          eventId: eventId,
-          gymId: this.members[0].gymId,
-          memberId: this.members[0].id
-        })
-
-        // console.log('created registration', registration)
+      if (this.registeringMemberIds.length === 1) {
+        this.loading = true
+        this.$emit('unregister', this.eventMemberRegistrationId)
       } else {
-        console.log('need to choose a person to register')
-
-        // TODO: need to choose a person to register
+        this.$emit('register', this.eventDetails, this.registeringMemberIds)
       }
-      this.loading = false
-      // .then((result) => {
-      //   console.log('Got result:', result)
-      //
-      //   // TODO: ok...need to actually add a registration
-      //   //            this.$router.push({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
-      // })
+    },
+    registerForEvent: async function () {
+      if (isUndefined(this.eventDetails.event)) {
+        await this.createEvent(this.eventDetails.scheduledEvent, this.eventDetails)
+      }
+      if (this.registeringMemberIds.length === 1) {
+        this.loading = true
+      }
+
+      this.$emit('register', this.eventDetails, this.registeringMemberIds)
     },
     updateRegistrationRecords (newRegistrationRecords, newEventDetails) {
-      // console.log('have', newRegistrationRecords.length, ' registration records', newRegistrationRecords)
-      if (isUndefined(newEventDetails) || isUndefined(newEventDetails.event)) {
-        // console.log('not possible to register - event not found')
+      // console.log('have', newRegistrationRecords.length, ' registration records', newRegistrationRecords, this.registeringMemberIds)
+      if (isUndefined(this.registeringMemberIds) || this.registeringMemberIds.length === 0) {
+        this.eventMemberRegistrationId = null
+        this.present = false
+        return
+      }
+      // console.log('event', newEventDetails)
+      if (isUndefined(newEventDetails)) {
+        this.eventMemberRegistrationId = null
+        this.present = false
+        return
+      }
+      if (isUndefined(newEventDetails.event)) {
+        this.eventMemberRegistrationId = null
+        this.present = false
+        this.loading = false
         return
       }
       for (let i = 0; i < newRegistrationRecords.length; i++) {
@@ -117,42 +95,36 @@ export default {
           continue
         }
 
-        // console.log('MATCHED')
-
-        // TODO: multiple members
-
-        if (this.memberIds.includes(record.memberId)) {
+        if (this.registeringMemberIds.includes(record.memberId)) {
           this.present = true
           this.eventMemberRegistrationId = record.id
+          this.loading = false
+          // console.log('MATCHED')
           return
         }
       }
+
+      // console.log("NOT MATCHED")
+
       // No record found - member isn't registered
       this.eventMemberRegistrationId = null
       this.present = false
-    },
-    presentChange () {
-      let value = !this.present
-      console.log('CHANGING REGISTRATION ', {
-        memberId: this.member.id,
-        eventMemberRegistrationId: this.eventMemberRegistrationId,
-        value: value
-      })
-      // this.$emit('registration-change', {
-      //   memberId: this.member.id,
-      //   eventMemberRegistrationId: this.eventMemberRegistrationId,
-      //   value: value
-      // })
+      this.loading = false
     }
   },
 
   mounted () {
-    if (this.members) {
-      this.extractIds(this.members)
+    this.loading = true
+    if (!isUndefined(this.memberId)) {
+      // console.log('using memberId', this.memberId)
+      this.registeringMemberIds = [this.memberId]
+    } else {
+      // console.log('using memberIdSSSS', this.memberIds)
+      this.registeringMemberIds = this.memberIds
     }
     if (this.registrationRecords) {
       // console.log('mount registration records', this.registrationRecords)
-      this.updateRegistrationRecords(this.registrationRecords)
+      this.updateRegistrationRecords(this.registrationRecords, this.eventDetails)
     }
   },
   watch: {
@@ -165,18 +137,12 @@ export default {
     },
     eventDetails: {
       handler: function (value) {
-        // console.log('updating registration records', value)
+        // console.log('eventDetails updatedd.....', value)
         this.updateRegistrationRecords(this.registrationRecords, value)
       },
       deep: true
-    },
-    members: {
-      handler: function (value) {
-        this.extractIds(value)
-      }
     }
   }
-
 }
 </script>
 
@@ -191,10 +157,6 @@ export default {
       padding-left:.8rem !important;
       padding-right:.8rem !important;
     }
-  }
-
-  .event-description {
-    color: rgba(0,0,0,0.65);
   }
 
 </style>
