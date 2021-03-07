@@ -1,8 +1,8 @@
 <template>
   <v-toolbar
     id="core-toolbar"
-    flat
     dense
+    max-height="70px"
     style="background: #eee;"
   >
     <div class="v-toolbar-title">
@@ -53,18 +53,17 @@
           offset-y
           transition="slide-y-transition">
 
+          <template v-slot:activator="{ on, attrs }">
               <v-icon
-                slot="activator"
+                v-bind="attrs"
+                v-on="on"
                 color="tertiary">mdi-account</v-icon>
-
-          <v-card>
-            <v-list dense>
-              <v-list-tile @click="onLogout">
-
-                Logout
-              </v-list-tile>
-            </v-list>
-          </v-card>
+          </template>
+              <v-list dense>
+                <v-list-item @click="onLogout">
+                  Logout
+                </v-list-item>
+              </v-list>
         </v-menu>
       </v-flex>
     </v-toolbar-items>

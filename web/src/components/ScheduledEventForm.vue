@@ -25,8 +25,6 @@
             v-model="modalStartDate"
             :return-value.sync="form.startDate"
             persistent
-            lazy
-            full-width
             width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -40,8 +38,8 @@
             </template>
             <v-date-picker v-model="form.startDate" scrollable>
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalStartDate= false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
+              <v-btn text color="primary" @click="modalStartDate= false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -52,8 +50,6 @@
             v-model="modalEndDate"
             :return-value.sync="form.endDate"
             persistent
-            lazy
-            full-width
             width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -66,8 +62,8 @@
             </template>
             <v-date-picker v-model="form.endDate" scrollable>
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalEndDate = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
+              <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -78,8 +74,6 @@
             v-model="modalStartTime"
             :return-value.sync="form.startTime"
             persistent
-            lazy
-            full-width
             width="290px"
           >
             <template v-slot:activator="{ on }">
@@ -99,8 +93,8 @@
               full-width
             >
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalStartTime = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
+              <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
@@ -110,8 +104,6 @@
             v-model="modalEndTime"
             :return-value.sync="form.endTime"
             persistent
-            lazy
-            full-width
             width="290px"
           >
             <template v-slot:activator="{ on }">
@@ -131,8 +123,8 @@
               full-width
             >
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalEndTime = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
+              <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
@@ -143,7 +135,7 @@
           </div>
         </v-container>
 
-        <v-flex xs12 text-xs-right>
+        <v-flex xs12 text-right>
           <v-btn
             class="mx-0 font-weight-light"
             color="success"

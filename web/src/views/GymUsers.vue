@@ -9,7 +9,8 @@
           <v-data-table
             :headers="headers"
             :items="userGyms"
-            hide-actions>
+            @click:row="navigateToUserGym"
+            hide-default-footer>
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
             <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
@@ -21,16 +22,6 @@
                 class="subheading font-weight-light text--darken-3"
                 v-text="header.text"
               />
-            </template>
-            <template
-              slot="items"
-              slot-scope="{ item }">
-
-              <tr @click="navigateToUserGym" :data-user-id="item.id">
-                <td>{{ get(item, 'user.name') }}</td>
-                <td>{{ get(item, 'user.email') }}</td>
-                <td>{{ item.role }}</td>
-              </tr>
             </template>
           </v-data-table>
 

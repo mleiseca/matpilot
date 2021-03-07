@@ -7,13 +7,12 @@
             <v-layout align-center justify-space-between fill-height>
 
               <v-flex>
-                <h4 class="title font-weight-light mb-2">
+                <h4 class="text-h6 font-weight-light mb-2">
                   Members
                 </h4>
               </v-flex>
 
               <v-flex>
-
                 <v-text-field
                   v-model="search"
                   append-icon="mdi-search"
@@ -32,11 +31,11 @@
           <v-data-table
             :headers="headers"
             :items="members"
-            :pagination.sync="pagination"
-            :total-items="totalMembers"
+            :options.sync="options"
+            :server-items-length="totalMembers"
             :loading="loading"
-            :rows-per-page-items="rowsPerPageItems"
-
+            :footer-props="{itemsPerPageOptions:rowsPerPageItems }"
+            @click:row="navigateToMember"
           >
             <template
               slot="headerCell"
@@ -46,16 +45,6 @@
                 v-text="header.text"
               />
             </template>
-            <template
-              slot="items"
-              slot-scope="{ item }">
-              <tr @click="navigateToMember"
-                  :data-member-id="item.id">
-                <td>{{ item.firstName }}</td>
-                <td>{{ item.lastName  }}</td>
-              </tr>
-            </template>
-
           </v-data-table>
 
         </material-card>
@@ -81,8 +70,8 @@ export default {
       loading: true,
       search: '',
       rowsPerPageItems: [5, 10, 25, 50],
-      pagination: {
-        rowsPerPage: 5
+      options: {
+        itemsPerPage: 5
       },
       totalMembers: 0,
       members: [],
@@ -102,7 +91,7 @@ export default {
   },
 
   watch: {
-    pagination: {
+    options: {
       handler () {
         //        console.log('pagination updated: ', this.pagination)
         this.dataFromApi()
@@ -119,33 +108,33 @@ export default {
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
-    //    ...mapState('members'),
     navigateToAddMember: function () {
       this.$router.push({ name: 'gym-members-add', params: { gymId: this.gymId } })
     },
-    navigateToMember: function (event) {
-      //      console.log("click for ", event)
-      const memberId = event.currentTarget.dataset['memberId']
-
-      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: memberId } })
+    navigateToMember: function (member) {
+      this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: member.id } })
     },
     dataFromApi: function () {
       const self = this
-      const { sortBy, descending, page, rowsPerPage } = this.pagination
+      const { sortBy, sortDesc, page, itemsPerPage } = this.options
 
       this.loading = true
       const query = {
-        $limit: rowsPerPage,
+        $limit: itemsPerPage,
         gymId: this.gymId
       }
 
-      if (sortBy) {
+      if (sortBy.length > 0) {
         query.$sort = { }
-        query.$sort[sortBy] = descending ? -1 : 1
+        // TODO: We could add each field here...
+        const isDesc = sortDesc.length === 0 ? false : sortDesc[0]
+        query.$sort[sortBy[0]] = isDesc ? -1 : 1
       }
 
       if (page > 1) {
-        query.$skip = rowsPerPage * (page - 1)
+        const isDescSkip = sortDesc.length === 0 ? false : sortDesc[0]
+
+        query.$skip = (isDescSkip ? -1 : 1) * (page - 1)
       }
       if (this.search != null && this.search.length > 1) {
         query['$or'] = [
@@ -153,14 +142,9 @@ export default {
           { lowerNickname: { $like: this.search.toLowerCase() + '%' } },
           { lowerLastName: { $like: this.search.toLowerCase() + '%' } }
         ]
-        //        query['$or'] = [
-        //          { lowerFirstName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
-        //          { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
-        //        ]
       }
 
-      this.findGymMembers({ query }).then(function (results) {
-        //        console.log('found results:  ',results)
+      return this.findGymMembers({ query }).then(function (results) {
         self.totalMembers = results.total
         self.members = results.data
         self.loading = false

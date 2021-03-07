@@ -1,14 +1,14 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-container>
-    <v-layout row wrap>
+    <v-layout wrap>
       <v-flex xs9 md10>
-        <div class="headline">{{ member.firstName }}
+        <div class="text-h5">{{ member.firstName }}
           <span v-if="member.nickname">({{ member.nickname }})</span>
           {{ member.lastName }} </div>
 
       </v-flex>
       <v-flex xs3 md2>
-        <v-btn flat @click="editClick()">
+        <v-btn text @click="editClick()">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
       </v-flex>

@@ -4,12 +4,12 @@
       <v-flex md12>
         <material-card offset="12">
           <v-flex slot="header" py-0>
-            <div class="title font-weight-heavy">{{ get(event, 'title') }}</div>
+            <div class="text-h6 font-weight-heavy">{{ get(event, 'title') }}</div>
 
             <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
-          <v-layout justify-center wrap row>
+          <v-layout justify-center wrap>
             <v-flex xs9>
               <v-text-field
                 v-if="bottomNav === 'search'"
@@ -70,15 +70,15 @@
           </transition>
         </material-card>
       </v-flex>
-      <v-bottom-nav
+      <v-bottom-navigation
         v-if="!keyboardUp"
-        :active.sync="bottomNav"
+        v-model="bottomNav"
         :value="true"
         fixed
       >
         <v-btn
           color="teal"
-          flat
+          text
           value="search"
         >
           <span>Search</span>
@@ -87,7 +87,7 @@
 
         <v-btn
           color="teal"
-          flat
+          text
           value="attendees"
           v-on:click="findAttendees()"
         >
@@ -96,7 +96,7 @@
         </v-btn>
         <v-btn
           color="teal"
-          flat
+          text
           value="suggestions"
           v-on:click="findSuggestions()"
         >
@@ -104,7 +104,7 @@
           <v-icon>mdi-exclamation</v-icon>
         </v-btn>
 
-      </v-bottom-nav>
+      </v-bottom-navigation>
     </v-layout>
 
   </v-container>
@@ -165,6 +165,7 @@ export default {
           lowerLastName: 1
         }
       }
+      console.log(query)
 
       if (this.bottomNav === 'attendees') {
         const memberIds = []
@@ -261,7 +262,7 @@ export default {
 
     async findSuggestions () {
       this.startLoading()
-
+      console.log('finding suggestions...')
       const attendedAfter = moment().subtract(15, 'days')
       const query = {
         $limit: 50,

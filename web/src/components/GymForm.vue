@@ -27,7 +27,7 @@
 
         <v-flex
           xs12
-          text-xs-right
+          text-right
         >
           <v-btn
             class="mx-0 font-weight-light"

@@ -2,7 +2,7 @@
 
   <material-card >
     <div slot="header">
-      <div class="title font-weight-light mb-2">Administration</div>
+      <div class="text-h6 font-weight-light mb-2">Administration</div>
     </div>
 
     <v-card-text>

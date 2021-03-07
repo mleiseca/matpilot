@@ -31,9 +31,11 @@ export default {
       const upcomingEvents = []
 
       const existingEventsByIdentifier = {}
-      ee.forEach(e => {
-        existingEventsByIdentifier['se-' + e.scheduledEventId + '-' + e.startDateTime] = e
-      })
+      if (ee) {
+        ee.forEach(e => {
+          existingEventsByIdentifier['se-' + e.scheduledEventId + '-' + e.startDateTime] = e
+        })
+      }
       function addEvent (se, date) {
         let now = momentTz.tz(se.timezone)
         const startDateTime = momentTz.tz(se.startTime, 'HH:mm', se.timezone).year(date.getUTCFullYear()).month(date.getUTCMonth()).date(date.getUTCDate())

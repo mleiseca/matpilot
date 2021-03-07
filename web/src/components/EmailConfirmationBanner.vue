@@ -1,7 +1,7 @@
 <template>
   <v-fade-transition mode="out-in">
     <v-container wrap fluid class="warning email-unconfirmed-warning" v-if="!userVerified">
-      <v-layout row>
+      <v-layout>
         <v-flex xs12 v-if="!emailSending">
           <a @click="resendEmail()">Verify your email address</a> to access to your member accounts.
         </v-flex>

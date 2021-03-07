@@ -15,10 +15,10 @@
   <v-container fill-height fluid grid-list-xl pt-0>
     <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active, past:eventDetails.past }">
       <v-flex xs12 md6 sm6 lg6 py-0>
-        <div class="description title">
+        <div class="description text-h6">
           {{ eventDetails.scheduledEvent.title }}
         </div>
-        <div class="times caption">
+        <div class="times text-caption">
           {{ eventDetails.startDateTime | moment("h:mma") }} - {{ eventDetails.endDateTime | moment("h:mma") }}
         </div>
       </v-flex>

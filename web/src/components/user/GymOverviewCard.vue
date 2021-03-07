@@ -3,7 +3,7 @@
     <material-card>
       <template >
         <div slot="header">
-          <div class="title font-weight-light mb-2" v-if="gym !== undefined">{{ gym.name }}</div>
+          <div class="text-h6 font-weight-light mb-2" v-if="gym !== undefined">{{ gym.name }}</div>
         </div>
         <v-card-text >
           <v-progress-circular :indeterminate="true" v-if="gymScheduledEvents.length === 0"/>

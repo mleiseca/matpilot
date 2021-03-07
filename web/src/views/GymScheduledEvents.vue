@@ -8,7 +8,7 @@
           <v-data-table
             :headers="headers"
             :items="gymScheduledEvents"
-            hide-actions>
+            hide-default-footer>
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
             <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
@@ -21,9 +21,10 @@
                 v-text="header.text"
               />
             </template>
+
             <template
-              slot="items"
-              slot-scope="{ item }">
+              v-slot:item=" {item } "
+              >
               <tr @click="navigateToScheduledEvent"
                   :data-scheduled-event-id="item.id">
                 <td>{{ item.title }}</td>

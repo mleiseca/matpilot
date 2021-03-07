@@ -1,8 +1,8 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
   <v-container>
-    <v-layout row wrap>
+    <v-layout wrap>
       <v-flex xs12>
-        <div class="headline">Training Record</div>
+        <div class="text-h5">Training Record</div>
       </v-flex>
 
       <v-flex xs4>
@@ -29,19 +29,19 @@
       </v-flex>
 
       <v-flex xs12>
-        <div class="headline">Attendance</div>
+        <div class="text-h5">Attendance</div>
       </v-flex>
 
       <v-flex xs3 pb-0 pt-0 pl-0 class="monthArrow">
-        <v-btn flat @click="changeMonth(-1)">
+        <v-btn text @click="changeMonth(-1)">
           <v-icon>mdi-arrow-left-bold</v-icon>
         </v-btn>
       </v-flex>
       <v-flex xs7 pb-0>
-        <div class="title attendanceMonth">{{ activeMonthText }}</div>
+        <div class="text-h6 attendanceMonth">{{ activeMonthText }}</div>
       </v-flex>
       <v-flex xs2 pb-0 pt-0 class="monthArrow" >
-        <v-btn flat @click="changeMonth(1)" v-show="nextAttendanceMonthShown" >
+        <v-btn text @click="changeMonth(1)" v-show="nextAttendanceMonthShown" >
           <v-icon>mdi-arrow-right-bold</v-icon>
         </v-btn>
       </v-flex>
@@ -57,10 +57,10 @@
           {{formatClassDateTime(attendance.startDateTime)}} - {{attendance.title}}
         </div>
         <div v-if="attendance.id == selectedAttendanceId" class="action">
-          <v-btn flat @click="editAttendance(attendance)">
+          <v-btn text @click="editAttendance(attendance)">
             <v-icon>mdi-redo</v-icon>
           </v-btn>
-          <v-btn flat @click="attendanceDeleteConfirmDialog = true">
+          <v-btn text @click="attendanceDeleteConfirmDialog = true">
             <v-icon>mdi-close-circle</v-icon>
           </v-btn>
         </div>
@@ -82,7 +82,7 @@
       max-width="290"
     >
       <v-card>
-        <v-card-title class="headline">Delete attendance?</v-card-title>
+        <v-card-title class="text-h5">Delete attendance?</v-card-title>
 
         <v-card-text>
           Are you sure you want to delete this attendance?
@@ -93,7 +93,7 @@
 
           <v-btn
             color="grey darken-1"
-            flat="flat"
+            text="text"
             @click="attendanceDeleteConfirmDialog = false"
           >
             Cancel
@@ -101,7 +101,7 @@
 
           <v-btn
             color="red darken-1"
-            flat="flat"
+            text="text"
             @click="deleteSelectedAttendance()"
           >
             Delete

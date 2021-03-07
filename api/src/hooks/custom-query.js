@@ -11,6 +11,7 @@ function customQuery(options) {
       Promise.resolve(hook)
       return
     }
+    delete hook.params.query['$customQuery']
     console.log('running custom query....', queryName.type)
     const sequelize = hook.app.get('sequelizeClient')
 
@@ -32,8 +33,7 @@ function customQuery(options) {
     console.log('query', query, queryName)
 
     return sequelize.query(query, queryOptions).then(results => {
-      // console.log('results', results)
-      hook.result = results[0] // this tells feathers to skip the DATA STORE step above
+      hook.result = results // this tells feathers to skip the DATA STORE step above
       return hook // always resolve the promise chain with the context
     })
   }

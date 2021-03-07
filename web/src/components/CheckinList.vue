@@ -1,7 +1,7 @@
 <template>
     <material-card>
       <div slot="header">
-        <div class="title font-weight-light mb-2">Upcoming events</div>
+        <div class="text-h6 font-weight-light mb-2">Upcoming events</div>
       </div>
 
         <div v-for="event in events" v-bind:key="event.date">

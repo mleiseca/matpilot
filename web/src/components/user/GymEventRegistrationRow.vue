@@ -19,7 +19,7 @@
           <!--        {{ present }}-->
 
           <v-btn v-if="!present && !loading"
-                 outline color="primary" class="checkinButton" @click="registerForEvent(eventDetails.scheduledEvent, eventDetails.time)">
+                 outlined color="primary" class="checkinButton" @click="registerForEvent(eventDetails.scheduledEvent, eventDetails.time)">
             Book</v-btn>
 
           <v-btn v-if="present && !loading"
@@ -92,6 +92,8 @@ export default {
 
         // console.log('created registration', registration)
       } else {
+        console.log('need to choose a person to register')
+
         // TODO: need to choose a person to register
       }
       this.loading = false
