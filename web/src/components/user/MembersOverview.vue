@@ -13,9 +13,6 @@
 </template>
 
 <script>
-import moment from 'moment'
-import { mapActions } from 'vuex'
-
 export default {
   name: 'UserMembersOverviewCard',
   data () {
@@ -26,26 +23,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('event-member-registration', {
-      findMemberEventRegistration: 'find'
-    }),
-    loadRegistrations: async function () {
-      const results = await this.findMemberEventRegistration({
-        query: {
-          $customQuery: {
-            type: 'REGISTRATION_DURING_PERIOD',
-            replacements: {
-              startDateTime: moment().subtract(1, 'days').toDate(), // TODO: the start and end dates must be larger than the range of events displayed
-              endDateTime: moment().add(8, 'days').toDate(),
-              memberIds: this.memberIds,
-              gymIds: this.gymIds
-            }
-          }
-        } })
-
-      // console.log('FOUND REGISTRATIONS', results)
-      this.registrationRecords = results
-    },
     extractIds: function (membersByGym) {
       // console.log('members is ', membersByGym)
       const memberIds = []
@@ -74,7 +51,6 @@ export default {
   mounted: async function () {
     this.membersByGym = this.$store.state.auth.user.membersByGym
     this.extractIds(this.membersByGym)
-    await this.loadRegistrations()
   }
 }
 </script>

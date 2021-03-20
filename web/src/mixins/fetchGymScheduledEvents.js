@@ -1,5 +1,6 @@
 import { mapActions, mapGetters } from 'vuex'
 import moment from 'moment'
+const { defaultTo } = require('lodash')
 
 export default {
   props: {
@@ -29,14 +30,17 @@ export default {
     },
     gymEvents () {
       const now = moment()
-
+      let start = now.clone().subtract(2, 'days').toISOString()
+      let end = now.clone().add(8, 'days').toISOString()
+      start = defaultTo(this.earliestEventDate, start)
+      end = defaultTo(this.latestEventDate, end)
       return this.findEventsInStore({
         query: {
           gymId: parseInt(this.gymId, 10),
           // TODO: this is also the date range for scheduled events we are going to be displaying
           $and: [
-            { startDateTime: { $gte: now.clone().subtract(2, 'days').toISOString() } },
-            { startDateTime: { $lte: now.clone().add(8, 'days').toISOString() } }
+            { startDateTime: { $gte: start } },
+            { startDateTime: { $lte: end } }
           ]
         }
       }).data
@@ -56,22 +60,8 @@ export default {
       }
     })
 
-    const now = moment()
-    const eventQuery = {
-      gymId: parseInt(this.gymId, 10),
-      '$and': [
-        // TODO: this is also the date range for scheduled events we are going to be displaying
-        { startDateTime: { $gte: now.clone().subtract(1, 'days').toISOString() } },
-        { startDateTime: { $lte: now.clone().add(8, 'days').toISOString() } }
-      ],
-      '$limit': 50
-    }
-    // eventQuery['$and'] = [
-    //     { startDateTime: { $gte: now.clone().subtract(2, 'days').toISOString() } },
-    //     { startDateTime: { $lte: now.clone().add(8, 'days').toISOString() } }
-    //   ]
-    await this.findEvents({ query: eventQuery })
-    // console.log('found events: ', e)
+    await this.loadEventsForTimeRange()
+    // console.log('found events: ')
   },
   methods: {
     ...mapActions('gyms', {
@@ -82,6 +72,24 @@ export default {
     }),
     ...mapActions('events', {
       findEvents: 'find'
-    })
+    }),
+    loadEventsForTimeRange: async function() {
+      // console.log('loading EVENTs for time range')
+      const now = moment()
+      let start = now.clone().subtract(2, 'days').toISOString()
+      let end = now.clone().add(8, 'days').toISOString()
+      start = defaultTo(this.earliestEventDate, start)
+      end = defaultTo(this.latestEventDate, end)
+
+      const eventQuery = {
+        gymId: parseInt(this.gymId, 10),
+        '$and': [
+          { startDateTime: { $gte: start } },
+          { startDateTime: { $lte: end } }
+        ],
+        '$limit': 50
+      }
+      await this.findEvents({ query: eventQuery })
+    }
   }
 }

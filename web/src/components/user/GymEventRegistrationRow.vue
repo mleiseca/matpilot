@@ -8,15 +8,15 @@
         </v-flex>
         <v-flex xs4 md2 py-0 class="checkinButtonHolder">
 
-          <v-btn v-if="!present && !loading"
+          <v-btn v-if="!present && !loading && !loadingRegistration"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">
             Book</v-btn>
 
-          <v-btn v-if="present && !loading"
+          <v-btn v-if="present && !loading && !loadingRegistration"
                  color="primary" class="checkinButton" @click="unregisterForEvent()">
             Booked</v-btn>
 
-          <v-progress-circular v-if="loading"
+          <v-progress-circular v-if="loading || loadingRegistration"
                                indeterminate
                                color="primary"
           ></v-progress-circular>
@@ -41,7 +41,8 @@ export default {
     eventDetails: Object,
     memberIds: Array,
     memberId: Number,
-    registrationRecords: Array
+    registrationRecords: Array,
+    loadingRegistration: Boolean
   },
   data () {
     return {

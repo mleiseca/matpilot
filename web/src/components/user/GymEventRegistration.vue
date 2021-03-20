@@ -36,11 +36,13 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" text @click="multiMemberRegistrationDialog = false">Done</v-btn>
-<!--          <v-btn color="primary" text @click="saveNewRank">Save</v-btn>-->
         </v-card-actions>
       </v-card>
     </v-dialog>
 <!--    {{ members }}-->
+<!--    {{ registrationStartDate }} ==> {{ registrationEndDate }}-->
+<!--    {{ registrationRecords }}-->
+
     <div v-for="event in events" v-bind:key="event.date">
       <v-flex xs12 class="date-header">{{ event.date }} </v-flex>
       <v-flex xs12 v-for="e in event.events" v-bind:key="e.id"
@@ -50,6 +52,7 @@
                                          v-bind:registrationRecords="registrationRecords"
                                          v-on:unregister="unregisterForEvent"
                                          v-on:register="registerForEvent"
+                                         v-bind:loadingRegistration.sync="loadingRegistrations"
         >
 
           <div class="event-title">
@@ -70,8 +73,9 @@
 <script>
 import scheduledEventsDisplay from '../../mixins/scheduledEventsDisplay'
 import UserGymEventRegistrationRow from './GymEventRegistrationRow.vue'
-import {mapActions, mapGetters} from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import eventCreation from '../../mixins/eventCreation'
+const { debounce } = require('lodash')
 
 export default {
   components: { UserGymEventRegistrationRow },
@@ -81,14 +85,17 @@ export default {
     gymId: [String, Number],
     members: Array,
     scheduledEvents: Array,
-    existingEvents: Array
+    existingEvents: Array,
+    earliestEventDate: Object,
+    latestEventDate: Object
   },
   data () {
     return {
       multiMemberRegistrationDialog: false,
       selectedEventDetails: null,
       includePastEvents: false,
-      memberIds: []
+      memberIds: [],
+      loadingRegistrations: false
     }
   },
   computed: {
@@ -99,7 +106,8 @@ export default {
       return this.findEventMemberRegistrationInStore({
         query: {
           gymId: parseInt(this.gymId, 10)
-        }
+        },
+        qid: 'event_member_registration_by_gym'
       }).data
     }
   },
@@ -107,27 +115,55 @@ export default {
     if (this.members) {
       this.extractIds(this.members)
     }
-
-    await this.findEventMemberRegistration({
-      query: {
-        // near past and future!
-        $limit: 50,
-        memberId: this.memberIds,
-        gymId: this.gymId
-      }
-    })
+    await this.loadRegistrations()
+    this.buildEvents(this.scheduledEvents, this.existingEvents)
   },
   watch: {
     members: {
       handler: function (value) {
         this.extractIds(value)
       }
-    }
+    },
+    earliestEventDate: function(value) {
+      this.loadingRegistrations = true
+      this.reloadDataDebounced()
+    },
+    latestEventDate: function(value) {
+      this.loadingRegistrations = true
+      this.reloadDataDebounced()
+    },
   },
   methods: {
     ...mapActions('event-member-registration', {
       findEventMemberRegistration: 'find'
     }),
+    reloadDataDebounced: debounce(function () { this.reloadData() }, 300),
+    reloadData: async function () {
+      await this.loadRegistrations()
+    },
+    loadRegistrations: async function () {
+
+      const results = await this.findEventMemberRegistration({
+        query: {
+          $customQuery: {
+            type: 'REGISTRATION_DURING_PERIOD',
+            replacements: {
+              startDateTime: this.earliestEventDate,
+              endDateTime: this.latestEventDate,
+              memberIds: this.memberIds,
+              gymIds: [this.gymId]
+            }
+          }
+        } })
+
+      this.$store.commit('event-member-registration/addItems', results[0])
+      this.$store.commit('event-member-registration/updatePaginationForQuery',
+        { 'qid': 'event_member_registration_by_gym',
+          'response': { 'data': results[0] }
+        })
+      // console.log('FOUND REGISTRATIONS', results[0])
+      this.loadingRegistrations = false
+    },
     extractIds: function (members) {
       const memberIds = []
       members.forEach(member => {
@@ -162,16 +198,9 @@ export default {
         this.$nextTick(() => {
           this.multiMemberRegistrationDialog = true
         })
-        console.log('need to choose a person to register')
-
-        // TODO: need to choose a person to register
+        // console.log('need to choose a person to register')
       }
-      // .then((result) => {
-      //   console.log('Got result:', result)
-      //
-      //   // TODO: ok...need to actually add a registration
-      //   //            this.$router.push({ name: 'gym-event-checkin', params: { gymId: scheduledEvent.gymId, eventId: result.id } })
-      // })
+
     }
   }
 }

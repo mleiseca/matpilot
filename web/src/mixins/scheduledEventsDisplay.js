@@ -1,6 +1,7 @@
 import momentTz from 'moment-timezone'
 import { rrulestr } from 'rrule'
 import { mapActions, mapGetters } from 'vuex'
+const { defaultTo, debounce } = require('lodash')
 
 export default {
   props: {
@@ -68,11 +69,10 @@ export default {
       ses.forEach(se => {
         if (se.rrules) {
           let now = momentTz.tz(se.timezone)
-          let earliestEventTime = this.includePastEvents ? now.clone().subtract(2, 'days') : now.clone()
-
-          // console.log('earliest event time', earliestEventTime.format('MMMM Do YYYY, h:mm:ss a'))
           // TODO: this '7' should really be controlled by a toggle on the material card. maybe day/week/month?
-          let lastDateToDisplay = earliestEventTime.clone().add(7, 'days')
+          let earliestEventTime = defaultTo(this.earliestEventDate, this.includePastEvents ? now.clone().subtract(2, 'days') : now.clone())
+          let lastDateToDisplay = defaultTo(this.latestEventDate, earliestEventTime.clone().add(7, 'days'))
+
           // this.findEvents()
           if (se.endDate) {
             const endDate = momentTz.tz(se.endDate, se.timezone)
@@ -128,11 +128,19 @@ export default {
     }
   },
   watch: {
-    scheduledEvents: function (value) {
-      this.buildEvents(value, this.existingEvents)
+    scheduledEvents: {
+      handler: function (value) {
+        // console.log('Building events from scheduledEvents')
+        this.buildEvents(value, this.existingEvents)
+      },
+      deep: true
     },
-    existingEvents: function (value) {
-      this.buildEvents(this.scheduledEvents, value)
+    existingEvents: {
+      handler: function (value) {
+        // console.log('Building events from existingEvents' + value)
+        this.buildEvents(this.scheduledEvents, value)
+      },
+      deep: true
     }
   }
 }
