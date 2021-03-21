@@ -13,12 +13,40 @@ const queries = {
     'order by period_events."startDateTime"'
 }
 
+async function updateEventMemberRegistrationCount(context) {
+
+  const eventId = context.result.eventId
+  const model = context.app.service('event-member-registration').Model
+  const count = await model.count({
+    where: {eventId}
+  })
+  await context.app.service('events').patch(eventId, {registrationCount : count})
+  return context
+}
+
+
+async function verifySpaceAvailable(context) {
+
+  const eventId = context.data.eventId
+  const model = context.app.service('event-member-registration').Model
+  const count = await model.count({
+    where: {eventId}
+  })
+  const event = await context.app.service('events').Model.findByPk(eventId)
+
+  if (event.maximumAttendance !== null && count >= event.maximumAttendance) {
+    throw new Error('This event is already full.')
+  }
+
+  return context
+}
+
 module.exports = {
   before: {
     all: [ authenticate('jwt'),  restrictAccessForGym() ],
     find: [customQuery({queries: queries})],
     get: [],
-    create: [assignCreatedBy],
+    create: [verifySpaceAvailable, assignCreatedBy],
     update: [],
     patch: [],
     remove: []
@@ -28,10 +56,10 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [updateEventMemberRegistrationCount],
     update: [],
     patch: [],
-    remove: []
+    remove: [updateEventMemberRegistrationCount]
   },
 
   error: {

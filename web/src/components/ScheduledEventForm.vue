@@ -17,7 +17,6 @@
             v-model="form.description"/>
         </v-flex>
 
-
         <v-flex xs12 md12>
           <v-text-field
             class="purple-input"

@@ -9,8 +9,13 @@
         <v-flex xs4 md2 py-0 class="checkinButtonHolder ">
 
           <v-btn v-if="!present && !loading && !loadingRegistration"
+                 :disabled="eventFull"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">
-            Book</v-btn>
+
+            <template v-if="!eventFull">Book</template>
+            <template v-else>Full</template>
+
+          </v-btn>
 
           <v-btn v-if="present && !loading && !loadingRegistration"
                  color="primary" class="checkinButton" @click="unregisterForEvent()">
@@ -28,7 +33,7 @@
 
 <script>
 import eventCreation from '../../mixins/eventCreation'
-import { isUndefined } from 'lodash'
+import { isUndefined, isNil } from 'lodash'
 
 export default {
   name: 'UserGymEventRegistrationRow',
@@ -126,6 +131,15 @@ export default {
     if (this.registrationRecords) {
       // console.log('mount registration records', this.registrationRecords)
       this.updateRegistrationRecords(this.registrationRecords, this.eventDetails)
+    }
+  },
+  computed: {
+    eventFull: function () {
+      if (isNil(this.eventDetails.event) || isNil(this.eventDetails.event.maximumAttendance)) {
+        return false
+      } else {
+        return this.eventDetails.event.registrationCount >= this.eventDetails.event.maximumAttendance
+      }
     }
   },
   watch: {

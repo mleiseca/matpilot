@@ -28,10 +28,10 @@ export default {
     }
   },
   computed: {
-    startDateStr: function() {
-      return this.startDate.format("dddd MMMM Do, YYYY")
+    startDateStr: function () {
+      return this.startDate.format('dddd MMMM Do, YYYY')
     },
-    canMoveToPreviousWeek: function() {
+    canMoveToPreviousWeek: function () {
       return this.allowPastWeeks || this.startDate.isAfter()
     }
   }

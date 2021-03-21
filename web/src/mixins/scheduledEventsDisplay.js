@@ -1,7 +1,7 @@
 import momentTz from 'moment-timezone'
 import { rrulestr } from 'rrule'
 import { mapActions, mapGetters } from 'vuex'
-const { defaultTo, debounce } = require('lodash')
+const { defaultTo } = require('lodash')
 
 export default {
   props: {

@@ -15,7 +15,6 @@
               {{ selectedEventDetails.startDateTime | moment("h:mma") }} - {{ selectedEventDetails.endDateTime | moment("h:mma") }}
             </div>
           </div>
-<!--          <v-flex xs12 class="date-header">{{ selectedEventDetails.date }} </v-flex>-->
           <v-flex xs12 v-for="m in members" v-bind:key="m.id"
                   class="event-detail">
 
@@ -24,6 +23,7 @@
                                              v-bind:registrationRecords="registrationRecords"
                                              v-on:unregister="unregisterForEvent"
                                              v-on:register="registerForEvent"
+                                             v-bind:loadingRegistration.sync="loadingRegistrations"
             >
 
               <div class="event-dialog-name">
@@ -39,9 +39,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-<!--    {{ members }}-->
-<!--    {{ registrationStartDate }} ==> {{ registrationEndDate }}-->
-<!--    {{ registrationRecords }}-->
 
     <div v-for="event in events" v-bind:key="event.date">
       <v-flex xs12 class="date-header">{{ event.date }} </v-flex>
@@ -75,6 +72,7 @@ import scheduledEventsDisplay from '../../mixins/scheduledEventsDisplay'
 import UserGymEventRegistrationRow from './GymEventRegistrationRow.vue'
 import { mapActions, mapGetters } from 'vuex'
 import eventCreation from '../../mixins/eventCreation'
+import { EventBus } from '../../event-bus'
 const { debounce } = require('lodash')
 
 export default {
@@ -124,14 +122,14 @@ export default {
         this.extractIds(value)
       }
     },
-    earliestEventDate: function(value) {
+    earliestEventDate: function (value) {
       this.loadingRegistrations = true
       this.reloadDataDebounced()
     },
-    latestEventDate: function(value) {
+    latestEventDate: function (value) {
       this.loadingRegistrations = true
       this.reloadDataDebounced()
-    },
+    }
   },
   methods: {
     ...mapActions('event-member-registration', {
@@ -142,7 +140,6 @@ export default {
       await this.loadRegistrations()
     },
     loadRegistrations: async function () {
-
       const results = await this.findEventMemberRegistration({
         query: {
           $customQuery: {
@@ -186,11 +183,16 @@ export default {
       if (memberIds.length === 1) {
         const eventId = eventDetails.event.id
         console.log('eventid', eventId)
-        await this.$store.dispatch('event-member-registration/create', {
-          eventId: eventId,
-          gymId: eventDetails.scheduledEvent.gymId,
-          memberId: memberIds[0]
-        })
+        try {
+          await this.$store.dispatch('event-member-registration/create', {
+            eventId: eventId,
+            gymId: eventDetails.scheduledEvent.gymId,
+            memberId: memberIds[0]
+          })
+        } catch (e) {
+          EventBus.$emit('user-message', { message: `Error: ${e.message}`, type: 'error' })
+          this.loading = false
+        }
 
         // console.log('created registration', registration)
       } else {
@@ -200,7 +202,6 @@ export default {
         })
         // console.log('need to choose a person to register')
       }
-
     }
   }
 }

@@ -73,7 +73,7 @@ export default {
     ...mapActions('events', {
       findEvents: 'find'
     }),
-    loadEventsForTimeRange: async function() {
+    loadEventsForTimeRange: async function () {
       // console.log('loading EVENTs for time range')
       const now = moment()
       let start = now.clone().subtract(2, 'days').toISOString()
