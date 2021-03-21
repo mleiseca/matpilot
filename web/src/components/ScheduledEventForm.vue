@@ -17,6 +17,16 @@
             v-model="form.description"/>
         </v-flex>
 
+
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="Maximum Attendance (optional)"
+            :rules="[rules.integer]"
+            :clearable="true"
+            v-model="form.maximumAttendance"/>
+        </v-flex>
+
         <!--TODO: add parts of mdc-form-field ?-->
 
         <v-flex xs12 sm6 md4>
@@ -181,6 +191,7 @@ export default {
       form: {
         title: '',
         description: '',
+        maximumAttendance: null,
         startDate: null,
         startTime: null,
         endDate: null,
@@ -193,7 +204,12 @@ export default {
       modalStartTime: false,
       modalEndTime: false,
       rules: {
-        required: value => !!value || 'Required.'
+        required: value => !!value || 'Required.',
+        integer: value => {
+          const pattern = /^\d.*$/
+          console.log(value, pattern.test(value))
+          return value === undefined || pattern.test(value) || 'Invalid.'
+        }
       }
     }
   },
@@ -211,6 +227,11 @@ export default {
       if (se.description) {
         this.form.description = se.description
       }
+
+      if (se.maximumAttendance !== undefined) {
+        this.form.maximumAttendance = se.maximumAttendance
+      }
+
       if (se.startDate) {
         this.form.startDate = moment(se.startDate).format('YYYY-MM-DD')
       }
@@ -289,6 +310,7 @@ export default {
 
       se.title = this.form.title
       se.description = this.form.description
+      se.maximumAttendance = this.form.maximumAttendance
 
       // TODO: timezone should come from the gym
       se.timezone = 'America/Chicago'

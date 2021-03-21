@@ -6,7 +6,7 @@
         <v-flex xs8 md10 py-0>
           <slot v-bind:eventDetails="eventDetails"></slot>
         </v-flex>
-        <v-flex xs4 md2 py-0 class="checkinButtonHolder">
+        <v-flex xs4 md2 py-0 class="checkinButtonHolder ">
 
           <v-btn v-if="!present && !loading && !loadingRegistration"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">

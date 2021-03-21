@@ -14,7 +14,8 @@ export default {
         description: scheduledEvent.description,
         timezone: scheduledEvent.timezone,
         startDateTime: eventDetails.startDateTime.toISOString(),
-        endDateTime: eventDetails.endDateTime.toISOString()
+        endDateTime: eventDetails.endDateTime.toISOString(),
+        maximumAttendance: scheduledEvent.maximumAttendance
       }
       console.log('with event', event, 'startdatetime', eventDetails.startDateTime.inspect())
       return this.$store.dispatch('events/create', event)

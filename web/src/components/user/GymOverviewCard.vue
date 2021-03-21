@@ -5,7 +5,7 @@
         <div slot="header">
           <div class="text-h6 font-weight-light mb-2" v-if="gym !== undefined">{{ gym.name }}</div>
         </div>
-        <v-card-text >
+        <v-card-text class="pa-0">
 
           <v-expansion-panels popout>
             <v-expansion-panel>
