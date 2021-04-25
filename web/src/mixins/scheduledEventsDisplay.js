@@ -26,6 +26,21 @@ export default {
     ...mapActions('events', {
       findEvents: 'find'
     }),
+    getEventIds: function () {
+      const result = []
+      for (let i = 0; i < this.events.length; i++) {
+        const day = this.events[i]
+        if (day.events != null) {
+          for (let j = 0; j < day.events.length; j++) {
+            const e = day.events[j]
+            if (e.event !== undefined) {
+              result.push(e.event.id)
+            }
+          }
+        }
+      }
+      return result
+    },
     buildEvents: function (ses, ee) {
       // console.log('rebuilding scheduled events...')
       // console.log('scheduled events', ses, ee)

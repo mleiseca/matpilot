@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!--  MODAL DIALOG FOR MULTIPLE MEMBERS IN ACCOUNT  -->
     <v-dialog v-model="multiMemberRegistrationDialog" max-width="500px" :persistent=true>
       <v-card>
         <v-card-title>
@@ -24,11 +25,17 @@
                                              v-on:unregister="unregisterForEvent"
                                              v-on:register="registerForEvent"
                                              v-bind:loadingRegistration.sync="loadingRegistrations"
+                                             v-bind:registrationsRemainingByMemberId="registrationsRemainingByMemberId"
             >
 
-              <div class="event-dialog-name">
-                {{ m.firstName }} {{ m.lastName }}
-              </div>
+              <template  v-slot:eventDescription>
+                <div class="event-dialog-name" >
+                  {{ m.firstName }} {{ m.lastName }}
+                </div>
+                <div class="event-member-remaining" v-if="registrationsTextForMemberId(m.id) !== ''">
+                  {{ registrationsTextForMemberId(m.id) }} registrations remaining for the week
+                </div>
+              </template>
 
             </user-gym-event-registration-row>
           </v-flex>
@@ -39,28 +46,30 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- END MODAL DIALOG FOR MULTIPLE MEMBERS IN ACCOUNT  -->
 
     <div v-for="event in events" v-bind:key="event.date">
       <v-flex xs12 class="date-header">{{ event.date }} </v-flex>
       <v-flex xs12 v-for="e in event.events" v-bind:key="e.id"
               class="event-detail">
+
         <user-gym-event-registration-row v-bind:event-details="e"
                                          v-bind:member-ids="memberIds"
                                          v-bind:registrationRecords="registrationRecords"
                                          v-on:unregister="unregisterForEvent"
                                          v-on:register="registerForEvent"
                                          v-bind:loadingRegistration.sync="loadingRegistrations"
+                                         v-bind:registrationsRemainingByMemberId="registrationsRemainingByMemberId"
         >
-
-          <div class="event-title">
-            <div class="event-title">
+          <template v-slot:eventDescription>
+            <div>
               <span class="">{{ e.scheduledEvent.title }}</span>
               <span class="event-description" v-if="e.scheduledEvent.description"> - {{ e.scheduledEvent.description }}</span>
             </div>
             <div class="times">
               {{ e.startDateTime | moment("h:mma") }} - {{ e.endDateTime | moment("h:mma") }}
             </div>
-          </div>
+          </template>
         </user-gym-event-registration-row>
       </v-flex>
     </div>
@@ -73,7 +82,7 @@ import UserGymEventRegistrationRow from './GymEventRegistrationRow.vue'
 import { mapActions, mapGetters } from 'vuex'
 import eventCreation from '../../mixins/eventCreation'
 import { EventBus } from '../../event-bus'
-const { debounce } = require('lodash')
+const { debounce, isNil } = require('lodash')
 
 export default {
   components: { UserGymEventRegistrationRow },
@@ -93,12 +102,17 @@ export default {
       selectedEventDetails: null,
       includePastEvents: false,
       memberIds: [],
-      loadingRegistrations: false
+      loadingRegistrations: false,
+      registrationsRemainingByMemberId: {},
+      registrations: []
     }
   },
   computed: {
     ...mapGetters('event-member-registration', {
       findEventMemberRegistrationInStore: 'find'
+    }),
+    ...mapGetters('gyms', {
+      getGymInStore: 'get'
     }),
     registrationRecords () {
       return this.findEventMemberRegistrationInStore({
@@ -122,6 +136,19 @@ export default {
         this.extractIds(value)
       }
     },
+    events: {
+      handler: function (value, newValue) {
+        console.log('events update', value, newValue)
+        this.updateRegistrationsRemaining(this.registrations)
+      }
+    },
+    registrationRecords: {
+      handler: function (value, newValue) {
+        console.log('registrationRecords update', value, newValue)
+        this.updateRegistrationsRemaining(value)
+        this.registrations = value
+      }
+    },
     earliestEventDate: function (value) {
       this.loadingRegistrations = true
       this.reloadDataDebounced()
@@ -138,6 +165,13 @@ export default {
     reloadDataDebounced: debounce(function () { this.reloadData() }, 300),
     reloadData: async function () {
       await this.loadRegistrations()
+    },
+    registrationsTextForMemberId: function (memberId) {
+      if (isNil(this.registrationsRemainingByMemberId[memberId])) {
+        return ''
+      } else {
+        return this.registrationsRemainingByMemberId[memberId]
+      }
     },
     loadRegistrations: async function () {
       const results = await this.findEventMemberRegistration({
@@ -161,6 +195,41 @@ export default {
       // console.log('FOUND REGISTRATIONS', results[0])
       this.loadingRegistrations = false
     },
+    updateRegistrationsRemaining: async function (registrations) {
+      let maximumWeeklyRegistrationPerMember = this.getGymInStore(this.gymId).maximumWeeklyRegistrationPerMember
+      const registrationsRemaining = {}
+
+      if (!isNil(maximumWeeklyRegistrationPerMember)) {
+        const registrationsByMemberId = {}
+        const eventIds = this.getEventIds()
+        for (let i = 0; i < registrations.length; i++) {
+          const registration = registrations[i]
+
+          console.log('updateRegistrationsRemaining registrations', registrations)
+          if (eventIds.includes(registration.eventId)) {
+            const count = registrationsByMemberId[registration.memberId] || 0
+            registrationsByMemberId[registration.memberId] = count + 1
+          }
+        }
+        // console.log("registrationsByMemberId", registrationsByMemberId)
+        for (let i = 0; i < this.memberIds.length; i++) {
+          let memberId = this.memberIds[i]
+          const registrationCount = registrationsByMemberId[memberId] || 0
+          registrationsRemaining[memberId] = maximumWeeklyRegistrationPerMember - registrationCount
+        }
+      }
+
+      if (this.memberIds.length === 1) {
+        this.$emit('registrations-remaining', registrationsRemaining[this.members[0].id])
+      } else {
+        this.$emit('registrations-remaining', null)
+      }
+
+      this.registrationsRemainingByMemberId = {}
+      for (let i = 0; i < this.memberIds.length; i++) {
+        this.registrationsRemainingByMemberId[this.members[i].id] = registrationsRemaining[this.members[i].id]
+      }
+    },
     extractIds: function (members) {
       const memberIds = []
       members.forEach(member => {
@@ -181,13 +250,19 @@ export default {
       // console.log('member',  members)
 
       if (memberIds.length === 1) {
+        let memberId = memberIds[0]
         const eventId = eventDetails.event.id
-        console.log('eventid', eventId)
+        // console.log('eventid', eventId)
+        if (!isNil(this.registrationsRemainingByMemberId[memberId]) && this.registrationsRemainingByMemberId[memberId] <= 0) {
+          EventBus.$emit('user-message', { message: `You have reached your registration limit for the week.`, type: 'error' })
+          this.loading = false
+          return
+        }
         try {
           await this.$store.dispatch('event-member-registration/create', {
             eventId: eventId,
             gymId: eventDetails.scheduledEvent.gymId,
-            memberId: memberIds[0]
+            memberId: memberId
           })
         } catch (e) {
           EventBus.$emit('user-message', { message: `Error: ${e.message}`, type: 'error' })
@@ -245,8 +320,15 @@ export default {
     color: rgba(0,0,0,0.65);
   }
 
+  .event-member-remaining {
+
+  }
+
+  .times {
+  }
+
   .event-dialog-name {
-    padding: 10px 0px;
+    padding: 10px 0px 0px 0px;
     /*border-color: rgba(0,0,0,0.1);*/
     /*border-top-style: none;*/
     /*border-bottom-style: solid;*/

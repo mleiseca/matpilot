@@ -4,16 +4,17 @@
     <v-container fill-height fluid grid-list-xl pa-2>
       <v-layout wrap class="row" v-bind:class="{ active: eventDetails.active, past:eventDetails.past }">
         <v-flex xs8 md10 py-0>
-          <slot v-bind:eventDetails="eventDetails"></slot>
+          <slot name="eventDescription" v-bind:eventDetails="eventDetails"></slot>
         </v-flex>
         <v-flex xs4 md2 py-0 class="checkinButtonHolder ">
 
           <v-btn v-if="!present && !loading && !loadingRegistration"
-                 :disabled="eventFull"
+                 :disabled="eventFull || atRegistrationLimit"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">
 
-            <template v-if="!eventFull">Book</template>
-            <template v-else>Full</template>
+            <template v-if="eventFull">Full</template>
+            <template v-else-if="atRegistrationLimit">At limit</template>
+            <template v-else>Book</template>
 
           </v-btn>
 
@@ -25,6 +26,7 @@
                                indeterminate
                                color="primary"
           ></v-progress-circular>
+
         </v-flex>
       </v-layout>
     </v-container>
@@ -47,7 +49,8 @@ export default {
     memberIds: Array,
     memberId: Number,
     registrationRecords: Array,
-    loadingRegistration: Boolean
+    loadingRegistration: Boolean,
+    registrationsRemainingByMemberId: {}
   },
   data () {
     return {
@@ -140,6 +143,21 @@ export default {
       } else {
         return this.eventDetails.event.registrationCount >= this.eventDetails.event.maximumAttendance
       }
+    },
+    atRegistrationLimit: function () {
+      let memberIdsToEvaluate = this.memberIds || [this.memberId]
+
+      console.log('memberIdsToEvaluate', memberIdsToEvaluate)
+      for (let i = 0; i < memberIdsToEvaluate.length; i++) {
+        const memberId = memberIdsToEvaluate[i]
+        let registrationsRemaining = this.registrationsRemainingByMemberId[memberId]
+        if (isNil(registrationsRemaining)) {
+          return false
+        } else if (registrationsRemaining > 0) {
+          return false
+        }
+      }
+      return true
     }
   },
   watch: {
@@ -157,6 +175,13 @@ export default {
       },
       deep: true
     }
+    // registrationsRemainingByMemberId: {
+    //   handler: function (value) {
+    //     console.log('registrationsRemainingByMemberId updatedd.....', value)
+    //     // this.updateRegistrationRecords(this.registrationRecords, value)
+    //   },
+    //   deep: true
+    // }
   }
 }
 </script>

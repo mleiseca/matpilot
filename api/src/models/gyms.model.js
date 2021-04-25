@@ -27,6 +27,10 @@ module.exports = function (app) {
       type: Sequelize.JSONB,
       allowNull: false
     },
+    maximumWeeklyRegistrationPerMember: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
   }, {
     hooks: {
       beforeCount(options) {

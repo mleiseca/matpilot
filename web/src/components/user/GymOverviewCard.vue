@@ -19,6 +19,9 @@
                   v-bind:allowPastWeeks="false"
                   v-on:week-change="weekChange"/>
 
+                <span v-if="registrationsRemaining !== null">
+                  Registrations remaining for the week: {{ registrationsRemaining }}
+                </span>
                 <user-gym-event-registration
                   v-bind:scheduled-events.sync="gymScheduledEvents"
                   v-bind:existing-events.sync="gymEvents"
@@ -26,6 +29,7 @@
                   v-bind:gymId="gymId"
                   v-bind:earliestEventDate="earliestEventDate"
                   v-bind:latestEventDate="latestEventDate"
+                  v-on:registrations-remaining="updateRegistrationsRemaining"
                 />
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -49,11 +53,12 @@ export default {
     registrationRecords: Array
   },
   data () {
-    let start = moment().startOf('week')
-    let end = moment().startOf('week').add(7, 'days')
+    let start = moment().startOf('isoWeek')
+    let end = moment().startOf('isoWeek').add(7, 'days')
     return {
       earliestEventDate: start,
-      latestEventDate: end
+      latestEventDate: end,
+      registrationsRemaining: null
     }
   },
   methods: {
@@ -61,6 +66,10 @@ export default {
       this.earliestEventDate = this.earliestEventDate.clone().add(7 * amount, 'days')
       this.latestEventDate = this.earliestEventDate.clone().add(7, 'days')
       this.loadEventsForTimeRange()
+    },
+    updateRegistrationsRemaining: function (value) {
+      console.log('updateRegistrationsRemaining', value)
+      this.registrationsRemaining = value
     }
   }
 }
