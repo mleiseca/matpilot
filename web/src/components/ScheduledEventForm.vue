@@ -159,6 +159,7 @@
 </template>
 
 <script>
+import { isNil } from 'lodash'
 import moment from 'moment'
 import { RRule, rrulestr } from 'rrule'
 import { EventBus } from './../event-bus.js'
@@ -206,8 +207,8 @@ export default {
         required: value => !!value || 'Required.',
         integer: value => {
           const pattern = /^\d.*$/
-          console.log(value, pattern.test(value))
-          return value === undefined || pattern.test(value) || 'Invalid.'
+          // console.log(value, pattern.test(value))
+          return isNil(value) || value.length === 0 || pattern.test(value) || 'Invalid.'
         }
       }
     }

@@ -12,8 +12,8 @@
                  :disabled="eventFull || atRegistrationLimit"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">
 
-            <template v-if="eventFull">Full</template>
-            <template v-else-if="atRegistrationLimit">At limit</template>
+            <template v-if="atRegistrationLimit">At limit</template>
+            <template v-else-if="eventFull">Full</template>
             <template v-else>Book</template>
 
           </v-btn>
