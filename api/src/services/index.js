@@ -15,12 +15,12 @@ module.exports = function (app) {
   app.configure(gyms)
   app.configure(events)
   app.configure(eventMemberAttendance)
+  app.configure(eventMemberRegistration)
   app.configure(members)
   app.configure(scheduledEvents)
   app.configure(users)
   app.configure(userGymRole)
   app.configure(memberRankHistory)
-  app.configure(eventMemberRegistration)
   app.configure(memberWeeklyRegistration)
 
   // https://github.com/feathersjs-ecosystem/feathers-sequelize/issues/20

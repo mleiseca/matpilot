@@ -48,6 +48,10 @@
                 <v-icon>mdi-account-off</v-icon>
                 No suggestions found
               </div>
+              <div v-if="bottomNav === 'registered'">
+                <v-icon>mdi-account-off</v-icon>
+                No registrations found
+              </div>
             </v-flex>
             <v-list v-if="members && members.length > 0">
               <mp-checkin-member-row
@@ -103,6 +107,15 @@
           <span>Suggestions</span>
           <v-icon>mdi-exclamation</v-icon>
         </v-btn>
+        <v-btn
+          color="teal"
+          text
+          value="registered"
+          v-on:click="findRegistered()"
+        >
+          <span>Registrations</span>
+          <v-icon>mdi-av-timer</v-icon>
+        </v-btn>
 
       </v-bottom-navigation>
     </v-layout>
@@ -143,11 +156,21 @@ export default {
     ...mapGetters('events', {
       getEventInStore: 'get'
     }),
+    ...mapGetters('event-member-registration', {
+      findEventMemberRegistrationInStore: 'find'
+    }),
     event () {
       return this.getEventInStore(this.eventId)
     },
     attendance () {
       return this.findEventMemberAttendanceInStore({
+        query: {
+          eventId: parseInt(this.eventId, 10)
+        }
+      }).data
+    },
+    registrationRecords () {
+      return this.findEventMemberRegistrationInStore({
         query: {
           eventId: parseInt(this.eventId, 10)
         }
@@ -183,6 +206,15 @@ export default {
           { lowerNickname: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
           { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
         ]
+      } else if (this.bottomNav === 'registered') {
+        const memberIds = []
+        this.registrationRecords.forEach(function (registration) {
+          memberIds.push(registration.memberId)
+        })
+        console.log('using member ids: ' , memberIds, this.registrationRecords)
+        query.id = {
+          $in: memberIds
+        }
       } else {
         return []
       }
@@ -201,6 +233,9 @@ export default {
     }),
     ...mapActions('events', {
       findEvents: 'find'
+    }),
+    ...mapActions('event-member-registration', {
+      findEventMemberRegistrations: 'find'
     }),
 
     escapeRegExp (string) {
@@ -249,7 +284,7 @@ export default {
       this.startLoading()
       const query = {
         gymId: this.gymId,
-        $limit: 50,
+        $limit: 1000,
         $include: [{
           model: 'event-member-attendance',
           where: { eventId: this.eventId }
@@ -277,6 +312,22 @@ export default {
       this.stopLoading()
     },
 
+    async findRegistered () {
+      this.startLoading()
+      const query = {
+        gymId: this.gymId,
+        $limit: 1000,
+        $include: [{
+          model: 'event-member-registration',
+          where: { eventId: this.eventId }
+        }]
+      }
+
+      await this.findGymMembers({ query })
+
+      this.stopLoading()
+    },
+
     attendanceChange (event) {
       if (event.value) {
         this.$store.dispatch('event-member-attendance/create', {
@@ -299,6 +350,7 @@ export default {
     }, 300)
   },
   watch: {
+
     attendance: {
       handler (newAttendance, old) {
         const attendanceMap = []
@@ -320,11 +372,17 @@ export default {
         id: this.eventId
       }
     })
-    // TODO: now this is hardcoded at 50...need something better!
+    // TODO: now this is hardcoded at 1000...need something better!
     this.findMemberEventAttendance({
       query: {
         eventId: this.eventId,
-        $limit: 50
+        $limit: 1000
+      }
+    })
+    this.findEventMemberRegistrations({
+      query: {
+        eventId: this.eventId,
+        $limit: 1000
       }
     })
   }
