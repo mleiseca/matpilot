@@ -20,18 +20,15 @@
             <v-icon>mdi-view-list</v-icon>
           </v-btn>
 
-        <v-breadcrumbs v-if="responsive">
-          <v-breadcrumbs-item
-            dark
-            v-for="item in breadcrumbs"
-            :key="item.text"
-            :to="item.to"
-            :exact="true">
-            {{ item.text }}
-          </v-breadcrumbs-item>
-
-          <template v-slot:divider>
-            <v-icon>mdi-chevron-right</v-icon>
+        <v-breadcrumbs v-if="responsive" divider=">" :items="breadcrumbs">
+          <template v-slot:item="{ item }">
+            <v-breadcrumbs-item
+              dark
+              :key="item.text"
+              :to="item.to"
+              :exact="true">
+              {{ item.text }}
+            </v-breadcrumbs-item>
           </template>
         </v-breadcrumbs>
         </v-layout>

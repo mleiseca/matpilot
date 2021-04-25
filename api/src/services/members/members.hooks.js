@@ -90,7 +90,7 @@ function writeWaiverSignatureToS3() {
       const MembersModel = hook.app.get('sequelizeClient').models['members']
       const memberId = hook.data.id
       logger.info('Writing waiver to S3, gym, member %s, %s, %s', hook.data.gymId, hook.data.lastName, memberId)
-      let buf = Buffer.from(hook.data.waiverSignature,'base64')
+      let buf = new Buffer.from(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''),'base64')
 
       // TODO: property name
       let keyName = 'gym_'  + hook.data.gymId + '_' + hook.data.id + '_' +  uuid.v4() + '.png'
@@ -121,6 +121,9 @@ function writeWaiverSignatureToS3() {
           ).then(function() {
             logger.info('Saved waiver data of memberId ' + memberId)
           })
+        })
+        .catch((error) => {
+          logger.error('Failed to upload to s3', error)
         })
 
       logger.info('Finished initial processing of waiver for member ' + memberId)
