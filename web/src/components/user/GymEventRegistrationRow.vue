@@ -9,16 +9,18 @@
         <v-flex xs4 md2 py-0 class="checkinButtonHolder ">
 
           <v-btn v-if="!present && !loading && !loadingRegistration"
-                 :disabled="eventFull || atRegistrationLimit"
+                 :disabled="eventFull || atRegistrationLimit || this.eventDetails.past"
                  outlined color="primary" class="checkinButton" @click="registerForEvent()">
 
-            <template v-if="atRegistrationLimit">At limit</template>
+            <template v-if="this.eventDetails.past">Ended</template>
+            <template v-else-if="atRegistrationLimit">At limit</template>
             <template v-else-if="eventFull">Full</template>
             <template v-else>Book</template>
 
           </v-btn>
 
           <v-btn v-if="present && !loading && !loadingRegistration"
+                 :disabled="this.eventDetails.past"
                  color="primary" class="checkinButton" @click="unregisterForEvent()">
             Booked</v-btn>
 
@@ -36,6 +38,7 @@
 <script>
 import eventCreation from '../../mixins/eventCreation'
 import { isUndefined, isNil } from 'lodash'
+import {EventBus} from "../../event-bus";
 
 export default {
   name: 'UserGymEventRegistrationRow',
@@ -61,6 +64,10 @@ export default {
   },
   methods: {
     unregisterForEvent: async function () {
+      if (this.eventDetails.past) {
+        EventBus.$emit('user-message', { message: `Cannot unregister for an ended event`, type: 'error' })
+        return
+      }
       if (this.registeringMemberIds.length === 1) {
         this.loading = true
         this.$emit('unregister', this.eventMemberRegistrationId)
@@ -69,6 +76,10 @@ export default {
       }
     },
     registerForEvent: async function () {
+      if (this.eventDetails.past) {
+        EventBus.$emit('user-message', { message: `Cannot register for an ended event`, type: 'error' })
+        return
+      }
       if (isUndefined(this.eventDetails.event)) {
         await this.createEvent(this.eventDetails.scheduledEvent, this.eventDetails)
       }
