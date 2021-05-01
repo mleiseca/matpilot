@@ -90,7 +90,16 @@ function writeWaiverSignatureToS3() {
       const MembersModel = hook.app.get('sequelizeClient').models['members']
       const memberId = hook.data.id
       logger.info('Writing waiver to S3, gym, member %s, %s, %s', hook.data.gymId, hook.data.lastName, memberId)
-      let buf = new Buffer.from(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''),'base64')
+
+      let buf = null
+      try {
+        // I'm not sure why this is required. It's like we are getting a string (the try case) when we are adding
+        // a waiver to an existing member.
+        // When we are creating a member, this fails, but the buffer works fine.
+        buf = new Buffer.from(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+      } catch(err) {
+        buf = Buffer.from(hook.data.waiverSignature,'base64')
+      }
 
       // TODO: property name
       let keyName = 'gym_'  + hook.data.gymId + '_' + hook.data.id + '_' +  uuid.v4() + '.png'
@@ -173,7 +182,32 @@ const queries = {
     '    e.id <> sc.id AND\n' +
     '   ema."eventId" = e.id and ' +
     '      sc.id = $currentEventId) ' +
-    '  order by members."lowerFirstName" , members."lowerLastName" desc'
+    '  order by members."lowerFirstName" , members."lowerLastName" desc',
+
+  'MEMBER_REPORT': 'select\n' +
+    '    "firstName",\n' +
+    '    "lastName",\n' +
+    '    "dateOfBirth",\n' +
+    '    tags,\n' +
+    '    rank,\n' +
+    '    "rankAwardDate",\n' +
+    '    coalesce(attendance.training_time_in_hours, 0) as training_time_in_hours,\n' +
+    '    coalesce(attendance.attendance_count, 0) as attendance_count\n' +
+    'from\n' +
+    '    members m\n' +
+    'left outer join\n' +
+    '    (select\n' +
+    '         ema."memberId" as memberId,\n' +
+    '         EXTRACT(epoch FROM (sum(e."endDateTime" - e."startDateTime"))/3600)::int as training_time_in_hours,\n' +
+    '         count(e.id) as attendance_count\n' +
+    '     from event_member_attendance ema, events e\n' +
+    '     where\n' +
+    '             ema."eventId" = e.id\n' +
+    '       and e."gymId" = 4\n' +
+    '     group by ema."memberId") as attendance\n' +
+    'on attendance.memberId = m.id\n' +
+    'where\n' +
+    '    m."gymId" = $gymId'
 }
 
 

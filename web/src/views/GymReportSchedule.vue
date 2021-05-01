@@ -72,7 +72,6 @@
               <v-data-table
                 :headers="headers"
                 :items="reportData"
-                :items-per-page="5"
                 class="elevation-1"
                 :loading="loading"
                 hide-default-footer

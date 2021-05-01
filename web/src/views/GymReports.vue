@@ -9,6 +9,8 @@
           <v-container class="grey lighten-5">
             <v-row no-gutters>
               <router-link :to="{ name: 'gym-reports-member'}">Members Report</router-link>
+            </v-row>
+            <v-row no-gutters>
               <router-link :to="{ name: 'gym-reports-schedule'}">Schedule Report</router-link>
             </v-row>
           </v-container>
