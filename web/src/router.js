@@ -40,6 +40,27 @@ let router = new Router({
       meta: { requiresAuth: true }
     },
     {
+      name: 'gym-reports',
+      path: '/gyms/:gymId/reports',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymReports.vue'),
+      props: true,
+      meta: { requiresAuth: true, breadcrumb: 'gym-reports', breadcrumbText: 'Reports' }
+    },
+    {
+      name: 'gym-reports-member',
+      path: '/gyms/:gymId/reports/member',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymReportMember.vue'),
+      props: true,
+      meta: { requiresAuth: true, breadcrumb: 'gym-reports', breadcrumbText: 'Reports' }
+    },
+    {
+      name: 'gym-reports-schedule',
+      path: '/gyms/:gymId/reports/schedule',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymReportSchedule.vue'),
+      props: true,
+      meta: { requiresAuth: true, breadcrumb: 'gym-reports', breadcrumbText: 'Reports' }
+    },
+    {
       name: 'gym-members',
       path: '/gyms/:gymId/members',
       component: () => import(/* webpackChunkName: "staffUsers" */ './views/GymMembers.vue'),

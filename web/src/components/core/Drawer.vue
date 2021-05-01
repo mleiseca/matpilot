@@ -179,6 +179,17 @@ export default {
             text: 'Schedule',
             icon: 'mdi-calendar'
           })
+
+          this.gymLinks.push({
+            to: {
+              name: 'gym-reports',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Reports',
+            icon: 'mdi-file-chart'
+          })
         }
       }
     },

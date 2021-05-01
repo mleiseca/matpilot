@@ -3,6 +3,7 @@
 function customQuery(options) {
   const queryMap = options.queries
   const model = options.model
+  // TODO add restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }?
   return function (hook) {
     const { $customQuery: queryName } = hook.params.query
 
