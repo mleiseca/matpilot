@@ -1,18 +1,18 @@
 <template>
   <v-container>
-    <v-layout row wrap>
+    <v-layout wrap>
       <v-flex xs9 md10>
-        <div class="headline">Rank</div>
+        <div class="text-h5">Rank</div>
       </v-flex>
       <v-flex xs3 md2 pt-1>
-        <v-btn flat @click="addRank">
+        <v-btn text @click="addRank">
           <v-icon >mdi-plus</v-icon>
         </v-btn>
         <v-dialog v-model="addRankDialog" max-width="500px" :persistent=true>
           <v-card>
             <v-card-title>
-              <div class="headline" v-if="!selectedRank">Add Rank</div>
-              <div class="headline" v-if="selectedRank">Edit Rank</div>
+              <div class="text-h5" v-if="!selectedRank">Add Rank</div>
+              <div class="text-h5" v-if="selectedRank">Edit Rank</div>
             </v-card-title>
             <v-card-text>
               <v-form ref="newRankForm" :lazyValidation=true>
@@ -28,10 +28,8 @@
                   v-model="promotionDateMenu"
                   :close-on-content-click="true"
                   :nudge-right="40"
-                  lazy
                   transition="scale-transition"
                   offset-y
-                  full-width
                   min-width="290px"
                 >
                   <template v-slot:activator="{ on }">
@@ -57,8 +55,8 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="accent" flat @click="addRankDialog = false">Cancel</v-btn>
-              <v-btn color="primary" flat @click="saveNewRank">Save</v-btn>
+              <v-btn color="accent" text @click="addRankDialog = false">Cancel</v-btn>
+              <v-btn color="primary" text @click="saveNewRank">Save</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
@@ -71,10 +69,10 @@
           <span class="rankDescription">{{ r.newRank }}</span> - <span class="rankDate">{{ formatAwardDate(r.awardDate) }}</span>
 
           <div v-if="selectedRank && r.id == selectedRank.id" class="action">
-            <v-btn flat @click="editRank(r)">
+            <v-btn text @click="editRank(r)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn flat @click="deleteConfirmDialog = true">
+            <v-btn text @click="deleteConfirmDialog = true">
               <v-icon>mdi-close-circle</v-icon>
             </v-btn>
           </div>
@@ -86,7 +84,7 @@
       max-width="290"
     >
       <v-card>
-        <v-card-title class="headline">Delete rank?</v-card-title>
+        <v-card-title class="text-h5">Delete rank?</v-card-title>
 
         <v-card-text>
           Are you sure you want to delete this rank?
@@ -97,7 +95,7 @@
 
           <v-btn
             color="grey darken-1"
-            flat="flat"
+            text="text"
             @click="deleteConfirmDialog = false"
           >
             Cancel
@@ -105,7 +103,7 @@
 
           <v-btn
             color="red darken-1"
-            flat="flat"
+            text="text"
             @click="deleteSelected()"
           >
             Delete
@@ -170,12 +168,16 @@ export default {
       findMemberRankHistory: 'find'
     }),
     addRank: function () {
+      this.addRankDialog = true
       this.newRank = null
       this.promotionDate = moment().format('YYYY-MM-DD')
       this.savePromotionDate(this.promotionDate)
-      this.$refs.newRankForm.resetValidation()
       this.selectedRank = null
-      this.addRankDialog = true
+
+      this.$nextTick(() => {
+        // $refs is only populated once components are rendered. We need the form to be rendered before getting access to it
+        this.$refs.newRankForm.resetValidation()
+      })
     },
     savePromotionDate (date) {
       this.newPromotionDate = moment(date).format('YYYY-MM-DD') + 'T00:00:00'
@@ -199,7 +201,6 @@ export default {
       this.addRankDialog = true
     },
     saveNewRank: function () {
-      console.log(this.$refs)
       if (!this.$refs.newRankForm.validate()) {
         EventBus.$emit('user-message', { message: 'Please correct the errors above', type: 'error' })
         return

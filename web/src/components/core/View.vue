@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
 
     <div id="core-view">
       <email-confirmation-banner></email-confirmation-banner>
@@ -9,13 +9,13 @@
       </v-fade-transition>
     </div>
     <!--<core-footer v-if="$route.name !== 'Maps'" />-->
-  </v-content>
+  </v-main>
 </template>
 
 <script>
 
 export default {
-   metaInfo () {
+  metaInfo () {
     return {
       title: 'MatPilot'
     }

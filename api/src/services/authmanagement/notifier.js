@@ -1,4 +1,4 @@
-const Email = require('email-templates');
+const Email = require('email-templates')
 const logger = require('../../logger')
 
 module.exports = function(app) {
@@ -20,11 +20,10 @@ module.exports = function(app) {
     notifier: async function(type, user, notifierOptions) { /* eslint-disable-line */
       let tokenLink
       let email
-      const e = new Email();
+      const e = new Email()
+      let emailHtml = ''
       switch (type) {
       case 'resendVerifySignup': //sending the user the verification email
-
-        let emailHtml = ''
         await e.render('verifyEmail/html', {
           tokenLink: getLink('verify', user.verifyToken),
           email: user.email
@@ -36,8 +35,8 @@ module.exports = function(app) {
           subject: 'Verify your email',
           html: emailHtml
         }
-          // .then(console.log)
-          // .catch(console.error);
+        // .then(console.log)
+        // .catch(console.error);
 
         // tokenLink = getLink('verify', user.verifyToken)
         // email = {

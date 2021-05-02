@@ -14,6 +14,10 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: true
     },
+    maximumAttendance: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     timezone: {
       type: DataTypes.STRING,
       allowNull: false

@@ -6,7 +6,7 @@
     dark
     floating
     persistent
-    mobile-break-point="991"
+    mobile-breakpoint="991"
     width="260"
   >
     <v-img
@@ -15,65 +15,65 @@
     >
       <v-layout
         class="fill-height"
-        tag="v-list"
         column
       >
-        <v-list-tile avatar>
-          <v-list-tile-avatar
-            color="white"
-          >
-            <v-img
-              :src="logo"
-              height="34"
-              contain
-            />
-          </v-list-tile-avatar>
-          <v-list-tile-title class="title">
-            <router-link :to="{ name: 'userhome'}">
-              MatPilot
-            </router-link>
-          </v-list-tile-title>
+        <v-list>
+          <v-list-item>
+            <v-list-item-avatar
+              color="white"
+            >
+              <v-img
+                :src="logo"
+                height="34"
+                contain
+              />
+            </v-list-item-avatar>
+            <v-list-item-title class="text-h6">
+              <router-link :to="{ name: 'userhome'}">
+                MatPilot
+              </router-link>
+            </v-list-item-title>
 
-        </v-list-tile>
-        <v-divider/>
-        <!--<v-list-tile-->
-          <!--v-if="responsive"-->
-        <!--&gt;-->
-          <!--<v-text-field-->
-            <!--class="purple-input search-input"-->
-            <!--label="Search..."-->
-            <!--color="purple"-->
-          <!--/>-->
-        <!--</v-list-tile>-->
-        <v-list-tile
-          v-for="(link, i) in gymLinks"
-          :key="i"
-          :to="link.to"
-          :active-class="color"
-          :exact="true"
-          avatar
-          class="v-list-item"
-        >
-          <v-list-tile-action>
-            <v-icon>{{ link.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title
-            v-text="link.text"
-          />
-        </v-list-tile>
-        <v-list-tile
-          disabled
-          active-class="primary"
-          class="v-list-item v-list__tile--buy"
-          to="/upgrade"
-        >
-          <!--<v-list-tile-action>-->
-            <!--<v-icon>mdi-package-up</v-icon>-->
-          <!--</v-list-tile-action>-->
-          <!--<v-list-tile-title class="font-weight-light">-->
-            <!--Upgrade To PRO-->
-          <!--</v-list-tile-title>-->
-        </v-list-tile>
+          </v-list-item>
+          <v-divider/>
+          <!--<v-list-tile-->
+            <!--v-if="responsive"-->
+          <!--&gt;-->
+            <!--<v-text-field-->
+              <!--class="purple-input search-input"-->
+              <!--label="Search..."-->
+              <!--color="purple"-->
+            <!--/>-->
+          <!--</v-list-tile>-->
+          <v-list-item
+            v-for="(link, i) in gymLinks"
+            :key="i"
+            :to="link.to"
+            :active-class="color"
+            :exact="true"
+            class="v-list-item"
+          >
+            <v-list-item-action>
+              <v-icon>{{ link.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-title
+              v-text="link.text"
+            />
+          </v-list-item>
+          <v-list-item
+            disabled
+            active-class="primary"
+            class="v-list-item v-list-item--buy"
+            to="/upgrade"
+          >
+            <!--<v-list-tile-action>-->
+              <!--<v-icon>mdi-package-up</v-icon>-->
+            <!--</v-list-tile-action>-->
+            <!--<v-list-tile-title class="font-weight-light">-->
+              <!--Upgrade To PRO-->
+            <!--</v-list-tile-title>-->
+          </v-list-item>
+        </v-list>
       </v-layout>
     </v-img>
   </v-navigation-drawer>
@@ -179,6 +179,17 @@ export default {
             text: 'Schedule',
             icon: 'mdi-calendar'
           })
+
+          this.gymLinks.push({
+            to: {
+              name: 'gym-reports',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Reports',
+            icon: 'mdi-file-chart'
+          })
         }
       }
     },
@@ -202,7 +213,7 @@ export default {
 
 <style lang="scss">
   #app-drawer {
-    .v-list__tile {
+    .v-list-item {
       border-radius: 4px;
 
       &--buy {

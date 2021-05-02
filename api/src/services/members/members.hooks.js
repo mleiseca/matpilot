@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const { fastJoin, makeCallingParams } = require('feathers-hooks-common')
+const customQuery = require('../../hooks/custom-query').customQuery
 const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
 const logger = require('../../logger')
 const moment = require('moment')
@@ -89,7 +90,16 @@ function writeWaiverSignatureToS3() {
       const MembersModel = hook.app.get('sequelizeClient').models['members']
       const memberId = hook.data.id
       logger.info('Writing waiver to S3, gym, member %s, %s, %s', hook.data.gymId, hook.data.lastName, memberId)
-      let buf = Buffer.from(hook.data.waiverSignature,'base64')
+
+      let buf = null
+      try {
+        // I'm not sure why this is required. It's like we are getting a string (the try case) when we are adding
+        // a waiver to an existing member.
+        // When we are creating a member, this fails, but the buffer works fine.
+        buf = new Buffer.from(hook.data.waiverSignature.replace(/^data:image\/\w+;base64,/, ''), 'base64')
+      } catch(err) {
+        buf = Buffer.from(hook.data.waiverSignature,'base64')
+      }
 
       // TODO: property name
       let keyName = 'gym_'  + hook.data.gymId + '_' + hook.data.id + '_' +  uuid.v4() + '.png'
@@ -120,6 +130,9 @@ function writeWaiverSignatureToS3() {
           ).then(function() {
             logger.info('Saved waiver data of memberId ' + memberId)
           })
+        })
+        .catch((error) => {
+          logger.error('Failed to upload to s3', error)
         })
 
       logger.info('Finished initial processing of waiver for member ' + memberId)
@@ -159,41 +172,42 @@ function createLowerName() {
   }
 }
 
-function customQuery(hook) {
-  const { $customQuery } = hook.params.query
+const queries = {
+  'SUGGESTED_ATTENDEES': 'select members.* from members\n' +
+    'where\n' +
+    '  id in (\n' +
+    '   select ema."memberId" from events e, events sc, event_member_attendance ema where ' +
+    '   e."startDateTime" > $attendedAfter and ' +
+    '   e."scheduledEventId" = sc."scheduledEventId" AND ' +
+    '    e.id <> sc.id AND\n' +
+    '   ema."eventId" = e.id and ' +
+    '      sc.id = $currentEventId) ' +
+    '  order by members."lowerFirstName" , members."lowerLastName" desc',
 
-  // console.log('checking custom query')
-  // console.log($customQuery)
-  if (!$customQuery) {
-    Promise.resolve(hook)
-    return
-  }
-  // delete hook.params.query.$customQuery;
-
-  const queries = {
-    'SUGGESTED_ATTENDEES': 'select members.* from members\n' +
-      'where\n' +
-      '  id in (\n' +
-      '   select ema."memberId" from events e, events sc, event_member_attendance ema where' +
-      '   e."startDateTime" > $attendedAfter and ' +
-      '   e."scheduledEventId" = sc."scheduledEventId" AND ' +
-      '    e.id <> sc.id AND\n' +
-      '   ema."eventId" = e.id and ' +
-      '      sc.id = $currentEventId) ' +
-      '  order by members."lowerFirstName" , members."lowerLastName" desc'
-
-  }
-
-  const sequelize = hook.app.get('sequelizeClient')
-
-  return sequelize.query(queries[$customQuery.type], {
-    model: sequelize.models['members'],
-    // bind: { currentEventId: 13, attendedAfter: '2019-08-10' }
-    bind: $customQuery.bind
-  }).then(results => {
-    hook.result = results // this tells feathers to skip the DATA STORE step above
-    return hook // always resolve the promise chain with the context
-  })
+  'MEMBER_REPORT': 'select\n' +
+    '    "firstName",\n' +
+    '    "lastName",\n' +
+    '    "dateOfBirth",\n' +
+    '    tags,\n' +
+    '    rank,\n' +
+    '    "rankAwardDate",\n' +
+    '    coalesce(attendance.training_time_in_hours, 0) as training_time_in_hours,\n' +
+    '    coalesce(attendance.attendance_count, 0) as attendance_count\n' +
+    'from\n' +
+    '    members m\n' +
+    'left outer join\n' +
+    '    (select\n' +
+    '         ema."memberId" as memberId,\n' +
+    '         EXTRACT(epoch FROM (sum(e."endDateTime" - e."startDateTime"))/3600)::int as training_time_in_hours,\n' +
+    '         count(e.id) as attendance_count\n' +
+    '     from event_member_attendance ema, events e\n' +
+    '     where\n' +
+    '             ema."eventId" = e.id\n' +
+    '       and e."gymId" = 4\n' +
+    '     group by ema."memberId") as attendance\n' +
+    'on attendance.memberId = m.id\n' +
+    'where\n' +
+    '    m."gymId" = $gymId'
 }
 
 
@@ -229,7 +243,7 @@ function include(hook) {
 module.exports = {
   before: {
     all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [customQuery, include],
+    find: [customQuery({queries: queries, model: 'members'}), include],
     get: [],
     create: [
       commonHooks.lowerCase('email'),

@@ -4,12 +4,12 @@
       <v-flex md12>
         <material-card offset="12">
           <v-flex slot="header" py-0>
-            <div class="title font-weight-heavy">{{ get(event, 'title') }}</div>
+            <div class="text-h6 font-weight-heavy">{{ get(event, 'title') }}</div>
 
             <div>{{ get(event, 'startDateTime')| moment("dddd, MMMM Do") }}</div>
           </v-flex>
 
-          <v-layout justify-center wrap row>
+          <v-layout justify-center wrap>
             <v-flex xs9>
               <v-text-field
                 v-if="bottomNav === 'search'"
@@ -48,6 +48,10 @@
                 <v-icon>mdi-account-off</v-icon>
                 No suggestions found
               </div>
+              <div v-if="bottomNav === 'registered'">
+                <v-icon>mdi-account-off</v-icon>
+                No registrations found
+              </div>
             </v-flex>
             <v-list v-if="members && members.length > 0">
               <mp-checkin-member-row
@@ -70,15 +74,15 @@
           </transition>
         </material-card>
       </v-flex>
-      <v-bottom-nav
+      <v-bottom-navigation
         v-if="!keyboardUp"
-        :active.sync="bottomNav"
+        v-model="bottomNav"
         :value="true"
         fixed
       >
         <v-btn
           color="teal"
-          flat
+          text
           value="search"
         >
           <span>Search</span>
@@ -87,7 +91,7 @@
 
         <v-btn
           color="teal"
-          flat
+          text
           value="attendees"
           v-on:click="findAttendees()"
         >
@@ -96,15 +100,24 @@
         </v-btn>
         <v-btn
           color="teal"
-          flat
+          text
           value="suggestions"
           v-on:click="findSuggestions()"
         >
           <span>Suggestions</span>
           <v-icon>mdi-exclamation</v-icon>
         </v-btn>
+        <v-btn
+          color="teal"
+          text
+          value="registered"
+          v-on:click="findRegistered()"
+        >
+          <span>Registrations</span>
+          <v-icon>mdi-av-timer</v-icon>
+        </v-btn>
 
-      </v-bottom-nav>
+      </v-bottom-navigation>
     </v-layout>
 
   </v-container>
@@ -143,11 +156,21 @@ export default {
     ...mapGetters('events', {
       getEventInStore: 'get'
     }),
+    ...mapGetters('event-member-registration', {
+      findEventMemberRegistrationInStore: 'find'
+    }),
     event () {
       return this.getEventInStore(this.eventId)
     },
     attendance () {
       return this.findEventMemberAttendanceInStore({
+        query: {
+          eventId: parseInt(this.eventId, 10)
+        }
+      }).data
+    },
+    registrationRecords () {
+      return this.findEventMemberRegistrationInStore({
         query: {
           eventId: parseInt(this.eventId, 10)
         }
@@ -165,6 +188,7 @@ export default {
           lowerLastName: 1
         }
       }
+      console.log(query)
 
       if (this.bottomNav === 'attendees') {
         const memberIds = []
@@ -182,6 +206,15 @@ export default {
           { lowerNickname: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } },
           { lowerLastName: { $regex: '^' + this.escapeRegExp(this.search.toLowerCase()) } }
         ]
+      } else if (this.bottomNav === 'registered') {
+        const memberIds = []
+        this.registrationRecords.forEach(function (registration) {
+          memberIds.push(registration.memberId)
+        })
+        console.log('using member ids: ', memberIds, this.registrationRecords)
+        query.id = {
+          $in: memberIds
+        }
       } else {
         return []
       }
@@ -200,6 +233,9 @@ export default {
     }),
     ...mapActions('events', {
       findEvents: 'find'
+    }),
+    ...mapActions('event-member-registration', {
+      findEventMemberRegistrations: 'find'
     }),
 
     escapeRegExp (string) {
@@ -248,7 +284,7 @@ export default {
       this.startLoading()
       const query = {
         gymId: this.gymId,
-        $limit: 50,
+        $limit: 1000,
         $include: [{
           model: 'event-member-attendance',
           where: { eventId: this.eventId }
@@ -261,7 +297,7 @@ export default {
 
     async findSuggestions () {
       this.startLoading()
-
+      console.log('finding suggestions...')
       const attendedAfter = moment().subtract(15, 'days')
       const query = {
         $limit: 50,
@@ -273,6 +309,22 @@ export default {
 
       this.suggestions = await this.findGymMembers({ query })
       //      console.log('suggestions: ', this.suggestions)
+      this.stopLoading()
+    },
+
+    async findRegistered () {
+      this.startLoading()
+      const query = {
+        gymId: this.gymId,
+        $limit: 1000,
+        $include: [{
+          model: 'event-member-registration',
+          where: { eventId: this.eventId }
+        }]
+      }
+
+      await this.findGymMembers({ query })
+
       this.stopLoading()
     },
 
@@ -298,6 +350,7 @@ export default {
     }, 300)
   },
   watch: {
+
     attendance: {
       handler (newAttendance, old) {
         const attendanceMap = []
@@ -319,11 +372,17 @@ export default {
         id: this.eventId
       }
     })
-    // TODO: now this is hardcoded at 50...need something better!
+    // TODO: now this is hardcoded at 1000...need something better!
     this.findMemberEventAttendance({
       query: {
         eventId: this.eventId,
-        $limit: 50
+        $limit: 1000
+      }
+    })
+    this.findEventMemberRegistrations({
+      query: {
+        eventId: this.eventId,
+        $limit: 1000
       }
     })
   }

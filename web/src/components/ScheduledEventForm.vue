@@ -17,6 +17,15 @@
             v-model="form.description"/>
         </v-flex>
 
+        <v-flex xs12 md12>
+          <v-text-field
+            class="purple-input"
+            label="Maximum Attendance (optional)"
+            :rules="[rules.integer]"
+            :clearable="true"
+            v-model="form.maximumAttendance"/>
+        </v-flex>
+
         <!--TODO: add parts of mdc-form-field ?-->
 
         <v-flex xs12 sm6 md4>
@@ -25,8 +34,6 @@
             v-model="modalStartDate"
             :return-value.sync="form.startDate"
             persistent
-            lazy
-            full-width
             width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -40,8 +47,8 @@
             </template>
             <v-date-picker v-model="form.startDate" scrollable>
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalStartDate= false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
+              <v-btn text color="primary" @click="modalStartDate= false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -52,8 +59,6 @@
             v-model="modalEndDate"
             :return-value.sync="form.endDate"
             persistent
-            lazy
-            full-width
             width="290px">
             <template v-slot:activator="{ on }">
               <v-text-field
@@ -66,8 +71,8 @@
             </template>
             <v-date-picker v-model="form.endDate" scrollable>
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalEndDate = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
+              <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -78,8 +83,6 @@
             v-model="modalStartTime"
             :return-value.sync="form.startTime"
             persistent
-            lazy
-            full-width
             width="290px"
           >
             <template v-slot:activator="{ on }">
@@ -99,8 +102,8 @@
               full-width
             >
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalStartTime = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
+              <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
@@ -110,8 +113,6 @@
             v-model="modalEndTime"
             :return-value.sync="form.endTime"
             persistent
-            lazy
-            full-width
             width="290px"
           >
             <template v-slot:activator="{ on }">
@@ -131,8 +132,8 @@
               full-width
             >
               <v-spacer></v-spacer>
-              <v-btn flat color="primary" @click="modalEndTime = false">Cancel</v-btn>
-              <v-btn flat color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
+              <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
+              <v-btn text color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
@@ -143,7 +144,7 @@
           </div>
         </v-container>
 
-        <v-flex xs12 text-xs-right>
+        <v-flex xs12 text-right>
           <v-btn
             class="mx-0 font-weight-light"
             color="success"
@@ -158,6 +159,7 @@
 </template>
 
 <script>
+import { isNil } from 'lodash'
 import moment from 'moment'
 import { RRule, rrulestr } from 'rrule'
 import { EventBus } from './../event-bus.js'
@@ -189,6 +191,7 @@ export default {
       form: {
         title: '',
         description: '',
+        maximumAttendance: null,
         startDate: null,
         startTime: null,
         endDate: null,
@@ -201,7 +204,12 @@ export default {
       modalStartTime: false,
       modalEndTime: false,
       rules: {
-        required: value => !!value || 'Required.'
+        required: value => !!value || 'Required.',
+        integer: value => {
+          const pattern = /^\d.*$/
+          // console.log(value, pattern.test(value))
+          return isNil(value) || value.length === 0 || pattern.test(value) || 'Invalid.'
+        }
       }
     }
   },
@@ -219,6 +227,11 @@ export default {
       if (se.description) {
         this.form.description = se.description
       }
+
+      if (se.maximumAttendance !== undefined) {
+        this.form.maximumAttendance = se.maximumAttendance
+      }
+
       if (se.startDate) {
         this.form.startDate = moment(se.startDate).format('YYYY-MM-DD')
       }
@@ -297,6 +310,7 @@ export default {
 
       se.title = this.form.title
       se.description = this.form.description
+      se.maximumAttendance = this.form.maximumAttendance
 
       // TODO: timezone should come from the gym
       se.timezone = 'America/Chicago'

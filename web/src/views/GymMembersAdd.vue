@@ -64,10 +64,8 @@
                           v-model="dateOfBirthMenu"
                           :close-on-content-click="false"
                           :nudge-right="40"
-                          lazy
                           transition="scale-transition"
                           offset-y
-                          full-width
                           min-width="290px"
                         >
                           <template v-slot:activator="{ on }">
@@ -265,7 +263,7 @@
                             :customStyle="{ border: 'black 3px solid' }"
 
                           />
-                          <v-flex xs12 text-xs-right>
+                          <v-flex xs12 text-right>
                             <v-btn
                               class="mx-0 font-weight-light"
                               color="normal"
@@ -310,7 +308,7 @@ export default {
     return {
       windowWidth: window.innerWidth,
       stepperState: [true, true, true, true],
-      e1: 0,
+      e1: 1,
       gym: { 'memberTags': [] },
       member: {
         firstName: '',

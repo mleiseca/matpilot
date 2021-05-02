@@ -1,15 +1,6 @@
 // var webpack = require('webpack')
 
 module.exports = {
-  configureWebpack: {
-    optimization: {
-      splitChunks: {
-        chunks: 'all',
-        minSize: 10000,
-        maxSize: 512000
-      }
-    }
-  }
   // ,
   // pluginOptions: {
   //   webpackBundleAnalyzer: {
@@ -20,4 +11,17 @@ module.exports = {
   //   },
   //
   // }
+  configureWebpack: {
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        minSize: 10000,
+        maxSize: 512000
+      }
+    }
+  },
+
+  transpileDependencies: [
+    'vuetify'
+  ]
 }

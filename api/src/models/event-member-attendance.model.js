@@ -21,7 +21,6 @@ module.exports = function (app) {
     ]
   })
 
-  // eslint-disable-next-line no-unused-vars
   eventMemberAttendance.associate = function (models) {
     eventMemberAttendance.belongsTo(models.gyms)
     eventMemberAttendance.belongsTo(models.events)

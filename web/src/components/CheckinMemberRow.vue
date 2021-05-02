@@ -1,12 +1,12 @@
 <template>
-  <v-list-tile v-on:click='presentChange()'>
-    <v-list-tile-action >
+  <v-list-item v-on:click='presentChange()'>
+    <v-list-item-action >
       <transition name="bounce">
         <v-icon color="pink" v-if="present">mdi-check-bold</v-icon>
       </transition>
-    </v-list-tile-action>
+    </v-list-item-action>
 
-    <v-list-tile-content>
+    <v-list-item-content>
       <template v-if="member.nickname">
         {{ member.nickname }}
       </template>
@@ -14,9 +14,9 @@
         {{ member.firstName }}
       </template>
        {{ member.lastName }}
-    </v-list-tile-content>
+    </v-list-item-content>
 
-  </v-list-tile>
+  </v-list-item>
 </template>
 
 <script>

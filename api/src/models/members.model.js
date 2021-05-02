@@ -87,6 +87,7 @@ module.exports = function (app) {
     members.belongsTo(models.gyms)
     members.belongsTo(models.users, {foreignKey: 'createdBy'})
     members.hasMany(models.event_member_attendance, {foreignKey: {allowNull: false}} )
+    members.hasMany(models.event_member_registration, {foreignKey: {allowNull: false}} )
   }
 
   return members

@@ -1,3 +1,5 @@
+const lookupUserGyms = require('./services/users/lookupUserMemberGyms')
+
 module.exports = function(app) {
   if(typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -24,7 +26,7 @@ module.exports = function(app) {
       // Add it to the authenticated user channel
       app.channel('authenticated').join(connection)
 
-      // console.log(user);
+      // Subscribe to gyms where I am admin/staff
       const userGymRoleModel = app.services['user-gym-role'].Model
 
       userGymRoleModel.findAll({
@@ -35,6 +37,13 @@ module.exports = function(app) {
         // console.log(gymRoles)
         gymRoles.forEach(userGymRole => {
           app.channel(`gyms/${userGymRole.gymId}`).join(connection)
+        })
+      })
+
+      // Subscribe to gyms where I am member
+      lookupUserGyms(app.get('sequelizeClient'), user).then(function(membersGroupedByGym) {
+        membersGroupedByGym.forEach(memberList => {
+          app.channel(`gyms/${memberList.gymId}`).join(connection)
         })
       })
 
@@ -68,11 +77,12 @@ module.exports = function(app) {
   // });
 
 
-  // maybe 'user-gym-role', members, member-rank-history, 'event-member-attendance', should only be for admin users?
-  const servicesWithGymId = ['event-member-attendance', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
+  // TODO: maybe 'user-gym-role', members, member-rank-history, 'event-member-attendance', should only be for admin users?
+  const servicesWithGymId = ['event-member-attendance', 'event-member-registration', 'events', 'gyms', 'members', 'member-rank-history', 'scheduled-events', 'user-gym-role']
 
   servicesWithGymId.forEach(function(service) {
     app.service(service).publish((data) => {
+      // TODO - there should be admin vs non-admin channels here - otherwise we are sending a bunch of stuff to anyone at the gym
       return app.channel(`gyms/${data.gymId}`)
     })
   })

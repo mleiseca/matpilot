@@ -25,7 +25,7 @@
       <v-container grid-list-xl>
         <v-layout wrap>
           <v-flex xs12>
-            <div class="text-xs-center body-2 text-uppercase sidebar-filter">Sidebar Filters</div>
+            <div class="text-center text-body-2 text-uppercase sidebar-filter">Sidebar Filters</div>
 
             <v-layout justify-center>
               <v-avatar
@@ -42,7 +42,7 @@
           <v-flex
             xs12
           >
-            <div class="text-xs-center body-2 text-uppercase sidebar-filter">Images</div>
+            <div class="text-center text-body-2 text-uppercase sidebar-filter">Images</div>
           </v-flex>
           <v-flex
             v-for="img in images"
@@ -78,7 +78,7 @@
             </v-btn>
           </v-flex>
           <v-flex xs12>
-            <div class="text-xs-center body-2 text-uppercase">
+            <div class="text-center text-body-2 text-uppercase">
               <div class=" sidebar-filter">
                 Thank You for Sharing!
               </div>

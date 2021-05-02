@@ -7,8 +7,8 @@
           text="">
           <v-data-table
             :headers="headers"
-            :items="scheduledEvents"
-            hide-actions>
+            :items="gymScheduledEvents"
+            hide-default-footer>
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
             <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
@@ -21,9 +21,10 @@
                 v-text="header.text"
               />
             </template>
+
             <template
-              slot="items"
-              slot-scope="{ item }">
+              v-slot:item=" {item } "
+              >
               <tr @click="navigateToScheduledEvent"
                   :data-scheduled-event-id="item.id">
                 <td>{{ item.title }}</td>
@@ -46,14 +47,15 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
 import { rrulestr } from 'rrule'
 import moment from 'moment'
+
+import fetchGymScheduledEvents from '../mixins/fetchGymScheduledEvents'
 
 // todo: search?
 export default {
   name: 'GymScheduledEvents',
-  props: ['gymId'],
+  mixins: [fetchGymScheduledEvents],
   data () {
     return {
       headers: [
@@ -72,22 +74,8 @@ export default {
       ]
     }
   },
-  computed: {
-    ...mapGetters('scheduled-events', {
-      findScheduledEventsInStore: 'find'
-    }),
-    scheduledEvents () {
-      return this.findScheduledEventsInStore({
-        query: {
-          gymId: parseInt(this.gymId, 10)
-        }
-      }).data
-    }
-  },
+
   methods: {
-    ...mapActions('scheduled-events', {
-      findScheduledEvents: 'find'
-    }),
     navigateToAddScheduledEvent: function () {
       this.$router.push({ name: 'gym-scheduled-event-add', params: { gymId: this.gymId } })
     },
@@ -102,15 +90,6 @@ export default {
         return moment(scheduledEvent.startDate).format('MMMM D, YYYY')
       }
     }
-  },
-  mounted () {
-    this.findScheduledEvents({
-      query: {
-        $sort: { createdAt: -1 },
-        $limit: 25,
-        gymId: this.gymId
-      }
-    })
   }
 }
 </script>

@@ -14,6 +14,15 @@ module.exports = function (app) {
       type: DataTypes.STRING,
       allowNull: true
     },
+    maximumAttendance: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
+    registrationCount: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
     timezone: {
       type: DataTypes.STRING,
       allowNull: false
