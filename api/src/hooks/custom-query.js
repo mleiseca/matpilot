@@ -13,7 +13,7 @@ function customQuery(options) {
       return
     }
     delete hook.params.query['$customQuery']
-    console.log('running custom query....', queryName.type)
+    // console.log('running custom query....', queryName.type)
     const sequelize = hook.app.get('sequelizeClient')
 
     const queryOptions = {}
@@ -30,8 +30,8 @@ function customQuery(options) {
     }
 
     const query = queryMap[queryName.type]
-    console.log('queryOptions', queryOptions)
-    console.log('query', query, queryName)
+    // console.log('queryOptions', queryOptions)
+    // console.log('query', query, queryName)
 
     return sequelize.query(query, queryOptions).then(results => {
       hook.result = results // this tells feathers to skip the DATA STORE step above

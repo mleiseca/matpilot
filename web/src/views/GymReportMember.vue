@@ -31,7 +31,6 @@
                   {{ item.training_time | getHoursSpent }}
                 </template>
 
-
               </v-data-table>
             </v-row>
           </v-container>
@@ -42,15 +41,15 @@
 </template>
 
 <script>
-import moment from "moment";
-import {mapActions} from "vuex";
+import moment from 'moment'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'MembersReport.vue',
   props: {
-    gymId: [String, Number],
+    gymId: [String, Number]
   },
-  data() {
+  data () {
     return {
       fromDateMenu: false,
       fromDateVal: moment().subtract(6, 'month').format('YYYY-MM-DD'),
@@ -94,7 +93,7 @@ export default {
       ]
     }
   },
-  mounted: async function() {
+  mounted: async function () {
     await this.loadReport()
   },
   filters: {
@@ -129,7 +128,7 @@ export default {
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
-    loadReport: async function() {
+    loadReport: async function () {
       this.loading = true
       const query = {
         $limit: 10000,
@@ -142,7 +141,7 @@ export default {
 
       const extractedTags = []
       const processedResponse = []
-      for (let i =0; i<response.length; i++) {
+      for (let i = 0; i < response.length; i++) {
         let member = response[i]
 
         // attendance_count: (...)
@@ -153,7 +152,7 @@ export default {
         // rankAwardDate: (...)
         // tags: (...)
         // training_time_in_hours: (...)
-        for (let j = 0; j<member.tags.length; j++) {
+        for (let j = 0; j < member.tags.length; j++) {
           let tag = member.tags[j]
           if (!extractedTags.includes(tag)) {
             extractedTags.push(tag)
@@ -163,16 +162,15 @@ export default {
         processedResponse.push(member)
       }
 
-
       this.reportData = processedResponse
       console.log(response)
 
       // tags
       this.headers = this.baseHeaders
-      for(let i=0; i< extractedTags.length; i++) {
+      for (let i = 0; i < extractedTags.length; i++) {
         this.headers.push({
-          "text": extractedTags[i],
-          "value": 'tag_' + extractedTags[i]
+          'text': extractedTags[i],
+          'value': 'tag_' + extractedTags[i]
         })
       }
       this.loading = false

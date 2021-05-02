@@ -1,5 +1,5 @@
 
-const userMemberQuery = 'select "gymId", id, "firstName", "lastName" From members where email = $email';
+const userMemberQuery = 'select "gymId", id, "firstName", "lastName" From members where email = $email'
 
 module.exports = async function(sequelize, user) {
 

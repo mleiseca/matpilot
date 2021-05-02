@@ -85,15 +85,15 @@
 </template>
 
 <script>
-import moment from "moment";
-import {mapActions} from "vuex";
+import moment from 'moment'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'GymReportsSchedule.vue',
   props: {
-    gymId: [String, Number],
+    gymId: [String, Number]
   },
-  data() {
+  data () {
     return {
       fromDateMenu: false,
       fromDateVal: moment().subtract(6, 'month').format('YYYY-MM-DD'),
@@ -108,18 +108,18 @@ export default {
           text: 'Class name',
           value: 'scheduled_event_title'
         },
-        {text: "Number of classes", value: "number_of_classes"},
-        {text: "Total student visits", value: "total_students"},
-        {text: "Unique students", value: "unique_students"},
+        { text: 'Number of classes', value: 'number_of_classes' },
+        { text: 'Total student visits', value: 'total_students' },
+        { text: 'Unique students', value: 'unique_students' }
       ]
     }
   },
   computed: {
-    fromDateDisp() {
-      return this.fromDateVal;
+    fromDateDisp () {
+      return this.fromDateVal
     },
-    toDateDisp() {
-      return this.toDateVal;
+    toDateDisp () {
+      return this.toDateVal
     }
   },
   methods: {
@@ -143,8 +143,8 @@ export default {
 
       this.reportData = response[0]
       this.loading = false
-      }
     }
+  }
 }
 </script>
 

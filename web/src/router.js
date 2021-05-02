@@ -213,7 +213,6 @@ router.beforeEach(function (to, from, next) {
         let userGymRole = userGyms[i]
         // console.log("Checking", userGymRole.role, userGymRole.gymId)
         if ((String(userGymRole.gymId) === String(gymId)) && roles.includes(userGymRole.role)) {
-
           next()
           return
         }

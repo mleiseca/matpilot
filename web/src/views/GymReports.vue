@@ -21,13 +21,13 @@
 </template>
 
 <script>
-  export default {
-    name: 'GymReports',
-    props: ['gymId'],
-    data () {
-      return {}
-    }
+export default {
+  name: 'GymReports',
+  props: ['gymId'],
+  data () {
+    return {}
   }
+}
 </script>
 
 <style scoped>

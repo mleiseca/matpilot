@@ -211,7 +211,7 @@ export default {
         this.registrationRecords.forEach(function (registration) {
           memberIds.push(registration.memberId)
         })
-        console.log('using member ids: ' , memberIds, this.registrationRecords)
+        console.log('using member ids: ', memberIds, this.registrationRecords)
         query.id = {
           $in: memberIds
         }

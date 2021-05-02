@@ -67,10 +67,10 @@ async function updateMemberWeeklyRegistrationCount(context) {
     // [ [ { registration_count: '3',
     //   week_start: 2021-04-12T00:00:00.000Z } ],
 
-    console.log(results[0][0])
+    // console.log(results[0][0])
     const registrationCount = parseInt(results[0][0]['registration_count'], 10)
     const weekStartDate = results[0][0]['week_start']
-    console.log({ memberId, gymId, registrationCount, weekStartDate})
+    // console.log({ memberId, gymId, registrationCount, weekStartDate})
     await context.app.service('member-weekly-registration').create({
       memberId, gymId, registrationCount, weekStartDate
     })

@@ -1,4 +1,4 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
+const { authenticate } = require('@feathersjs/authentication').hooks
 const mapCreateToUpsert = require('../../hooks/map-create-to-upsert')
 
 module.exports = {
@@ -37,4 +37,4 @@ module.exports = {
     patch: [],
     remove: []
   }
-};
+}

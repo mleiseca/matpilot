@@ -38,7 +38,7 @@
 <script>
 import eventCreation from '../../mixins/eventCreation'
 import { isUndefined, isNil } from 'lodash'
-import {EventBus} from "../../event-bus";
+import { EventBus } from '../../event-bus'
 
 export default {
   name: 'UserGymEventRegistrationRow',
