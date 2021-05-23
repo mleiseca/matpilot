@@ -17,6 +17,7 @@
                 <week-picker
                   v-bind:startDate.sync="earliestEventDate"
                   v-bind:allowPastWeeks="false"
+                  v-bind:maxStartDate="maxStartDate"
                   v-on:week-change="weekChange"/>
 
                 <span v-if="registrationsRemaining !== null">
@@ -55,9 +56,12 @@ export default {
   data () {
     let start = moment().startOf('isoWeek')
     let end = moment().startOf('isoWeek').add(7, 'days')
+    // maxStartDate will remain constant, even as earliestEventDate/latestEventDate move
+    let maxStartDate = moment().startOf('isoWeek').add(3, 'weeks')
     return {
       earliestEventDate: start,
       latestEventDate: end,
+      maxStartDate: maxStartDate,
       registrationsRemaining: null
     }
   },
