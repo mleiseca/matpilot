@@ -100,6 +100,7 @@ export default {
     },
     search: {
       handler () {
+        this.options.page = 1
         this.dataFromApi()
       }
     }
@@ -134,7 +135,7 @@ export default {
       if (page > 1) {
         const isDescSkip = sortDesc.length === 0 ? false : sortDesc[0]
 
-        query.$skip = (isDescSkip ? -1 : 1) * (page - 1)
+        query.$skip = (isDescSkip ? -1 : 1) * (page - 1) * itemsPerPage
       }
       if (this.search != null && this.search.length > 1) {
         query['$or'] = [
