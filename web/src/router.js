@@ -44,6 +44,34 @@ let router = new Router({
       meta: { requiresGymRole: STAFF }
     },
     {
+      name: 'gym-waivers',
+      path: '/gyms/:gymId/waivers',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaivers.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+
+    {
+      name: 'gym-waivers-add',
+      path: '/gyms/:gymId/waivers/add',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaiversAdd.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+    {
+      name: 'gym-waivers-view',
+      path: '/gyms/:gymId/waivers/:gymWaiverId',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaiversView.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+    //   this.$router.push({ name: 'gym-waiver-add', params: { gymId: this.gymId } })
+    // },
+    // navigateToWaiver: function (event) {
+    // const waiverId = event.currentTarget.dataset['waiverId']
+    // this.$router.push({ name: 'gym-waiver-view', params: { gymId: this.gymId, scheduledEventId: waiverId } })
+
+    {
       name: 'gym-reports',
       path: '/gyms/:gymId/reports',
       component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymReports.vue'),

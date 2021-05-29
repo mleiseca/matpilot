@@ -190,6 +190,17 @@ export default {
             text: 'Reports',
             icon: 'mdi-file-chart'
           })
+
+          this.gymLinks.push({
+            to: {
+              name: 'gym-waivers',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Waivers',
+            icon: 'mdi-clipboard-text'
+          })
         }
       }
     },

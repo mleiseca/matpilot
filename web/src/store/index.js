@@ -16,6 +16,8 @@ export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   plugins: [
     service('gyms'),
+    service('gym-waivers'),
+    service('gym-waiver-member-signatures'),
     service('members'),
     service('member-rank-history'),
     service('events'),

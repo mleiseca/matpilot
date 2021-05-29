@@ -22,6 +22,7 @@
     "moment-timezone": "^0.5.33",
     "rrule": "^2.6.8",
     "socket.io-client": "^2.4.0",
+    "tiptap-vuetify": "^2.24.0",
     "vue": "^2.6.12",
     "vue-html2canvas": "0.0.4",
     "vue-moment": "^4.1.0",
