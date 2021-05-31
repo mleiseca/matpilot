@@ -25,6 +25,7 @@ module.exports = function (app) {
   // eslint-disable-next-line no-unused-vars
   gymWaivers.associate = function (models) {
     gymWaivers.belongsTo(models.gyms)
+    gymWaivers.belongsTo(models.users, {foreignKey: 'createdBy'})
   };
 
   return gymWaivers;

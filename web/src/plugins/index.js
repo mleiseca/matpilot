@@ -1,4 +1,6 @@
 import './moment'
 import './vuetify'
 import './tiptap'
+import './vue-scrollto'
+import './cookies'
 import './signature-pad'

@@ -56,17 +56,6 @@
           <v-checkbox class="tagDisplay" v-model="member.tags" :label="tagType.name" :value="tagType.tag" :disabled="true"></v-checkbox>
         </div>
       </v-flex>
-
-      <v-flex xs12 v-if="member.waiverSignedUrl">
-      <div class="leadingIcon">
-        <v-icon>mdi-file-document-box-outline</v-icon>
-      </div>
-      <div class="dataElement">
-        <a :href="member.waiverSignedUrl" target="_blank">
-          Signed waiver
-        </a>
-      </div>
-    </v-flex>
     </v-layout>
   </v-container>
 

@@ -1,72 +1,35 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-  <v-form ref="form">
 
-    <v-container class="pa-0 lighten-5">
-      <v-stepper v-model="currentWaiver" vertical>
-          <template v-for="(waiver, index) in gymWaivers">
-            <v-stepper-step
-              :key="`${index + 1}-step`"
-              :complete="currentWaiver > index + 1"
-              :step="index + 1 "
-              class="always_display"
-            >
-              {{ waiver.name }}
-            </v-stepper-step>
-
-          <v-stepper-content
-            pa-0
-            :key="`${index + 1}-content`"
-            :step="index + 1"
+  <v-container class="pa-0 lighten-5" ref="waiversContainer">
+    <v-stepper  outlined flat elevation-0 v-model="currentWaiver" vertical >
+        <template v-for="(waiverAndSignature, index) in waiverAndSignatures">
+          <v-stepper-step
+            v-on:click="maybeOpenSignedDoc(index)"
+            :key="`${index + 1}-step`"
+            :complete="currentWaiver > index + 1 || (waiverAndSignature.signature !== undefined)"
+            :step="index + 1 "
+            class="always_display"
+            editable
+            edit-icon="$complete"
+            :rules="[() => waiverAndSignature.signature !== undefined]"
           >
-            <waiver-signature v-bind:waiver="waiver" v-bind:member="member"
+            {{ waiverAndSignature.waiver.name }}
+          </v-stepper-step>
+
+        <v-stepper-content
+          pa-0
+          :key="`${index + 1}-content`"
+          :step="index + 1"
+        >
+            <waiver-signature v-if="waiverAndSignature.signature === undefined"
+                              v-bind:waiver="waiverAndSignature.waiver"
+                              v-bind:member="member"
                               v-on:waiver-signature-save="waiverSaved"/>
+        </v-stepper-content>
+        </template>
 
-<!--            <v-btn-->
-<!--              color="primary"-->
-<!--              @click="nextStep(n)"-->
-<!--            >-->
-<!--              Continue-->
-<!--            </v-btn>-->
-
-<!--            <v-btn text>-->
-<!--              Cancel-->
-<!--            </v-btn>-->
-          </v-stepper-content>
-          </template>
-
-      </v-stepper>
-    </v-container>
-<!--      <v-row no-gutters>-->
-
-<!--      </v-row>-->
-
-
-<!--        <v-text-field-->
-<!--          class="purple-input"-->
-<!--          label="Name"-->
-<!--          :rules="[rules.required]"-->
-<!--          required-->
-<!--          autocomplete="off"-->
-<!--          v-model="waiverCopy.name"/>-->
-<!--      </v-row>-->
-
-<!--      <v-row no-gutters>-->
-<!--        <tiptap-vuetify-->
-<!--          v-model="waiverCopy.contents"-->
-<!--          :extensions="extensions"-->
-<!--        />-->
-<!--      </v-row>-->
-
-<!--      <v-row>-->
-<!--        <v-flex xs6 md3>-->
-<!--          <v-btn-->
-<!--            color="success"-->
-<!--            @click="save">-->
-<!--            Save-->
-<!--          </v-btn>-->
-<!--        </v-flex>-->
-<!--      </v-row>-->
-  </v-form>
+    </v-stepper>
+  </v-container>
 </template>
 
 <script>
@@ -74,46 +37,82 @@
 
   import { isNil } from 'lodash'
   import fetchWaivers from "../mixins/fetchWaivers";
+  import fetchMemberWaivers from "../mixins/fetchMemberWaivers";
   import WaiverSignature from "./WaiverSignature";
 
   export default {
     name: 'MemberWaivers',
     components: {WaiverSignature},
-    mixins: [fetchWaivers],
+    mixins: [fetchWaivers, fetchMemberWaivers],
     props: {
-      member: { type: Object },
-      gymId: [String, Number]
+      member: {type: Object},
+      gymId: [String, Number],
+      alertUnsigned: {type: Boolean}
     },
     data () {
       return {
-        currentWaiver: 0
+        currentWaiver: 0,
+        waiverAndSignatures: []
       }
     },
 
     mounted: function () {
       const w = this.gymWaivers
       console.log('at mount time, gymwaivers is', w)
-      if (!isNil(w) && w.length > 0) {
+      if (!this.alertUnsigned && !isNil(w) && w.length > 0) {
         this.$nextTick(function () { this.currentWaiver = 1 })
       }
     },
     watch: {
-      member: function(m) {
-        console.log('got update on gymWaivers -> member', m)
+      memberId: function(m) {
+        console.log('got update on gymWaivers -> memberId', m)
       },
-      gymWaivers: function(){
-        console.log('got update on gymWaivers')
-        this.$nextTick(function () { this.currentWaiver = 1 })
+      gymWaivers: function(x){
+        console.log('got update on gymWaivers', x)
+        if (!this.alertUnsigned) {
+          this.$nextTick(function () {
+            this.currentWaiver = 1
+          })
+        }
+        this.updateMemberWaiverStatus()
+      },
+      memberWaivers: function(x) {
+        console.log('got update on memberWaivers', x)
+        this.updateMemberWaiverStatus()
       }
     },
     methods: {
+      maybeOpenSignedDoc(index) {
+        const waiverAndSig = this.waiverAndSignatures[index]
+        if (waiverAndSig.signature !== undefined && waiverAndSig.signature.waiverSignedUrl !== undefined) {
+          window.open(waiverAndSig.signature.waiverSignedUrl, '_blank');
+        }
+      },
+      updateMemberWaiverStatus() {
+        console.log('updating member waiver status')
+        const existSigsByWaiverId = new Map()
+        for (const memberSignture of this.memberWaivers) {
+          existSigsByWaiverId.set(memberSignture.gymWaiverId, memberSignture)
+        }
+        this.waiverAndSignatures = []
+        for (const waiver of this.gymWaivers) {
+
+          this.waiverAndSignatures.push({
+            waiver: waiver,
+            signature: existSigsByWaiverId.get(waiver.id)
+          })
+        }
+        console.log("this.waiverAndSignatures", this.waiverAndSignatures)
+      },
+
       waiverSaved: function(waiverSignature) {
-        console.log("Waiver saved", waiverSignature)
+        console.log("(MemberWaivers) Waiver saved", waiverSignature, this.currentWaiver, this.gymWaivers.length)
         if (this.currentWaiver === this.gymWaivers.length) {
           this.$emit('gym-waivers-signed')
         } else {
           this.currentWaiver = this.currentWaiver + 1
         }
+        this.$scrollTo(this.$refs.waiversContainer, 100, {})
       }
     }
   }

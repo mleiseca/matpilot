@@ -92,30 +92,40 @@ const queries = {
     '      sc.id = $currentEventId) ' +
     '  order by members."lowerFirstName" , members."lowerLastName" desc',
 
-  'MEMBER_REPORT': 'select\n' +
-    '    "firstName",\n' +
-    '    "lastName",\n' +
-    '    "dateOfBirth",\n' +
-    '    tags,\n' +
-    '    rank,\n' +
-    '    "rankAwardDate",\n' +
-    '    coalesce(attendance.training_time_in_hours, 0) as training_time_in_hours,\n' +
-    '    coalesce(attendance.attendance_count, 0) as attendance_count\n' +
-    'from\n' +
-    '    members m\n' +
-    'left outer join\n' +
-    '    (select\n' +
-    '         ema."memberId" as memberId,\n' +
-    '         EXTRACT(epoch FROM (sum(e."endDateTime" - e."startDateTime"))/3600)::int as training_time_in_hours,\n' +
-    '         count(e.id) as attendance_count\n' +
-    '     from event_member_attendance ema, events e\n' +
-    '     where\n' +
-    '             ema."eventId" = e.id\n' +
-    '       and e."gymId" = 4\n' +
-    '     group by ema."memberId") as attendance\n' +
-    'on attendance.memberId = m.id\n' +
-    'where\n' +
-    '    m."gymId" = $gymId'
+  'MEMBER_REPORT': `select
+                      "id",
+                      "firstName",
+                      "lastName",
+                      "dateOfBirth",
+                      tags,
+                      rank,
+                      "rankAwardDate",
+                      coalesce(attendance.training_time_in_hours, 0) as training_time_in_hours,
+                      coalesce(attendance.attendance_count, 0) as attendance_count,
+                      coalesce(waivers.signed_waivers, 0) as signed_waiver_count
+                    from
+                      members m
+                        left outer join
+                      (select
+                         ema."memberId" as memberId,
+                         EXTRACT(epoch FROM (sum(e."endDateTime" - e."startDateTime"))/3600)::int as training_time_in_hours,
+                         count(e.id) as attendance_count
+                       from event_member_attendance ema, events e
+                       where
+                         ema."eventId" = e.id
+                         and e."gymId" = $gymId
+                       group by ema."memberId") as attendance
+                      on attendance.memberId = m.id
+                        left outer join
+                      (select gwms."memberId" ,
+                              count(*) as signed_waivers
+                       from
+                         gym_waiver_member_signatures gwms
+                       where gwms."gymId" = $gymId
+                       group by gwms."memberId") as waivers
+                      on waivers."memberId" = m.id
+                    where
+                      m."gymId" = $gymId`
 }
 
 

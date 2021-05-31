@@ -27,6 +27,7 @@ module.exports = function (app) {
     gymWaiverMemberSignature.belongsTo(models.gyms, {foreignKey: {allowNull: false}})
     gymWaiverMemberSignature.belongsTo(models.members, {foreignKey: {allowNull: false}})
     gymWaiverMemberSignature.belongsTo(models.gym_waivers, {foreignKey: {allowNull: false}})
+    gymWaiverMemberSignature.belongsTo(models.users, {foreignKey: 'createdBy'})
   };
 
   return gymWaiverMemberSignature;

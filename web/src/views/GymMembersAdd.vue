@@ -20,18 +20,11 @@
                                 :rules="[() => this.stepperState[2]]"
                                 >
                   Emergency Contact</v-stepper-step>
-                <v-stepper-step step="4"
-                                :rules="[() => this.stepperState[3]]"
-                                @click="validatePreviousSteps(4)"
-                                >
-                  Waivers
-                </v-stepper-step>
               </v-stepper-header>
 
               <v-stepper-items>
                 <!-------------------------- STEP 1 ------------------------------------------------------------------>
                 <v-stepper-content step="1">
-<!--                  <v-card class="mb-12" >-->
                     <v-form ref="formStep1">
                       <v-flex xs12 md12>
                         <v-text-field
@@ -191,7 +184,7 @@
 
                   <v-btn
                     color="primary"
-                    @click="validateCreateAndStep($refs.formStep3, 4)"
+                    @click="validateAndCreate($refs.formStep3)"
                   >
                     Continue
                   </v-btn>
@@ -201,19 +194,16 @@
                 </v-stepper-content>
 
                 <!-------------------------- STEP 4 ------------------------------------------------------------------>
-                <v-stepper-content step="4" class="pa-0">
-<!--                  <v-card-->
-<!--                    class="mb-12"-->
-<!--                  >-->
-                    <v-form ref="formStep4">
+<!--                <v-stepper-content step="4" class="pa-0">-->
+<!--                    <v-form ref="formStep4">-->
 
-                      <member-waivers v-bind:gym-id="gymId"
-                                      v-bind:member="member"
-                                      v-on:gym-waivers-signed="gymWaiversSigned">
-                      </member-waivers>
-                    </v-form>
-<!--                  </v-card>-->
-                </v-stepper-content>
+<!--                      <member-waivers v-bind:gym-id="gymId"-->
+<!--                                      v-bind:member="member"-->
+<!--                                      v-bind:alert-unsigned="false"-->
+<!--                                      v-on:gym-waivers-signed="gymWaiversSigned">-->
+<!--                      </member-waivers>-->
+<!--                    </v-form>-->
+<!--                </v-stepper-content>-->
               </v-stepper-items>
             </v-stepper>
         </v-flex>
@@ -236,7 +226,7 @@ export default {
   props: ['gymId'],
   data () {
     return {
-      stepperState: [true, true, true, true],
+      stepperState: [true, true, true],
       e1: 1,
       gym: { 'memberTags': [] },
       member: {
@@ -306,7 +296,7 @@ export default {
       this.stepperState[nextStep - 2] = true
       this.e1 = nextStep
     },
-    validateCreateAndStep: async function (form, nextStep) {
+    validateAndCreate: async function (form, nextStep) {
       if (!form.validate()) {
         this.stepperState[nextStep - 2] = false
         return
@@ -334,9 +324,7 @@ export default {
           EventBus.$emit('loading', { done: true })
           console.log('Got result:', result)
           this.member.id = result.id
-
-          this.stepperState[nextStep - 2] = true
-          this.e1 = nextStep
+          this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: result.id } })
         })
         .catch((e) => {
           console.log('** Login catch: ', e)

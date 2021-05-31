@@ -92,7 +92,7 @@
       },
       guardianContactName() {
         if (!isNil(this.member.guardianContacts) && this.member.guardianContacts.length > 0){
-          return this.member.guardianContacts[0].guardianContactName
+          return this.member.guardianContacts[0].guardianContactName || this.member.guardianContacts[0].name
         } else {
           return ""
         }
@@ -116,11 +116,15 @@
         }
         gymMemberWaiverSignature.waiverSignature = await this.readWaiverAsPng()
 
+        // This is sad, but needs to be emitted before saving. The issue is that this component is removed from the page
+        // when the update goes through....that removes the listener on the parent before the message can be sent
+        this.$emit('waiver-signature-save')
+
         this.$store.dispatch('gym-waiver-member-signatures/create', gymMemberWaiverSignature)
           .then((result) => {
             EventBus.$emit('loading', { done: true })
-            console.log('Got result:', result)
-            this.$emit('waiver-signature-save', result)
+            console.log('(waiver sig saved) Got result:', result)
+
             // this.stepperState[nextStep - 2] = true
             // this.e1 = nextStep
           })

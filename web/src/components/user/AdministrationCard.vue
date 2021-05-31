@@ -52,7 +52,7 @@ export default {
         query: {
           userId: this.$store.state.auth.user.id,
           $sort: { createdAt: -1 },
-          $limit: 25
+          $limit: 100
         }
       }).data
     }
@@ -68,7 +68,7 @@ export default {
       query: {
         userId: this.$store.state.auth.user.id,
         $sort: { createdAt: -1 },
-        $limit: 25
+        $limit: 100
       }
     })
   }
