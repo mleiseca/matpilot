@@ -13,6 +13,7 @@
                 :items="reportData"
                 class="elevation-1"
                 :loading="loading"
+                @click:row="navigateToMember"
               >
                 <template
                   v-slot:item.dateOfBirth="{ item }"
@@ -86,6 +87,10 @@ export default {
         {
           text: 'Attendance count',
           value: 'attendance_count'
+        },
+        {
+          text: 'Signed waiver count',
+          value: 'signed_waiver_count'
         }
       ],
       reportData: [],
@@ -128,6 +133,11 @@ export default {
     ...mapActions('members', {
       findGymMembers: 'find'
     }),
+    navigateToMember: function (member) {
+      console.log('Report - open member', member)
+      let routeData = this.$router.resolve({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: member.id } })
+      window.open(routeData.href, '_blank')
+    },
     loadReport: async function () {
       this.loading = true
       const query = {

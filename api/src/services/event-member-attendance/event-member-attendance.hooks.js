@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const customQuery = require('../../hooks/custom-query').customQuery
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGymWorkers, restrictAccessForMember} = require('../../hooks/authorization')
 
 const queries = {
   'ATTENDANCE_DURING_PERIOD':
@@ -22,13 +22,13 @@ const queries = {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'), restrictAccessForGym() ],
-    find: [customQuery({queries: queries})],
-    get: [],
-    create: [assignCreatedBy],
-    update: [],
-    patch: [],
-    remove: []
+    all: [ authenticate('jwt'),  ],
+    find: [restrictAccessForMember(), customQuery({queries: queries})],
+    get: [restrictAccessForMember()],
+    create: [restrictAccessForGymWorkers(), assignCreatedBy],
+    update: [restrictAccessForGymWorkers()],
+    patch: [restrictAccessForGymWorkers()],
+    remove: [restrictAccessForGymWorkers()]
   },
 
   after: {

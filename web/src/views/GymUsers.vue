@@ -74,7 +74,7 @@ export default {
         query: {
           gymId: parseInt(this.gymId, 10),
           $sort: { createdAt: -1 },
-          $limit: 25
+          $limit: 100
         }
       }).data
     }
@@ -96,7 +96,7 @@ export default {
     this.findUserGyms({
       query: {
         $sort: { createdAt: -1 },
-        $limit: 50,
+        $limit: 100,
         gymId: this.gymId
       }
     })

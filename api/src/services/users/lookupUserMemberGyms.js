@@ -1,5 +1,7 @@
 
-const userMemberQuery = 'select "gymId", id, "firstName", "lastName" From members where email = $email'
+const userMemberQuery =
+    `select m."gymId", m.id, m."firstName", m."lastName", m."guardianContacts", m."dateOfBirth"
+      From members m, gyms g where email = $email and m."gymId" = g.id and g.active = true`
 
 module.exports = async function(sequelize, user) {
 

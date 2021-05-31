@@ -10,6 +10,8 @@ const authmanagement = require('./authmanagement/authmanagement.service.js')
 const memberRankHistory = require('./member-rank-history/member-rank-history.service.js')
 const eventMemberRegistration = require('./event-member-registration/event-member-registration.service.js')
 const memberWeeklyRegistration = require('./member-weekly-registration/member-weekly-registration.service.js')
+const gymWaivers = require('./gym-waivers/gym-waivers.service.js');
+const gymWaiverMemberSignatures = require('./gym-waiver-member-signatures/gym-waiver-member-signatures.service.js');
 // eslint-disable-next-line no-unused-vars
 module.exports = function (app) {
   app.configure(gyms)
@@ -22,6 +24,8 @@ module.exports = function (app) {
   app.configure(userGymRole)
   app.configure(memberRankHistory)
   app.configure(memberWeeklyRegistration)
+  app.configure(gymWaivers);
+  app.configure(gymWaiverMemberSignatures);
 
   // https://github.com/feathersjs-ecosystem/feathers-sequelize/issues/20
   const sequelizeClient = app.get('sequelizeClient')

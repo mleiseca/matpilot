@@ -206,7 +206,7 @@ export default {
       rules: {
         required: value => !!value || 'Required.',
         integer: value => {
-          const pattern = /^\d.*$/
+          const pattern = /^\d*$/
           // console.log(value, pattern.test(value))
           return isNil(value) || value.length === 0 || pattern.test(value) || 'Invalid.'
         }
@@ -310,7 +310,7 @@ export default {
 
       se.title = this.form.title
       se.description = this.form.description
-      se.maximumAttendance = this.form.maximumAttendance
+      se.maximumAttendance = this.form.maximumAttendance || null
 
       // TODO: timezone should come from the gym
       se.timezone = 'America/Chicago'

@@ -165,14 +165,16 @@ export default {
     attendance () {
       return this.findEventMemberAttendanceInStore({
         query: {
-          eventId: parseInt(this.eventId, 10)
+          eventId: parseInt(this.eventId, 10),
+          $limit: 1000
         }
       }).data
     },
     registrationRecords () {
       return this.findEventMemberRegistrationInStore({
         query: {
-          eventId: parseInt(this.eventId, 10)
+          eventId: parseInt(this.eventId, 10),
+          $limit: 1000
         }
       }).data
     },
@@ -186,7 +188,8 @@ export default {
         $sort: {
           lowerFirstName: 1,
           lowerLastName: 1
-        }
+        },
+        $limit: 1000
       }
       console.log(query)
 
@@ -300,7 +303,7 @@ export default {
       console.log('finding suggestions...')
       const attendedAfter = moment().subtract(15, 'days')
       const query = {
-        $limit: 50,
+        $limit: 100,
         $customQuery: {
           type: 'SUGGESTED_ATTENDEES',
           bind: { currentEventId: this.eventId, attendedAfter: attendedAfter.format('YYYY-MM-DD') }

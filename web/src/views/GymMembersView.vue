@@ -1,6 +1,6 @@
 <template>
 
-  <v-container fill-height fluid grid-list-xl pt-0>
+  <v-container fill-height fluid grid-list-xl ref="memberContainer">
     <v-layout  justify-center wrap>
       <v-flex xs12 md8>
         <material-card
@@ -23,7 +23,14 @@
               v-bind:member="member"
               v-bind:gym="gym"></member-view>
 
-            <v-divider></v-divider>
+            <div class="pt-10 pb-10">
+            <member-waivers v-bind:gym-id="gymId"
+                            v-bind:member="member"
+                            v-bind:alert-unsigned="true"
+                            v-on:gym-waivers-signed="gymWaiversSigned">
+            </member-waivers>
+
+            </div>
 
             <member-rank
               :member="member"
@@ -76,6 +83,8 @@ export default {
     await this.getMember(this.memberId).then(result => {
       this.member = result
     })
+
+    this.$scrollTo(this.$refs.memberContainer, 100, {})
   },
   methods: {
     ...mapActions('gyms', {
@@ -84,6 +93,10 @@ export default {
     ...mapActions('members', {
       getMember: 'get'
     }),
+    gymWaiversSigned: function () {
+      console.log('MEMBER VIEW: gymWaiversSigned')
+      this.$scrollTo(this.$refs.memberContainer, 100, {})
+    },
     saveMemberAndDisplay: function (event) {
       console.log('Saving member and redisplaying:', event)
       event.save()

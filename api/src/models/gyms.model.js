@@ -31,6 +31,10 @@ module.exports = function (app) {
       type: DataTypes.INTEGER,
       allowNull: true
     },
+    registrationMessage: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    }
   }, {
     hooks: {
       beforeCount(options) {

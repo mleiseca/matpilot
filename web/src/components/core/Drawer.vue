@@ -83,6 +83,8 @@
 // Utilities
 import { mapMutations, mapState, mapActions } from 'vuex'
 import { EventBus } from '../../event-bus'
+import client from '../../api/feathers-client'
+import store from '../../store'
 
 export default {
   data: () => ({
@@ -190,11 +192,23 @@ export default {
             text: 'Reports',
             icon: 'mdi-file-chart'
           })
+
+          this.gymLinks.push({
+            to: {
+              name: 'gym-waivers',
+              params: {
+                id: gymId
+              }
+            },
+            text: 'Waivers',
+            icon: 'mdi-clipboard-text'
+          })
         }
       }
     },
-    isAdminForGym (gymId) {
-      const userGyms = this.$store.state.auth.user.user_gym_roles
+    async isAdminForGym (gymId) {
+      let user = await client.service('users').get(store.state.auth.user.id)
+      const userGyms = user.user_gym_roles
       console.log('user gyms: ', userGyms)
       if (!userGyms) {
         return false

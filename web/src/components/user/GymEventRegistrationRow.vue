@@ -158,7 +158,7 @@ export default {
     atRegistrationLimit: function () {
       let memberIdsToEvaluate = this.memberIds || [this.memberId]
 
-      console.log('memberIdsToEvaluate', memberIdsToEvaluate)
+      // console.log('memberIdsToEvaluate', memberIdsToEvaluate)
       for (let i = 0; i < memberIdsToEvaluate.length; i++) {
         const memberId = memberIdsToEvaluate[i]
         let registrationsRemaining = this.registrationsRemainingByMemberId[memberId]

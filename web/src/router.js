@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import store from './store'
 import { get } from 'lodash'
 import { EventBus } from './event-bus'
+import client from './api/feathers-client'
 
 Vue.use(Router)
 
@@ -43,6 +44,34 @@ let router = new Router({
       props: true,
       meta: { requiresGymRole: STAFF }
     },
+    {
+      name: 'gym-waivers',
+      path: '/gyms/:gymId/waivers',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaivers.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+
+    {
+      name: 'gym-waivers-add',
+      path: '/gyms/:gymId/waivers/add',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaiversAdd.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+    {
+      name: 'gym-waivers-view',
+      path: '/gyms/:gymId/waivers/:gymWaiverId',
+      component: () => import(/* webpackChunkName: "adminUsers" */ './views/GymWaiversView.vue'),
+      props: true,
+      meta: { requiresGymRole: ADMIN }
+    },
+    //   this.$router.push({ name: 'gym-waiver-add', params: { gymId: this.gymId } })
+    // },
+    // navigateToWaiver: function (event) {
+    // const waiverId = event.currentTarget.dataset['waiverId']
+    // this.$router.push({ name: 'gym-waiver-view', params: { gymId: this.gymId, scheduledEventId: waiverId } })
+
     {
       name: 'gym-reports',
       path: '/gyms/:gymId/reports',
@@ -202,17 +231,20 @@ router.beforeEach(function (to, from, next) {
   }
 })
 
-router.beforeEach(function (to, from, next) {
+router.beforeEach(async function (to, from, next) {
   if (to.matched.some(record => record.meta.requiresGymRole)) {
     const roles = to.meta.requiresGymRole
     const gymId = to.params.gymId
-    // console.log("CHecking roles for ", gymId, store.state.auth.user.user_gym_roles, roles)
-    if (store.state.auth.user && store.state.auth.user.user_gym_roles && gymId) {
-      const userGyms = store.state.auth.user.user_gym_roles
+    let user = await client.service('users').get(store.state.auth.user.id)
+
+    if (user && user.user_gym_roles && gymId) {
+      // console.log("Gym ID is", gymId)
+      const userGyms = user.user_gym_roles
       for (let i = 0; i < userGyms.length; i++) {
         let userGymRole = userGyms[i]
         // console.log("Checking", userGymRole.role, userGymRole.gymId)
         if ((String(userGymRole.gymId) === String(gymId)) && roles.includes(userGymRole.role)) {
+          // console.log(" found! ", userGymRole.role, userGymRole.gymId)
           next()
           return
         }

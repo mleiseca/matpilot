@@ -130,7 +130,7 @@ export default {
       this.loading = true
       const response = await this.findScheduledEvents({
         query: {
-          $limit: 50,
+          $limit: 100,
           $customQuery: {
             type: 'SCHEDULE_REPORT',
             bind: {

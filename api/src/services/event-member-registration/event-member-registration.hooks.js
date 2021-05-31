@@ -1,14 +1,15 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const customQuery = require('../../hooks/custom-query').customQuery
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForMember} = require('../../hooks/authorization')
+
 
 const queries = {
   'REGISTRATION_DURING_PERIOD':
     'select event_member_registration.*, period_events."startDateTime", period_events.title from event_member_registration,\n' +
-    '  (select id, "startDateTime", title From events where :startDateTime <= "startDateTime" and "startDateTime" <= :endDateTime and "gymId" in (:gymIds)) period_events\n' +
+    '  (select id, "startDateTime", title From events where :startDateTime <= "startDateTime" and "startDateTime" <= :endDateTime and "gymId" in (:gymId)) period_events\n' +
     'where\n' +
-    '  "memberId" in (:memberIds) and\n' +
+    '  "memberId" in (:memberId) and\n' +
     '  "eventId" = period_events.id\n' +
     'order by period_events."startDateTime"'
 }
@@ -98,7 +99,7 @@ async function verifySpaceAvailable(context) {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'),  restrictAccessForGym() ],
+    all: [ authenticate('jwt'), restrictAccessForMember() ],
     find: [customQuery({queries: queries})],
     get: [],
     create: [verifySpaceAvailable, assignCreatedBy],
