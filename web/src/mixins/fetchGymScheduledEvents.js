@@ -24,7 +24,8 @@ export default {
       // console.log('scheduledEvents for gym', this.gymId)
       return this.findScheduledEventsInStore({
         query: {
-          gymId: parseInt(this.gymId, 10)
+          gymId: parseInt(this.gymId, 10),
+          $limit: 1000
         }
       }).data
     },
@@ -41,7 +42,8 @@ export default {
           $and: [
             { startDateTime: { $gte: start } },
             { startDateTime: { $lte: end } }
-          ]
+          ],
+          $limit: 1000
         }
       }).data
     }
@@ -56,7 +58,8 @@ export default {
     // console.log('looking up scheduled events...')
     await this.findScheduledEvents({
       query: {
-        gymId: this.gymId
+        gymId: this.gymId,
+        $limit: 1000
       }
     })
 
@@ -87,7 +90,7 @@ export default {
           { startDateTime: { $gte: start } },
           { startDateTime: { $lte: end } }
         ],
-        '$limit': 50
+        '$limit': 1000
       }
       await this.findEvents({ query: eventQuery })
     }

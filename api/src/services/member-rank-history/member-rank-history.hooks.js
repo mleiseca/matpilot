@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGymWorkers, restrictAccessForMember} = require('../../hooks/authorization')
+
 // const logger = require('../../logger')
 
 const assignCreatedBy = require('../../hooks/created-by')
@@ -35,13 +36,13 @@ async function updateUserRank(context) {
 }
 module.exports = {
   before: {
-    all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [],
-    get: [],
-    create: [assignCreatedBy],
-    update: [],
-    patch: [],
-    remove: []
+    all: [ authenticate('jwt')],
+    find: [restrictAccessForMember()],
+    get: [restrictAccessForMember()],
+    create: [restrictAccessForGymWorkers(), assignCreatedBy],
+    update: [restrictAccessForGymWorkers()],
+    patch: [restrictAccessForGymWorkers()],
+    remove: [restrictAccessForGymWorkers()]
   },
 
   after: {

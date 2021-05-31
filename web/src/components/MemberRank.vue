@@ -144,20 +144,27 @@ export default {
       findMemberRankHistoryInStore: 'find'
     }),
     rankHistory () {
+      if (this.member === undefined || this.member.id === undefined) {
+        return
+      }
       return this.findMemberRankHistoryInStore({
         query: {
           memberId: this.member.id,
           $sort: {
             awardDate: -1
-          }
+          },
+          $limit: 1000
         }
       }).data
     }
   },
   mounted: async function () {
+    if (this.member === undefined || this.member.id === undefined) {
+      return
+    }
     await this.findMemberRankHistory({
       query: {
-        $limit: 50,
+        $limit: 1000,
         memberId: this.member.id,
         gymId: this.gym.id
       }

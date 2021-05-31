@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import store from './store'
 import { get } from 'lodash'
 import { EventBus } from './event-bus'
-import client from "./api/feathers-client";
+import client from './api/feathers-client'
 
 Vue.use(Router)
 
@@ -235,7 +235,7 @@ router.beforeEach(async function (to, from, next) {
   if (to.matched.some(record => record.meta.requiresGymRole)) {
     const roles = to.meta.requiresGymRole
     const gymId = to.params.gymId
-    let user = await client.service('users').get(store.state.auth.user.id);
+    let user = await client.service('users').get(store.state.auth.user.id)
 
     if (user && user.user_gym_roles && gymId) {
       // console.log("Gym ID is", gymId)

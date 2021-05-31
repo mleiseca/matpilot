@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const hydrate = require('feathers-sequelize/hooks/hydrate')
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGym, restrictAccessForGymWorkers } = require('../../hooks/authorization')
+
 const commonHooks = require('feathers-hooks-common')
 const logger = require('../../logger')
 
@@ -54,8 +55,8 @@ function replaceUserWithUserId() {
 module.exports = {
   before: {
     all: [ authenticate('jwt'), includeGymAndUser() ],
-    find: [restrictAccessForGym()],
-    get: [restrictAccessForGym()],
+    find: [restrictAccessForGymWorkers()],
+    get: [restrictAccessForGymWorkers()],
     create: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }),
       commonHooks.iff(commonHooks.isProvider('external'), replaceUserWithUserId())],
     update: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }),

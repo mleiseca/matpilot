@@ -23,7 +23,6 @@
               v-bind:member="member"
               v-bind:gym="gym"></member-view>
 
-
             <div class="pt-10 pb-10">
             <member-waivers v-bind:gym-id="gymId"
                             v-bind:member="member"
@@ -32,7 +31,6 @@
             </member-waivers>
 
             </div>
-
 
             <member-rank
               :member="member"
@@ -95,8 +93,8 @@ export default {
     ...mapActions('members', {
       getMember: 'get'
     }),
-    gymWaiversSigned: function() {
-      console.log("MEMBER VIEW: gymWaiversSigned")
+    gymWaiversSigned: function () {
+      console.log('MEMBER VIEW: gymWaiversSigned')
       this.$scrollTo(this.$refs.memberContainer, 100, {})
     },
     saveMemberAndDisplay: function (event) {

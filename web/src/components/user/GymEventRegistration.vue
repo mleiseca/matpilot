@@ -117,7 +117,8 @@ export default {
     registrationRecords () {
       return this.findEventMemberRegistrationInStore({
         query: {
-          gymId: parseInt(this.gymId, 10)
+          gymId: parseInt(this.gymId, 10),
+          $limit: 1000
         },
         qid: 'event_member_registration_by_gym'
       }).data
@@ -181,8 +182,8 @@ export default {
             replacements: {
               startDateTime: this.earliestEventDate,
               endDateTime: this.latestEventDate,
-              memberIds: this.memberIds,
-              gymIds: [this.gymId]
+              memberId: this.memberIds,
+              gymId: [this.gymId]
             }
           }
         } })

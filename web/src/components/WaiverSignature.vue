@@ -59,105 +59,105 @@
 </template>
 
 <script>
-  import { EventBus } from '../event-bus'
-  import { isNil } from 'lodash'
-  import moment from "moment";
+import { EventBus } from '../event-bus'
+import { isNil } from 'lodash'
+import moment from 'moment'
 
-  export default {
-    name: 'WaiverSignature',
-    props: {
-      waiver: { type: Object },
-      member: { type: Object }
-    },
-    data () {
-      return {
-        windowWidth: window.innerWidth,
-        agreeToTerms: false,
-        rules: {
-          required: value => !!value || 'Required.'
-        },
+export default {
+  name: 'WaiverSignature',
+  props: {
+    waiver: { type: Object },
+    member: { type: Object }
+  },
+  data () {
+    return {
+      windowWidth: window.innerWidth,
+      agreeToTerms: false,
+      rules: {
+        required: value => !!value || 'Required.'
       }
-    },
-
-    // mounted: function () {
-    //   this.$watch('waiver', w => {
-    //     console.log('new waiver', w)
-    //     this.loadWaiverIntoForm(w)
-    //   })
-    // },
-    computed: {
-      isMinor() {
-        return !isNil(this.member.dateOfBirth) &&
-          moment().diff(this.member.dateOfBirth, 'years') < 18
-      },
-      guardianContactName() {
-        if (!isNil(this.member.guardianContacts) && this.member.guardianContacts.length > 0){
-          return this.member.guardianContacts[0].guardianContactName || this.member.guardianContacts[0].name
-        } else {
-          return ""
-        }
-      }
-    },
-    methods: {
-      save: async function (event) {
-        event.preventDefault()
-
-        if (this.$refs.signaturePad.isEmpty()) {
-          EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
-          return
-        }
-
-        EventBus.$emit('loading', { done: false })
-        const gymMemberWaiverSignature = {
-          memberId: this.member.id,
-          gymId: this.waiver.gymId,
-          gymWaiverId: this.waiver.id,
-          waiverName: this.waiver.name
-        }
-        gymMemberWaiverSignature.waiverSignature = await this.readWaiverAsPng()
-
-        // This is sad, but needs to be emitted before saving. The issue is that this component is removed from the page
-        // when the update goes through....that removes the listener on the parent before the message can be sent
-        this.$emit('waiver-signature-save')
-
-        this.$store.dispatch('gym-waiver-member-signatures/create', gymMemberWaiverSignature)
-          .then((result) => {
-            EventBus.$emit('loading', { done: true })
-            console.log('(waiver sig saved) Got result:', result)
-
-            // this.stepperState[nextStep - 2] = true
-            // this.e1 = nextStep
-          })
-          .catch((e) => {
-            console.log('** Login catch: ', e)
-            EventBus.$emit('user-message', { message: `Error: ${e.message}`, type: 'error' })
-            EventBus.$emit('loading', { done: true })
-          })
-      },
-      cancel: function (event) {
-        event.preventDefault()
-        // this.$emit('gym-waiver-edit-cancel', this.waiver)
-      },
-      currentDate () { return moment().format('MMMM D, YYYY') },
-      readWaiverAsPng: function () {
-        const self = this
-        return new Promise(async function (resolve) {
-          const canvas = await self.$html2canvas(self.$refs.fullWaiver, { type: 'canvas', windowWidth: 1000 })
-          canvas.toBlob(resolve)
-        })
-      },
-
-      async clearSignature () {
-        await this.$refs.signaturePad.clearSignature()
-      },
-      // async showSignatureBox () {
-      //   if (!this.agreeToTerms) {
-      //   } else {
-      //     this.expandSignature = true
-      //   }
-      // },
     }
+  },
+
+  // mounted: function () {
+  //   this.$watch('waiver', w => {
+  //     console.log('new waiver', w)
+  //     this.loadWaiverIntoForm(w)
+  //   })
+  // },
+  computed: {
+    isMinor () {
+      return !isNil(this.member.dateOfBirth) &&
+          moment().diff(this.member.dateOfBirth, 'years') < 18
+    },
+    guardianContactName () {
+      if (!isNil(this.member.guardianContacts) && this.member.guardianContacts.length > 0) {
+        return this.member.guardianContacts[0].guardianContactName || this.member.guardianContacts[0].name
+      } else {
+        return ''
+      }
+    }
+  },
+  methods: {
+    save: async function (event) {
+      event.preventDefault()
+
+      if (this.$refs.signaturePad.isEmpty()) {
+        EventBus.$emit('user-message', { message: 'Please sign the waiver to continue', type: 'error' })
+        return
+      }
+
+      EventBus.$emit('loading', { done: false })
+      const gymMemberWaiverSignature = {
+        memberId: this.member.id,
+        gymId: this.waiver.gymId,
+        gymWaiverId: this.waiver.id,
+        waiverName: this.waiver.name
+      }
+      gymMemberWaiverSignature.waiverSignature = await this.readWaiverAsPng()
+
+      // This is sad, but needs to be emitted before saving. The issue is that this component is removed from the page
+      // when the update goes through....that removes the listener on the parent before the message can be sent
+      this.$emit('waiver-signature-save')
+
+      this.$store.dispatch('gym-waiver-member-signatures/create', gymMemberWaiverSignature)
+        .then((result) => {
+          EventBus.$emit('loading', { done: true })
+          console.log('(waiver sig saved) Got result:', result)
+
+          // this.stepperState[nextStep - 2] = true
+          // this.e1 = nextStep
+        })
+        .catch((e) => {
+          console.log('** Login catch: ', e)
+          EventBus.$emit('user-message', { message: `Error: ${e.message}`, type: 'error' })
+          EventBus.$emit('loading', { done: true })
+        })
+    },
+    cancel: function (event) {
+      event.preventDefault()
+      // this.$emit('gym-waiver-edit-cancel', this.waiver)
+    },
+    currentDate () { return moment().format('MMMM D, YYYY') },
+    readWaiverAsPng: function () {
+      const self = this
+      return new Promise(async function (resolve) {
+        const canvas = await self.$html2canvas(self.$refs.fullWaiver, { type: 'canvas', windowWidth: 1000 })
+        canvas.toBlob(resolve)
+      })
+    },
+
+    async clearSignature () {
+      await this.$refs.signaturePad.clearSignature()
+    }
+    // async showSignatureBox () {
+    //   if (!this.agreeToTerms) {
+    //   } else {
+    //     this.expandSignature = true
+    //   }
+    // },
   }
+}
 </script>
 
 <style scoped>

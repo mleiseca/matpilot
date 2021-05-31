@@ -134,9 +134,9 @@ export default {
       findGymMembers: 'find'
     }),
     navigateToMember: function (member) {
-      console.log("Report - open member", member)
+      console.log('Report - open member', member)
       let routeData = this.$router.resolve({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: member.id } })
-      window.open(routeData.href, '_blank');
+      window.open(routeData.href, '_blank')
     },
     loadReport: async function () {
       this.loading = true

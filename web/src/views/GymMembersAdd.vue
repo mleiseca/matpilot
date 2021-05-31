@@ -218,11 +218,9 @@ import { mapActions } from 'vuex'
 import { EventBus } from '../event-bus'
 import { trim } from 'lodash'
 import moment from 'moment'
-import MemberWaivers from "../components/MemberWaivers";
 
 export default {
   name: 'GymMembersAdd',
-  components: {MemberWaivers},
   props: ['gymId'],
   data () {
     return {
@@ -331,7 +329,6 @@ export default {
           EventBus.$emit('user-message', { message: `Error adding member: ${e.message}`, type: 'error' })
           EventBus.$emit('loading', { done: true })
         })
-
     },
 
     // TODO: copied from MemberForm
@@ -351,7 +348,7 @@ export default {
       const age = moment().diff(date, 'years')
       this.isMinor = age < 18
     },
-    gymWaiversSigned() {
+    gymWaiversSigned () {
       this.$router.push({ name: 'gym-members-view', params: { gymId: this.gymId, memberId: this.member.id } })
     }
   }

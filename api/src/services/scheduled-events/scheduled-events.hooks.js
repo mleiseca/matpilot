@@ -1,7 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const customQuery = require('../../hooks/custom-query').customQuery
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGym} = require('../../hooks/authorization')
+
 
 const queries = {
   'SCHEDULE_REPORT':
@@ -37,13 +38,13 @@ const queries = {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'), restrictAccessForGym() ],
-    find: [customQuery({queries: queries})],
-    get: [],
-    create: [assignCreatedBy],
-    update: [],
-    patch: [],
-    remove: []
+    all: [ authenticate('jwt') ],
+    find: [restrictAccessForGym(), customQuery({queries: queries})],
+    get: [restrictAccessForGym()],
+    create: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] }), assignCreatedBy],
+    update: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] })],
+    patch: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] })],
+    remove: [restrictAccessForGym({ role: ['OWNER', 'ADMIN'] })]
   },
 
   after: {

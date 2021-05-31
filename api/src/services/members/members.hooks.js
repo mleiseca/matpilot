@@ -2,7 +2,9 @@ const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
 const { fastJoin, makeCallingParams } = require('feathers-hooks-common')
 const customQuery = require('../../hooks/custom-query').customQuery
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGymWorkers, restrictAccessForMember} = require('../../hooks/authorization')
+
+
 const logger = require('../../logger')
 const commonHooks = require('feathers-hooks-common')
 
@@ -22,7 +24,7 @@ const memberResolvers = {
           eventId: context.params.populate.id
         }, undefined, { paginate: false }
       ))
-      logger.info(result)
+      // logger.info(result)
       return getResultsByKey(keys, result, attendance => attendance.memberId, '!')
     },
     { context }
@@ -160,20 +162,27 @@ function include(hook) {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'), restrictAccessForGym()],
-    find: [customQuery({queries: queries, model: 'members'}), include],
-    get: [],
+    all: [ authenticate('jwt')],
+    find: [
+      restrictAccessForMember({memberIdField: "id"}),
+      customQuery({queries: queries, model: 'members'}), include],
+    get: [
+      restrictAccessForMember({memberIdField: "id"}),
+      ],
     create: [
+      restrictAccessForGymWorkers(),
       commonHooks.lowerCase('email'),
       assignCreatedBy,
       createLowerName()
 
     ],
     update: [
+      restrictAccessForGymWorkers(),
       commonHooks.discard('rank', 'rankAwardDate'),
       commonHooks.lowerCase('email'),
       createLowerName()],
     patch: [
+      restrictAccessForGymWorkers(),
       // commonHooks.iff(
       //   commonHooks.isProvider('external'),
       //   commonHooks.preventChanges(true,

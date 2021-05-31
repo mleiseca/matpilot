@@ -1,4 +1,5 @@
 import { mapActions, mapGetters } from 'vuex'
+import { isNil } from 'lodash'
 
 export default {
   props: {
@@ -10,20 +11,28 @@ export default {
     }),
     gymWaivers () {
       // console.log('scheduledEvents for gym', this.gymId)
+      if (isNil(this.gymId)) {
+        return
+      }
       return this.findWaiversInStore({
         query: {
-          gymId: parseInt(this.gymId, 10)
+          gymId: parseInt(this.gymId, 10),
+          $limit: 1000
         }
       }).data
     }
   },
   mounted: async function () {
+    if (isNil(this.gymId)) {
+      return
+    }
     await this.findWaivers({
       query: {
         gymId: this.gymId,
         $sort: {
           createdAt: 1
-        }
+        },
+        $limit: 1000
       }
     })
   },

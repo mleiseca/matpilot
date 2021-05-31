@@ -1,6 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks
 const assignCreatedBy = require('../../hooks/created-by')
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForGym } = require('../../hooks/authorization')
+
 const logger = require('../../logger')
 
 // function rawFalse(context) {
@@ -28,9 +29,9 @@ module.exports = {
     find: [restrictAccessForGym({gymIdField: 'id'})],
     get: [restrictAccessForGym({gymIdField: 'id'})],
     create: [assignCreatedBy],
-    update: [restrictAccessForGym({gymIdField: 'id'})],
-    patch: [restrictAccessForGym({gymIdField: 'id'})],
-    remove: [restrictAccessForGym({gymIdField: 'id'})]
+    update: [restrictAccessForGym({gymIdField: 'id', role: ['OWNER', 'ADMIN']})],
+    patch: [restrictAccessForGym({gymIdField: 'id', role: ['OWNER', 'ADMIN']})],
+    remove: [restrictAccessForGym({gymIdField: 'id', role: ['OWNER']})]
   },
 
   after: {

@@ -81,9 +81,9 @@
 <script>
 import fetchGymScheduledEvents from '../../mixins/fetchGymScheduledEvents'
 import moment from 'moment'
-import fetchWaivers from "../../mixins/fetchWaivers";
-import fetchMemberWaivers from "../../mixins/fetchMemberWaivers";
-import { isNil} from 'lodash'
+import fetchWaivers from '../../mixins/fetchWaivers'
+import fetchMemberWaivers from '../../mixins/fetchMemberWaivers'
+import { isNil } from 'lodash'
 
 export default {
   name: 'UserGymOverviewCard',
@@ -104,11 +104,11 @@ export default {
       maxStartDate: maxStartDate,
       registrationsRemaining: null,
       waiversAllSigned: false,
-      hasAcknowledgedMessage: this.$cookies.get("acknowledgedGymMessage_" +this.gymId)
+      hasAcknowledgedMessage: this.$cookies.get('acknowledgedGymMessage_' + this.gymId)
     }
   },
   watch: {
-    gymWaivers: function(x){
+    gymWaivers: function (x) {
       if (!this.alertUnsigned) {
         this.$nextTick(function () {
           this.currentWaiver = 1
@@ -116,7 +116,7 @@ export default {
       }
       this.updateWaiversAllSigned()
     },
-    memberWaivers: function(x) {
+    memberWaivers: function (x) {
       this.updateWaiversAllSigned()
     }
   },
@@ -130,10 +130,10 @@ export default {
       console.log('updateRegistrationsRemaining', value)
       this.registrationsRemaining = value
     },
-    updateWaiversAllSigned() {
-      console.log("(gymoverview) updateWaiversAllSigned" )
+    updateWaiversAllSigned () {
+      console.log('(gymoverview) updateWaiversAllSigned')
       if (isNil(this.gymWaivers) || this.gymWaivers.length === 0 || isNil(this.memberWaivers) || this.memberWaivers.length === 0) {
-        this.waiversAllSigned = false;
+        this.waiversAllSigned = false
         return
       }
       const existSigsByMemberAndWaiverId = new Map()
@@ -145,17 +145,17 @@ export default {
         for (const waiver of this.gymWaivers) {
           const key = [member.id, waiver.id].join('-')
           if (!existSigsByMemberAndWaiverId.has(key)) {
-            console.log("(gymoverview) updateWaiversAllSigned ... missing ", existSigsByMemberAndWaiverId, waiver.id)
-            this.waiversAllSigned = false;
+            console.log('(gymoverview) updateWaiversAllSigned ... missing ', existSigsByMemberAndWaiverId, waiver.id)
+            this.waiversAllSigned = false
             return
           }
         }
       }
-      this.waiversAllSigned = true;
+      this.waiversAllSigned = true
     },
-    acknowledgeMessage() {
+    acknowledgeMessage () {
       this.hasAcknowledgedMessage = true
-      this.$cookies.set("acknowledgedGymMessage_" +this.gymId, true)
+      this.$cookies.set('acknowledgedGymMessage_' + this.gymId, true)
     }
   }
 }

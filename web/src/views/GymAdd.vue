@@ -54,8 +54,8 @@
 
 <script>
 import { mapActions } from 'vuex'
-import store from "../store";
-import client from "../api/feathers-client";
+import store from '../store'
+import client from '../api/feathers-client'
 
 export default {
   name: 'GymAdd',
@@ -65,13 +65,10 @@ export default {
   computed: {
   },
   methods: {
-    ...mapActions('auth', ['authenticate']),
     ...mapActions('gyms', {
       findGyms: 'find'
     }),
     saveGymAndDisplay: async function (event) {
-      const { authenticate } = this
-
       console.log('Saving gym and redisplaying:', event)
       console.log('user from service', await client.service('users').get(store.state.auth.user.id))
       this.$store.dispatch('gyms/create', event)
@@ -82,7 +79,7 @@ export default {
           console.log('user from service', await client.service('users').get(store.state.auth.user.id))
           // this.$nextTick(function () {
           //   console.log('User after tick', store.state.auth.user.user_gym_roles)
-          this.$router.push({name: '/gym', params: {gymId: result.id}})
+          this.$router.push({ name: '/gym', params: { gymId: result.id } })
           // })
         })
     }

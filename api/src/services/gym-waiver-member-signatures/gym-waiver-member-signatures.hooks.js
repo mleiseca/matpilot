@@ -1,7 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const moment = require('moment')
 const assignCreatedBy = require('../../hooks/created-by')
-const restrictAccessForGym = require('../../hooks/authorization').restrictAccessForGym
+const { restrictAccessForMember} = require('../../hooks/authorization')
 const logger = require('../../logger')
 const uuid = require('uuid')
 const AWS = require('aws-sdk')
@@ -10,7 +9,6 @@ const WAIVER_S3_BUCKET = process.env.WAIVER_S3_BUCKET || 'com.matpilot.productio
 
 function addUrlForEach(input) {
   if (input && input.waiverUrl) {
-    logger.info(input)
     let key = input.waiverUrl
     let bucket = WAIVER_S3_BUCKET
     if (input.waiverUrl.startsWith('https')) {
@@ -37,7 +35,7 @@ function addUrlForWaiver() {
   return function(hook) {
     const input = hook.result
     input.data.forEach(addUrlForEach)
-    console.log('addUrlForWaiver', hook.result.data)
+    // console.log('addUrlForWaiver', hook.result.data)
     return hook
   }
 }
@@ -91,7 +89,7 @@ function writeWaiverSignatureToS3() {
 
 module.exports = {
   before: {
-    all: [ authenticate('jwt'), restrictAccessForGym()],
+    all: [ authenticate('jwt'), restrictAccessForMember()],
     find: [],
     get: [],
     create: [assignCreatedBy, writeWaiverSignatureToS3()],
