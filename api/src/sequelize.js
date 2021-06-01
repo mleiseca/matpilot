@@ -21,7 +21,9 @@ module.exports = function (app) {
     useSsl = useSslEnv === 'true'
   }
   if (useSsl === true) {
-    dbOptions.dialectOptions = {ssl: useSsl}
+    dbOptions.dialectOptions = {  ssl: {
+        rejectUnauthorized: false
+      }}
   }
 
   logger.info('dboptions: %o', dbOptions)
