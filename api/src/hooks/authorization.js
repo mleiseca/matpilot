@@ -155,11 +155,15 @@ async function addMemberIdParameter(hook, options) {
   let explicitMemberId = extractMemberId(hook.params.query, options);
 
   if (isUndefined(explicitMemberId)) {
-
     const userGymIds = await fetchUserGymIds(hook.app, hook.params.user.id)
-    // logger.info('%s - %s: No explicitMemberId in %s. Adding ids %s', hook.path, hook.method, hook.params.query, Array.from(memberIds))
-    logger.info('%s - %s: No explicitMemberId in %s. Adding GYM ids %s', hook.path, hook.method, hook.params.query, Array.from(userGymIds))
-    set(hook.params, `query.${options.gymIdField}`, Array.from(userGymIds))
+    let explicitGymId = extractGymId(hook.params.query, options);
+    if (explicitGymId) {
+      explicitGymId = parseInt(explicitGymId, 10)
+      if (!userGymIds.has(explicitGymId)) {
+        logger.info('Permission denied, gymIds is [%s] query wanted %s', Array.from(userGymIds).join(','), explicitGymId)
+        throw new errors.Forbidden('You do not have the permissions to access this.')
+      }
+    }
     // set(hook.params, `query.${options.memberIdField}`, Array.from(memberIds))
   } else {
     logger.info('%s - %s: Found explicitMemberId: %s', hook.path, hook.method, explicitMemberId)
