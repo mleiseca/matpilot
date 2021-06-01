@@ -8,7 +8,8 @@
           <v-data-table
             :headers="headers"
             :items="gymScheduledEvents"
-            hide-default-footer>
+            :items-per-page="15"
+          >
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
             <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
@@ -30,6 +31,8 @@
                 <td>{{ item.title }}</td>
                 <td>{{ item.startTime }} - {{ item.endTime }}</td>
                 <td>{{ scheduleDescription(item) }}</td>
+                <td>{{ item.startDate | moment("dddd, MMMM Do YYYY") }}</td>
+                <td>{{ item.endDate | moment("dddd, MMMM Do YYYY") }}</td>
               </tr>
             </template>
           </v-data-table>
@@ -60,8 +63,9 @@ export default {
     return {
       headers: [
         {
-          sortable: false,
-          text: 'Title'
+          sortable: true,
+          text: 'Title',
+          value: 'title'
         },
         {
           sortable: false,
@@ -70,7 +74,17 @@ export default {
         {
           sortable: false,
           text: 'Description'
-        }
+        },
+        {
+          sortable: true,
+          text: 'Start Date',
+          value: 'startDate'
+        },
+        {
+          sortable: true,
+          text: 'End Date',
+          value: 'endDate'
+        },
       ]
     }
   },

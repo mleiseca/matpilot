@@ -11,8 +11,7 @@
 
               <v-data-table
                 :headers="headers"
-                :items="gymWaivers"
-                hide-default-footer>
+                :items="gymWaivers">
                 <template
                   slot="headerCell"
                   slot-scope="{ header }">

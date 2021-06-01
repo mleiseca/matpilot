@@ -74,7 +74,6 @@
                 :items="reportData"
                 class="elevation-1"
                 :loading="loading"
-                hide-default-footer
               ></v-data-table>
             </v-row>
           </v-container>

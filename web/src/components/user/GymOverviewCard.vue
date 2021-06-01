@@ -25,7 +25,7 @@
             </v-row>
           </v-alert>
           <v-expansion-panels popout>
-            <v-expansion-panel v-show="waiversAllSigned && (hasAcknowledgedMessage || gym.registrationMessage === null)">
+            <v-expansion-panel v-show="waiversAllSigned && (hasAcknowledgedMessage || (gym !== undefined && gym.registrationMessage === null))">
               <v-expansion-panel-header>
                 Register for classes
               </v-expansion-panel-header>

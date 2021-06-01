@@ -9,8 +9,7 @@
           <v-data-table
             :headers="headers"
             :items="userGyms"
-            @click:row="navigateToUserGym"
-            hide-default-footer>
+            @click:row="navigateToUserGym">
             <!-- TODO: this pagination or search needs to work -->
             <!--:pagination.sync="pagination"-->
             <!--:rows-per-page-items="pagination.rowsPerPageItems"-->
