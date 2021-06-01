@@ -48,7 +48,7 @@
             <v-date-picker v-model="form.startDate" scrollable>
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="modalStartDate= false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
+              <v-btn depressed color="primary" @click="$refs.dialogStartDate.save(form.startDate)">OK</v-btn>
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -71,8 +71,14 @@
             </template>
             <v-date-picker v-model="form.endDate" scrollable>
               <v-spacer></v-spacer>
+              <v-btn
+                text color="error" @click="$refs.dialogEndDate.save(null)">Remove
+              </v-btn>
               <v-btn text color="primary" @click="modalEndDate = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
+
+              <v-btn depressed color="primary" @click="$refs.dialogEndDate.save(form.endDate)">OK</v-btn>
+
+
             </v-date-picker>
           </v-dialog>
         </v-flex>
@@ -103,7 +109,7 @@
             >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="modalStartTime = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
+              <v-btn depressed color="primary" @click="$refs.startTimeDialog.save(form.startTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
@@ -133,7 +139,7 @@
             >
               <v-spacer></v-spacer>
               <v-btn text color="primary" @click="modalEndTime = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
+              <v-btn depressed color="primary" @click="$refs.endTimeDialog.save(form.endTime)">OK</v-btn>
             </v-time-picker>
           </v-dialog>
         </v-flex>
