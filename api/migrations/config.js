@@ -27,9 +27,10 @@ module.exports = {
     dialect: 'postgres',
     migrationStorageTableName: '_migrations',
     dialectOptions: {
-      ssl: true,
       // Ref.: https://github.com/brianc/node-postgres/issues/2009
-      rejectUnauthorized: false,
+      ssl: {
+        rejectUnauthorized: false
+      }
     }
   }
 };
